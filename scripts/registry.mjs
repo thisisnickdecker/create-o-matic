@@ -12,7 +12,7 @@ const ROOT = resolve(import.meta.dirname, "../web")
 const DIR = join(ROOT, "instruments")
 const REQUIRED = ["id", "name", "version", "status", "category", "description", "license", "runtime", "entry", "interfaces", "outputs", "groups", "parameters"]
 const STATUS = ["sketch", "experimental", "stable", "retired"]
-const TYPES = ["number", "int", "select", "bool", "color", "palette", "text", "string", "font", "media", "mark", "stack"]
+const TYPES = ["number", "int", "select", "bool", "color", "palette", "text", "string", "font", "media", "mark", "stack", "list"]
 const OUTPUT_STATES = ["verified", "untested", "planned"]
 const problems = []
 const fail = (where, msg) => problems.push(`${where}: ${msg}`)
@@ -61,6 +61,9 @@ for (const name of (await readdir(DIR, { withFileTypes: true })).filter((d) => d
         if (!d) { fail(`${where}/presets/${f}`, `unknown parameter "${k}"`); continue }
         if ((d.type === "number" || d.type === "int") && !(v >= d.min && v <= d.max)) fail(`${where}/presets/${f}`, `${k} = ${v} outside ${d.min}–${d.max}`)
         if (d.type === "select" && !d.options.some(([o]) => o === v)) fail(`${where}/presets/${f}`, `${k} = "${v}" isn't an option`)
+        if (d.type === "list") {
+          for (const row of v) for (const key of Object.keys(row)) if (key !== "id" && !d.item.some((x) => x.key === key)) fail(`${where}/presets/${f}`, `a row of "${k}" has unknown setting "${key}"`)
+        }
         if (d.type === "stack") {
           for (const layer of v) {
             const e = EFFECTS.find((x) => x.id === layer.effect)

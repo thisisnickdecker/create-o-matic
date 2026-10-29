@@ -1,0 +1,37 @@
+{
+  "name": "Wave",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "Create-o-matic",
+        "font": "Bricolage Grotesque",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 800,
+        "leading": 1.0,
+        "ink": "#0000FF"
+      },
+      {
+        "text": "Create-o-matic",
+        "font": "Bricolage Grotesque",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 300,
+        "leading": 1.0,
+        "ink": "#FF2E88"
+      }
+    ],
+    "format": "landscape",
+    "margin": 80,
+    "gap": 10,
+    "labels": false,
+    "rules": false,
+    "valign": "center",
+    "motion": "wave",
+    "motionAmount": 0.8,
+    "stagger": 0.25
+  }
+}

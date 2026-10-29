@@ -1,0 +1,38 @@
+{
+  "name": "Specimen sheet",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "Specimen",
+        "font": "Inter Tight",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 800,
+        "tracking": -0.03,
+        "leading": 0.95
+      },
+      {
+        "text": "The quick brown fox jumps over the lazy dog",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 72,
+        "weight": 400,
+        "leading": 1.1
+      },
+      {
+        "text": "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz 0123456789 &?!",
+        "font": "Space Grotesk",
+        "fontSource": "open",
+        "size": 34,
+        "weight": 500,
+        "leading": 1.25
+      }
+    ],
+    "format": "landscape",
+    "margin": 72,
+    "gap": 44
+  }
+}

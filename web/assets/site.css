@@ -47,6 +47,8 @@ body.site { overflow-x: hidden; }
 .tile .meta span:last-child { color: var(--g600); font-size: 13px; text-align: right; }
 .looks .art { aspect-ratio: 4 / 3; padding: 0; }
 .looks canvas { width: 100%; height: 100%; box-shadow: none; border-radius: 0; }
+[data-specimens] .art { position: relative; background: var(--g100); }
+[data-specimens] canvas { position: absolute; inset: 7%; width: 86%; height: 86%; object-fit: contain; }
 .tile .open { display: inline-flex; gap: 6px; margin: 2px 4px 0; font-size: 13px; color: var(--g600); transition: color .2s; }
 .tile:hover .open { color: var(--ink); }
 

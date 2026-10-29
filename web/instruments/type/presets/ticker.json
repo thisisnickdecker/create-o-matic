@@ -1,0 +1,84 @@
+{
+  "name": "Ticker",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "CREATE-O-MATIC",
+        "font": "Anton",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 400,
+        "leading": 0.92,
+        "ink": "#FF2E88"
+      },
+      {
+        "text": "TYPE TESTER",
+        "font": "Archivo",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 900,
+        "leading": 0.92,
+        "ink": "#F4F4F1"
+      },
+      {
+        "text": "FREE AND OPEN SOURCE",
+        "font": "Big Shoulders Display",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 900,
+        "leading": 0.92,
+        "ink": "#00B3FF"
+      },
+      {
+        "text": "2,000 FONTS",
+        "font": "Bricolage Grotesque",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 800,
+        "leading": 0.92,
+        "ink": "#FFE800"
+      },
+      {
+        "text": "MAKE IT MOVE",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 900,
+        "italic": true,
+        "leading": 0.92,
+        "ink": "#F4F4F1"
+      },
+      {
+        "text": "LIVE TYPE",
+        "font": "Archivo",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 900,
+        "leading": 0.92,
+        "ink": "#7A00FF"
+      },
+      {
+        "text": "SPECIMENS",
+        "font": "Anton",
+        "fontSource": "open",
+        "size": 250,
+        "weight": 400,
+        "leading": 0.92,
+        "ink": "#FF7A00"
+      }
+    ],
+    "format": "story",
+    "background": "#121211",
+    "labels": false,
+    "rules": false,
+    "margin": 0,
+    "gap": 6,
+    "valign": "center",
+    "motion": "marquee",
+    "stagger": 0.23,
+    "duration": 8
+  }
+}

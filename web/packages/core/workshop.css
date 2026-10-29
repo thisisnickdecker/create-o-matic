@@ -207,8 +207,8 @@ body.dragging .drop { display: grid; }
 }
 
 /* the effect stack: one card per layer */
-.row.t-stack { grid-template-columns: 1fr; }
-.row.t-stack > .label { display: none; }
+.row.t-stack, .row.t-list { grid-template-columns: 1fr; }
+.row.t-stack > .label, .row.t-list > .label { display: none; }
 .stack { display: grid; gap: 8px; }
 .layers { display: grid; gap: 6px; }
 .layer { border-radius: var(--r-m); background: var(--g50); box-shadow: inset 0 0 0 1px var(--g150); transition: opacity .2s var(--ease); }

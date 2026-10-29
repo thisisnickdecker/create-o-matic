@@ -16,6 +16,7 @@
   <script type="module">
     import * as elastic from "/instruments/elastic/elastic.js"
     import * as texture from "/instruments/texture/texture.js"
+    import * as type from "/instruments/type/type.js"
     import { sanitize } from "/packages/core/patch.js"
     import { ensureFont } from "/packages/core/fonts.js"
     import { prepareMarks } from "/packages/core/marks.js"
@@ -26,6 +27,7 @@
       { name: "make", title: "The machine. Free, in your browser.", preset: "heat", t: 0.25 },
       { name: "manual", title: "The Create-o-matic manual.", preset: "golden-section", t: 0.2 },
       { name: "texture", title: "Texture lab: a darkroom for anything.", preset: "riso-duo", t: 0.25, engine: "texture" },
+      { name: "type", title: "Type tester: every font, side by side.", preset: "specimen-sheet", t: 0.25, engine: "type" },
     ]
     const W = 1200, H = 630, PAD = 64
     const save = new URLSearchParams(location.search).has("save")
@@ -70,10 +72,11 @@
       const x = 640, y = 40, w = W - x - 40, h = H - 80
       ctx.fillStyle = "#F0F0EE"
       ctx.beginPath(); ctx.roundRect(x, y, w, h, 28); ctx.fill()
-      const engine = card.engine === "texture" ? texture : elastic
+      const engine = { texture, type }[card.engine] ?? elastic
       const raw = await fetch(`/instruments/${card.engine || "elastic"}/presets/${card.preset}.json`).then((r) => r.json())
       const patch = sanitize(engine.manifest, raw)
       let marks = null
+      if (engine === type) await Promise.all(type.fontRequests(patch).map((r) => ensureFont(r)))
       if (engine === elastic) {
         await ensureFont(elastic.fontRequest(patch))
         elastic.clearMetrics()

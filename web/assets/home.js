@@ -106,9 +106,40 @@ async function looks(host) {
   }))
 }
 
+// The Type tester's sheets, set once their fonts arrive, when they come near the screen.
+const SPECIMENS = ["specimen-sheet", "pairings", "weight-sweep"]
+async function specimens(host) {
+  const type = await import("/instruments/type/type.js")
+  const { ensureFont } = await import("/packages/core/fonts.js")
+  const patches = await Promise.all(SPECIMENS.map((n) => fetch(`/instruments/type/presets/${n}.json`).then((r) => r.json())))
+  const near = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue
+      near.unobserve(e.target)
+      const patch = sanitize(type.manifest, e.target._patch), c = e.target.querySelector("canvas")
+      Promise.all(type.fontRequests(patch).map((r) => ensureFont(r))).then(() => {
+        const { w, h } = type.size(patch), k = Math.min(c.clientWidth / w, c.clientHeight / h) * Math.min(devicePixelRatio || 1, 2)
+        c.width = Math.round(w * k); c.height = Math.round(h * k)
+        type.render(c.getContext("2d"), patch, 0.3, { scale: k })
+      })
+    }
+  }, { rootMargin: "300px 0px" })
+  host.replaceChildren(...patches.map((patch) => {
+    const tile = Object.assign(document.createElement("a"), { className: "tile", href: `/type/#${toHash(sanitize(type.manifest, patch))}` })
+    tile.innerHTML = `<div class="art"><canvas></canvas></div><div class="meta"><span></span><span></span></div>`
+    tile.querySelector(".meta span").textContent = patch.name
+    tile.querySelector(".meta span:last-child").textContent = [...new Set(patch.params.rows.map((r) => r.font))].join(" · ")
+    tile.querySelector(".art")._patch = patch
+    near.observe(tile.querySelector(".art"))
+    return tile
+  }))
+}
+
 const card = document.querySelector("[data-hero]")
 if (card) hero(card, document.querySelector("[data-hero-caption]"))
 const grid = document.querySelector("[data-examples]")
 if (grid) examples(grid)
 const lookGrid = document.querySelector("[data-looks]")
 if (lookGrid) looks(lookGrid)
+const specimenGrid = document.querySelector("[data-specimens]")
+if (specimenGrid) specimens(specimenGrid)

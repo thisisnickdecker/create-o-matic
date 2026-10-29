@@ -17,7 +17,7 @@ export const fontString = (weight, size, family) => `${weight} ${size}px ${quote
 let catalogue
 export function openCatalogue() {
   catalogue ??= fetch("https://api.fontsource.org/v1/fonts").then((r) => r.json())
-    .then((list) => list.map((f) => ({ family: f.family, source: "open", id: f.id, category: f.category, variable: f.variable, weights: f.weights, google: f.type === "google", license: f.license })))
+    .then((list) => list.map((f) => ({ family: f.family, source: "open", id: f.id, category: f.category, variable: f.variable, weights: f.weights, styles: f.styles, subsets: f.subsets, latin: f.defSubset === "latin", google: f.type === "google", license: f.license })))
     .catch(() => [])
   return catalogue
 }
@@ -89,13 +89,24 @@ const fontsourceMeta = (id) => {
   return meta.get(id)
 }
 
-// Fontsource serves one file per weight (or one variable file); register what the patch needs.
-async function fontsourceFaces(family, weights) {
+// Fontsource serves one file per weight and style (or one variable file per style); register what
+// the patch needs.
+async function fontsourceFaces(family, weights, italic = false) {
   const id = family.toLowerCase().replace(/[^a-z0-9]+/g, "-")
   const m = await fontsourceMeta(id)
   if (!m) return false
   const subset = m.defSubset || "latin"
   const cdn = "https://cdn.jsdelivr.net/fontsource/fonts"
+  if (italic && m.styles?.includes("italic")) {
+    const key = `open|${family}|italic`
+    if (!registered.has(key)) {
+      const faces = m.variable
+        ? [new FontFace(family, `url(${cdn}/${id}:vf@latest/${subset}-wght-italic.woff2)`, { weight: "100 900", style: "italic" })]
+        : m.weights.map((w) => new FontFace(family, `url(${cdn}/${id}@latest/${subset}-${w}-italic.woff2)`, { weight: String(w), style: "italic" }))
+      await Promise.all(faces.map((f) => f.load().then(() => document.fonts.add(f)).catch(() => {})))
+      registered.add(key)
+    }
+  }
   if (m.variable && !registered.has(`open|${family}|vf`)) {
     const face = new FontFace(family, `url(${cdn}/${id}:vf@latest/${subset}-wght-normal.woff2)`, { weight: "100 900" })
     try { await face.load(); document.fonts.add(face); registered.add(`open|${family}|vf`); return true } catch {}
@@ -121,13 +132,13 @@ async function fileFace(family) {
   return true
 }
 
-export async function ensureFont({ source, family, kit, weights = [400], sample = "" }) {
+export async function ensureFont({ source, family, kit, weights = [400], sample = "", italic = false }) {
   family = (family || "").trim()
   if (!family) return { ok: false, note: "No family set." }
   const lo = Math.min(...weights), hi = Math.max(...weights)
 
   if (source === "open") {
-    if (!(await fontsourceFaces(family, weights))) return { ok: false, note: `“${family}” isn't in the open catalogue.` }
+    if (!(await fontsourceFaces(family, weights, italic))) return { ok: false, note: `“${family}” isn't in the open catalogue.` }
   } else if (source === "google") {
     if (!(await googleSheet(family, lo, hi))) return { ok: false, note: `Google Fonts has no family called “${family}”.` }
   } else if (source === "adobe") {

@@ -1,0 +1,600 @@
+{
+  "id": "type",
+  "name": "Type tester",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "typography",
+    "specimen"
+  ],
+  "description": "Live type specimens. Rows of your own text, each in its own font from the open library, your Adobe Fonts project, your computer or your files, at its own size, weight, tracking and leading. Stack or grid them, compare faces side by side, set them moving, and export a specimen sheet or a loop.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "type.js",
+    "app": "app.js"
+  },
+  "page": "/type/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch and font files give the same frames in the same browser.",
+  "groups": [
+    {
+      "id": "galley",
+      "label": "Galley",
+      "hint": "rows of type"
+    },
+    {
+      "id": "chase",
+      "label": "Chase",
+      "hint": "layout"
+    },
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size and time"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "motion and keyframes"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "landscape",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "format",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "format",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 6,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "margin",
+      "group": "format",
+      "label": "Margin",
+      "type": "int",
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "key": "background",
+      "group": "format",
+      "label": "Paper",
+      "type": "color",
+      "default": "#F4F4F1"
+    },
+    {
+      "key": "rows",
+      "group": "galley",
+      "label": "Rows",
+      "type": "list",
+      "itemName": "a row",
+      "title": "{font} · {weight}",
+      "max": 24,
+      "item": [
+        {
+          "key": "text",
+          "label": "Text",
+          "type": "text",
+          "default": "The quick brown fox jumps over the lazy dog",
+          "help": "Type anything. New lines start new lines."
+        },
+        {
+          "key": "font",
+          "label": "Font",
+          "type": "font",
+          "default": "Inter Tight",
+          "help": "Browse 2,000+ open fonts, your Adobe Fonts project, installed fonts or your own files."
+        },
+        {
+          "key": "fontSource",
+          "label": "Source",
+          "type": "select",
+          "default": "open",
+          "options": [
+            [
+              "open",
+              "Font library"
+            ],
+            [
+              "google",
+              "Google Fonts"
+            ],
+            [
+              "adobe",
+              "Adobe Fonts"
+            ],
+            [
+              "system",
+              "Installed"
+            ],
+            [
+              "file",
+              "My fonts"
+            ]
+          ],
+          "hidden": true
+        },
+        {
+          "key": "fit",
+          "label": "Size by",
+          "type": "select",
+          "default": "size",
+          "options": [
+            [
+              "size",
+              "Point size"
+            ],
+            [
+              "width",
+              "Fill the width"
+            ]
+          ],
+          "help": "Fill the width sets one line as wide as the column."
+        },
+        {
+          "key": "size",
+          "label": "Size",
+          "type": "int",
+          "min": 6,
+          "max": 800,
+          "step": 1,
+          "default": 72,
+          "unit": "px",
+          "when": {
+            "fit": "size"
+          }
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "type": "int",
+          "min": 100,
+          "max": 1000,
+          "step": 10,
+          "default": 400
+        },
+        {
+          "key": "italic",
+          "label": "Italic",
+          "type": "bool",
+          "default": false
+        },
+        {
+          "key": "tracking",
+          "label": "Tracking",
+          "type": "number",
+          "min": -0.2,
+          "max": 0.6,
+          "step": 0.005,
+          "default": 0,
+          "unit": "em"
+        },
+        {
+          "key": "leading",
+          "label": "Leading",
+          "type": "number",
+          "min": 0.6,
+          "max": 2.4,
+          "step": 0.01,
+          "default": 1.05
+        },
+        {
+          "key": "case",
+          "label": "Case",
+          "type": "select",
+          "default": "as-is",
+          "options": [
+            [
+              "as-is",
+              "As typed"
+            ],
+            [
+              "upper",
+              "Upper"
+            ],
+            [
+              "lower",
+              "Lower"
+            ],
+            [
+              "title",
+              "Title Case"
+            ]
+          ]
+        },
+        {
+          "key": "ink",
+          "label": "Ink",
+          "type": "color",
+          "default": "#121211"
+        }
+      ],
+      "default": [
+        {
+          "text": "Specimen",
+          "font": "Inter Tight",
+          "fontSource": "open",
+          "fit": "width",
+          "weight": 800
+        },
+        {
+          "text": "The quick brown fox jumps over the lazy dog",
+          "font": "Fraunces",
+          "fontSource": "open",
+          "size": 64,
+          "weight": 400
+        },
+        {
+          "text": "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz 0123456789",
+          "font": "Space Grotesk",
+          "fontSource": "open",
+          "size": 36,
+          "weight": 500
+        }
+      ]
+    },
+    {
+      "key": "adobeKit",
+      "group": "galley",
+      "label": "Adobe project",
+      "type": "string",
+      "default": "",
+      "help": "Your Adobe Fonts web project ID, from fonts.adobe.com › Web Projects. Its families appear in the font browser."
+    },
+    {
+      "key": "layout",
+      "group": "chase",
+      "label": "Layout",
+      "type": "select",
+      "default": "stack",
+      "options": [
+        [
+          "stack",
+          "Stacked rows"
+        ],
+        [
+          "grid",
+          "Grid"
+        ]
+      ]
+    },
+    {
+      "key": "columns",
+      "group": "chase",
+      "label": "Columns",
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "when": {
+        "layout": "grid"
+      }
+    },
+    {
+      "key": "gap",
+      "group": "chase",
+      "label": "Gap",
+      "type": "int",
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "key": "align",
+      "group": "chase",
+      "label": "Align",
+      "type": "select",
+      "default": "left",
+      "options": [
+        [
+          "left",
+          "Left"
+        ],
+        [
+          "center",
+          "Centre"
+        ],
+        [
+          "right",
+          "Right"
+        ]
+      ]
+    },
+    {
+      "key": "valign",
+      "group": "chase",
+      "label": "Sit",
+      "type": "select",
+      "default": "top",
+      "options": [
+        [
+          "top",
+          "From the top"
+        ],
+        [
+          "center",
+          "In the middle"
+        ],
+        [
+          "bottom",
+          "On the bottom"
+        ]
+      ],
+      "help": "Where the rows sit on the page as a block."
+    },
+    {
+      "key": "rules",
+      "group": "chase",
+      "label": "Rules",
+      "type": "bool",
+      "default": true,
+      "help": "A hairline between rows, as on a specimen sheet."
+    },
+    {
+      "key": "labels",
+      "group": "chase",
+      "label": "Labels",
+      "type": "bool",
+      "default": true,
+      "help": "Each row's font, weight and size, set small above it."
+    },
+    {
+      "key": "labelInk",
+      "group": "chase",
+      "label": "Label ink",
+      "type": "color",
+      "default": "#8E8E88",
+      "when": {
+        "labels": true
+      }
+    },
+    {
+      "key": "motion",
+      "group": "motion",
+      "label": "Motion",
+      "type": "select",
+      "default": "none",
+      "options": [
+        [
+          "none",
+          "Still"
+        ],
+        [
+          "weight",
+          "Weight sweep"
+        ],
+        [
+          "tracking",
+          "Tracking breathes"
+        ],
+        [
+          "size",
+          "Size pulse"
+        ],
+        [
+          "wave",
+          "Wave"
+        ],
+        [
+          "marquee",
+          "Marquee"
+        ],
+        [
+          "typewriter",
+          "Typewriter"
+        ]
+      ],
+      "help": "Weight sweep needs a variable font. Marquee runs each row as a ticker."
+    },
+    {
+      "key": "motionAmount",
+      "group": "motion",
+      "label": "Amount",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.6,
+      "when": {
+        "motion": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "key": "stagger",
+      "group": "motion",
+      "label": "Stagger",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.12,
+      "when": {
+        "motion": {
+          "not": "none"
+        }
+      },
+      "help": "How far behind the row above each row runs, as a share of the loop."
+    },
+    {
+      "key": "beats",
+      "group": "motion",
+      "label": "Beats per loop",
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "when": {
+        "motion": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

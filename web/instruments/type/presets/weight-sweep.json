@@ -1,0 +1,49 @@
+{
+  "name": "Weight sweep",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "Variable",
+        "font": "Inter Tight",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 500,
+        "leading": 0.95
+      },
+      {
+        "text": "Variable",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 500,
+        "leading": 0.95
+      },
+      {
+        "text": "Variable",
+        "font": "Big Shoulders Display",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 500,
+        "leading": 0.95
+      },
+      {
+        "text": "Variable",
+        "font": "Bricolage Grotesque",
+        "fontSource": "open",
+        "fit": "width",
+        "weight": 500,
+        "leading": 0.95
+      }
+    ],
+    "format": "portrait",
+    "margin": 56,
+    "gap": 24,
+    "motion": "weight",
+    "motionAmount": 0.95,
+    "stagger": 0.12,
+    "duration": 6
+  }
+}

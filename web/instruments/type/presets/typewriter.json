@@ -1,0 +1,34 @@
+{
+  "name": "Typewriter",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "Dear reader,",
+        "font": "IBM Plex Mono",
+        "fontSource": "open",
+        "size": 44,
+        "weight": 600
+      },
+      {
+        "text": "This is a type tester. Write anything here, choose any font, and watch it arrive a letter at a time.",
+        "font": "IBM Plex Mono",
+        "fontSource": "open",
+        "size": 32,
+        "weight": 400,
+        "leading": 1.45
+      }
+    ],
+    "format": "square",
+    "margin": 96,
+    "gap": 30,
+    "rules": false,
+    "labels": false,
+    "motion": "typewriter",
+    "stagger": 0.3,
+    "duration": 8,
+    "background": "#F3EBD8"
+  }
+}

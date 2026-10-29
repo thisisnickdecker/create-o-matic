@@ -2,7 +2,7 @@
 
 Instruments for making type, images and motion. Free and open source.
 
-Two instruments so far:
+Three instruments so far:
 
 - **Motion**: stretch words, logos and marks through a breathing grid or a golden spiral, keyframe
   anything, run it through liquid, halftone, a photocopier or onto a cube, and export the loop as
@@ -10,10 +10,12 @@ Two instruments so far:
 - **Texture lab**: a darkroom for any image or video. Stack risograph, halftone, photocopy, paper,
   grunge, film, chroma, holographic foil, gradient maps and your own textures, each with its own
   blend mode and opacity, and export at full size.
+- **Type tester**: live specimens. Rows of your own text, each in its own font from 2,000+ open
+  families, your Adobe Fonts or your files, compared side by side, set moving, and exported.
 
 Everything is a small JSON patch: the same patch makes the same frames, every time.
 
-**[createomatic.xyz](https://createomatic.xyz)** · [Motion](https://createomatic.xyz/make/) · [Texture lab](https://createomatic.xyz/texture/) · [Manual](https://createomatic.xyz/manual/)
+**[createomatic.xyz](https://createomatic.xyz)** · [Motion](https://createomatic.xyz/make/) · [Texture lab](https://createomatic.xyz/texture/) · [Type tester](https://createomatic.xyz/type/) · [Manual](https://createomatic.xyz/manual/)
 
 Made by [Nick Decker](https://nickdecker.net).
 
@@ -34,11 +36,12 @@ plain ES modules served as files.
 ```
 web/                          the site, exactly as it's published
   index.html, manual/         home and manual
-  make/, texture/             the two instruments' pages (each just mounts its app)
+  make/, texture/, type/      the instruments' pages (each just mounts its app)
   assets/                     site styles, the wordmark and colour knob, the home page's loops
   instruments/elastic/        Motion: instrument.json (every control), elastic.js (pure renderer),
                               app.js (its extras on the shell), embed.js (for other sites), presets/
   instruments/texture/        Texture lab: the same shape
+  instruments/type/           Type tester: the same shape
   packages/core/              shared: shell.js (the machine every instrument runs in), patches,
                               keyframes, effects and the effect stack, fonts, marks, colour picker,
                               exporters, the control rack and timeline

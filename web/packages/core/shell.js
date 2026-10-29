@@ -82,10 +82,10 @@ const TEMPLATE = `
         </div>
         <div class="strip">
           <select data-ref="exportScale" aria-label="Export size">
-            <option value="1">Full size</option>
-            <option value="0.5">Half size (good for GIF)</option>
+            <option value="1" selected>Full size</option>
+            <option value="0.5">Half size</option>
             <option value="0.25">Quarter size</option>
-            <option value="2">Double size (PNG only)</option>
+            <option value="2">Double size, PNG only</option>
           </select>
           <button class="btn" data-ref="embed" type="button" hidden>Copy embed code</button>
         </div>
@@ -181,8 +181,18 @@ export async function createMachine(host, engine, hooks = {}) {
 
   function syncPanel() { panel.sync(now(), patch.keys, u()) }
 
+  // The export sizes, in pixels, for the current format. Full size is always the default.
+  function labelSizes() {
+    const { w, h } = size(patch)
+    for (const o of ref.exportScale.options) {
+      const k = +o.value, name = { 1: "Full size", 0.5: "Half size", 0.25: "Quarter size", 2: "Double size" }[k]
+      o.textContent = `${name} · ${even(w * k)}×${even(h * k)}${k > 1 ? ", PNG only" : ""}`
+    }
+  }
+
   function changed() {
     syncPanel()
+    labelSizes()
     ref.seed.value = patch.seed
     resize()
     dirty = true

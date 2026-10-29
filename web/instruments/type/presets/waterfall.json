@@ -1,0 +1,86 @@
+{
+  "name": "Waterfall",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 180,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 128,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 96,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 72,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 54,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 40,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 30,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 22,
+        "weight": 500,
+        "leading": 1
+      },
+      {
+        "text": "Hamburgefontsiv",
+        "font": "Fraunces",
+        "fontSource": "open",
+        "size": 16,
+        "weight": 500,
+        "leading": 1
+      }
+    ],
+    "format": "portrait",
+    "margin": 64,
+    "gap": 18,
+    "rules": false
+  }
+}

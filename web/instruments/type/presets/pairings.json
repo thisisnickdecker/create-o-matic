@@ -1,0 +1,48 @@
+{
+  "name": "Pairings",
+  "instrument": "type",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "rows": [
+      {
+        "text": "A headline worth reading",
+        "font": "Playfair Display",
+        "fontSource": "open",
+        "size": 104,
+        "weight": 700,
+        "leading": 1.02
+      },
+      {
+        "text": "Body copy has to hold up over a long read: even colour, open counters, an honest italic. Set it at the size it'll be read at and live with it for a paragraph.",
+        "font": "Inter",
+        "fontSource": "open",
+        "size": 32,
+        "weight": 400,
+        "leading": 1.5
+      },
+      {
+        "text": "A headline worth reading",
+        "font": "Instrument Serif",
+        "fontSource": "open",
+        "size": 104,
+        "weight": 400,
+        "leading": 1.0
+      },
+      {
+        "text": "Body copy has to hold up over a long read: even colour, open counters, an honest italic. Set it at the size it'll be read at and live with it for a paragraph.",
+        "font": "IBM Plex Sans",
+        "fontSource": "open",
+        "size": 32,
+        "weight": 400,
+        "leading": 1.5
+      }
+    ],
+    "format": "landscape",
+    "layout": "grid",
+    "columns": 2,
+    "margin": 96,
+    "gap": 72,
+    "valign": "center"
+  }
+}

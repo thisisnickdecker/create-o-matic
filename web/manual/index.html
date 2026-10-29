@@ -28,6 +28,7 @@
     <nav class="nav" id="nav" aria-label="Site">
       <a href="/make/">Motion</a>
       <a href="/texture/">Texture lab</a>
+      <a href="/type/">Type tester</a>
       <a href="/#examples">Examples</a>
       <a href="/manual/" aria-current="page">Manual</a>
       <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
@@ -40,6 +41,7 @@
     <nav class="toc" aria-label="Contents">
       <a href="#start">Start here</a>
       <a href="#texture">The Texture lab</a>
+      <a href="#tester">The Type tester</a>
       <a href="#type">Type and marks</a>
       <a href="#fonts">Fonts</a>
       <a href="#colour">Colour</a>
@@ -64,7 +66,7 @@
       <p class="lead">Everything the machine does, and how to take what it makes into the rest of your work.</p>
 
       <h2 id="start">Start here</h2>
-      <p>Create-o-matic has two instruments so far: <a href="/make/">Motion</a>, for type and marks that move, and <a href="/texture/">the Texture lab</a>, for treating images and video. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
+      <p>Create-o-matic has three instruments so far: <a href="/make/">Motion</a>, for type and marks that move; <a href="/texture/">the Texture lab</a>, for treating images and video; and <a href="/type/">the Type tester</a>, for comparing type. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
       <ol>
         <li>Pick a preset from <b>Presets</b>, or start from what's there.</li>
         <li>Change the words in <b>Content</b>, one per line.</li>
@@ -89,6 +91,11 @@
       <p>Blend modes work as they do in Photoshop. <b>Multiply</b> for paper, dirt and ink. <b>Screen</b> for light leaks, dust on black and glows. <b>Overlay</b> and <b>Soft light</b> for gradients and colour washes. <b>Colour</b> and <b>Luminosity</b> to move just the hue or just the tone.</p>
       <p>The textures are generated in code from the seed, so they're original, never repeat, and come out the same every time. <b>Reroll</b> gives you new dust, fibre and grain without changing anything else. For your own textures, add a <b>Texture overlay</b> layer and choose the file; photographs of real paper, risograph prints and photocopies make the best ones.</p>
       <p><b>Presets</b> here are looks: choosing one changes the stack and keeps your image. <b>Vary</b> nudges every setting in the stack a little either way. A video plays through its loop, and every exported frame waits for the video to reach its exact time.</p>
+
+      <h2 id="tester">The Type tester</h2>
+      <p><a href="/type/">The Type tester</a> sets your own words as a specimen sheet. The <b>Galley</b> holds the rows: open a row to type in it and set its font (<b>Browse</b> searches the open library, your Adobe Fonts project, installed fonts and My fonts), size or <b>Fill the width</b>, weight, italic, tracking, leading, case and ink. The arrows reorder rows, ⧉ copies one, and <b>Add a row</b> copies the last. Drop a font file anywhere and it arrives as a new row, so comparing a font you've just bought against its rivals is one drag.</p>
+      <p>The <b>Chase</b> sets the page: rows stacked or in a grid of columns (side-by-side pairings), aligned left, centre or right, sitting at the top, middle or bottom, with hairline rules and small labels naming each row's font, weight and size. <b>Clockwork</b> sets it moving: <b>Weight sweep</b> (a variable font's weight axis, rows staggered), <b>Tracking breathes</b>, <b>Size pulse</b>, <b>Wave</b>, <b>Marquee</b> (each row a ticker, alternating direction) and <b>Typewriter</b>. Every row runs a little behind the one above by the <b>Stagger</b>.</p>
+      <p><b>Vary</b> deals every row a different open font of the same kind, chosen from real text families (Latin Extended, three weights or a variable axis), a quick way to meet faces you'd never have scrolled to. Export the sheet as PNG, or the motion as MP4, WebM or GIF.</p>
 
       <h2 id="type">Type and marks</h2>
       <p>Each line of <b>Content</b> is a slot. <b>Content mode</b> decides which slot goes in which cell:</p>
@@ -268,6 +275,7 @@ npm run check      <span class="c"># manifests, presets and tests</span></code><
     <nav aria-label="Footer">
       <a href="/make/">Motion</a>
       <a href="/texture/">Texture lab</a>
+      <a href="/type/">Type tester</a>
       <a href="/manual/">Manual</a>
       <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
       <a href="https://hirenick.xyz">Hire Nick</a>

@@ -5,6 +5,7 @@
 //   font          family field + font browser  media   choose / clear a backdrop file
 //   mark          menu of the marks available (from hooks.markNames)
 //   stack         an ordered list of effect layers, each with its own settings, opacity and blend
+//   list          rows of settings ("item" holds their definitions), as cards to add, copy, move, remove
 // A parameter marked "hidden" has no control (it's set by the instrument, such as an image's size).
 //   bool          switch
 // Numbers and colours that can be keyframed get a stopwatch, as in After Effects: click it to start
@@ -15,6 +16,7 @@
 import { openSwatches } from "./swatches.js"
 import { keyable } from "./keys.js"
 import { EFFECTS, GROUPS, BLENDS, effectById, newLayer } from "./effects/index.js"
+import { newListItem } from "./patch.js"
 
 // Whether a control shows, by its "when": exact values, or { not: value }.
 const shows = (when, params) => !when || Object.entries(when).every(([k, v]) => (v !== null && typeof v === "object" ? params[k] !== v.not : params[k] === v))
@@ -28,8 +30,8 @@ const el = (tag, attrs = {}, ...kids) => {
   return n
 }
 
-// hooks: { onChange(key, value), onStopwatch(key), onFontBrowse(anchor), onMedia(anchor, pick), markNames() }
-// onMedia asks for a file; pick(name) sets the control to it.
+// hooks: { onChange(key, value), onStopwatch(key), onFontBrowse(anchor, pick, current), onMedia(anchor, pick), markNames() }
+// onMedia asks for a file and onFontBrowse for a font; pick(…) sets the control to what was chosen.
 export function createPanel(root, manifest, hooks) {
   const rows = new Map() // key -> { def, row, set(value), watch }
 
@@ -159,7 +161,7 @@ function control(d, emit, hooks) {
       const input = el("input", { type: "text", spellcheck: false })
       input.addEventListener("change", () => emit(input.value.trim()))
       const browse = el("button", { type: "button", className: "btn", textContent: "Browse" })
-      browse.addEventListener("click", (e) => { e.preventDefault(); hooks.onFontBrowse(browse) })
+      browse.addEventListener("click", (e) => { e.preventDefault(); hooks.onFontBrowse?.(browse, emit) })
       return { node: el("span", { className: "font-field" }, input, browse), set(v) { if (document.activeElement !== input) input.value = v } }
     }
     case "mark": {
@@ -180,6 +182,7 @@ function control(d, emit, hooks) {
       }
     }
     case "stack": return stack(emit, hooks)
+    case "list": return list(d, emit, hooks)
     case "media": {
       const name = el("span", { className: "media-name" })
       const choose = el("button", { type: "button", className: "btn", textContent: "Choose…" })
@@ -274,6 +277,64 @@ function stack(emit, hooks) {
       const next = layers.map((l) => `${l.id}:${l.effect}`).join("|")
       if (next !== shape) { shape = next; build() }
       layers.forEach((l, i) => setters[i](l))
+    },
+  }
+}
+
+// A list: one card per row. The card's title is d.title with {key} filled from the row; it opens to the row's own
+// controls. Rows can be added, copied, moved and removed. A font picked from the browser sets both
+// the row's font and its source.
+function list(d, emit, hooks) {
+  let rows = []
+  let shape = ""
+  const open = new Set()
+  const cards = el("div", { className: "layers" })
+  const add = el("button", { type: "button", className: "btn", textContent: `Add ${d.itemName ?? "a row"}` })
+  add.addEventListener("click", (e) => {
+    e.preventDefault()
+    const row = newListItem(d, rows.at(-1))
+    open.add(row.id)
+    emit([...rows, row])
+  })
+  const update = (i, change) => emit(rows.map((r, j) => (j === i ? { ...r, ...change } : r)))
+  const setters = []
+
+  function build() {
+    setters.length = 0
+    cards.replaceChildren(...rows.map((row, i) => {
+      const title = el("button", { type: "button", className: "layer-name", title: "Show or hide this row's settings" })
+      const body = el("div", { className: "layer-body" })
+      const card = el("div", { className: `layer${open.has(row.id) ? " open" : ""}` })
+      title.addEventListener("click", () => { open.has(row.id) ? open.delete(row.id) : open.add(row.id); card.classList.toggle("open") })
+      const btn = (text, tip, fn) => { const b = el("button", { type: "button", className: "layer-btn", textContent: text, title: tip }); b.addEventListener("click", fn); return b }
+      const move = (by) => { const next = rows.slice(), j = i + by; if (j < 0 || j >= next.length) return; [next[i], next[j]] = [next[j], next[i]]; emit(next) }
+      const copy = btn("⧉", "Copy this row", () => { const r = newListItem(d, rows[i]); open.add(r.id); emit([...rows.slice(0, i + 1), r, ...rows.slice(i + 1)]) })
+      const subs = d.item.filter((f) => !f.hidden).map((f) => {
+        const subHooks = { ...hooks, onFontBrowse: (anchor) => hooks.onFontBrowse?.(anchor, (e) => update(i, { [f.key]: e.family, ...(e.source ? { [`${f.key}Source`]: e.source } : {}) }), rows[i]) }
+        const ctl = control(f, (v) => update(i, { [f.key]: v }), subHooks)
+        const label = el("span", { className: "name", textContent: f.label })
+        if (f.help) label.title = f.help
+        const r = el("div", { className: `row t-${f.type}` }, el("span", { className: "label" }, label), ctl.node)
+        body.append(r)
+        return { f, r, set: ctl.set }
+      })
+      card.append(el("div", { className: "layer-head" }, title, btn("↑", "Move up", () => move(-1)), btn("↓", "Move down", () => move(1)), copy,
+        btn("×", "Remove this row", () => emit(rows.filter((_, j) => j !== i)))), body)
+      setters.push((r) => {
+        title.textContent = d.title ? d.title.replace(/\{(\w+)\}/g, (_, k) => r[k]) : `Row ${i + 1}`
+        for (const s of subs) { s.set(r[s.f.key]); s.r.hidden = !shows(s.f.when, r) }
+      })
+      return card
+    }))
+  }
+
+  return {
+    node: el("div", { className: "stack" }, cards, add),
+    set(v) {
+      rows = v || []
+      const next = rows.map((r) => r.id).join("|")
+      if (next !== shape) { shape = next; build() }
+      rows.forEach((r, i) => setters[i](r))
     },
   }
 }

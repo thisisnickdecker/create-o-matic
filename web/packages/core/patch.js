@@ -48,6 +48,7 @@ export function coerce(d, v) {
     }
     case "bool": return Boolean(v)
     case "stack": return Array.isArray(v) ? v.map((l) => sanitizeLayer(l, coerce)).filter(Boolean).slice(0, 24) : undefined
+    case "list": return Array.isArray(v) ? v.slice(0, d.max ?? 24).map((item, i) => listItem(d, item, i)) : undefined
     case "color": return isColor(v) ? v.toUpperCase() : undefined
     case "palette": {
       if (!Array.isArray(v)) return undefined
@@ -57,6 +58,19 @@ export function coerce(d, v) {
     default: return typeof v === "string" ? v : undefined
   }
 }
+// One row of a list: its own fields checked against the list's item definitions, defaults filled.
+function listItem(d, item, i) {
+  const out = { id: typeof item?.id === "string" && item.id ? item.id.slice(0, 40) : `${d.key}-${i}` }
+  for (const f of d.item) {
+    const v = item && typeof item === "object" && f.key in item ? coerce(f, item[f.key]) : undefined
+    out[f.key] = v !== undefined ? v : clone(f.default)
+  }
+  return out
+}
+export function newListItem(d, from) {
+  return listItem(d, { ...(from ?? {}), id: `${d.key}-${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}` }, 0)
+}
+
 const isColor = (v) => typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v)
 const clone = (v) => (v && typeof v === "object" ? structuredClone(v) : v)
 

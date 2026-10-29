@@ -25,6 +25,17 @@ body.site { overflow-x: hidden; }
 .hero .display { max-width: 11em; }
 .hero .lead { margin-top: 28px; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; }
+
+/* The four tools, as doors under the headline. */
+.doors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 40px; }
+.doors a { display: grid; align-content: space-between; gap: 28px; min-height: 132px; padding: 20px 22px; border-radius: var(--r-l); background: var(--g100); color: var(--ink); transition: background .2s var(--ease), transform .2s var(--ease); }
+.doors a:hover { background: var(--g200); transform: translateY(-2px); }
+.doors b { font-family: var(--display); font-weight: 500; font-size: 22px; letter-spacing: -0.01em; }
+.doors b::after { content: " →"; color: var(--g500); }
+.doors span { font-size: 14px; line-height: 1.4; color: var(--g600); }
+.doors + .actions { margin-top: 16px; }
+@media (max-width: 900px) { .doors { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .doors { grid-template-columns: minmax(0, 1fr); gap: 8px; } .doors a { min-height: 0; gap: 6px; padding: 16px 20px; } }
 .stage-card { position: relative; margin-top: clamp(40px, 6vw, 72px); border-radius: var(--r-xl); background: var(--g100); aspect-ratio: 16 / 9; overflow: hidden; }
 .stage-card .slot { position: absolute; inset: clamp(20px, 4vw, 56px); display: grid; place-items: center; opacity: 0; transition: opacity .9s var(--ease); }
 .stage-card .slot.on { opacity: 1; }

@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "A machine for making type move. Free and open source.",
+  "description": "A playground for designers: a free, open-source lab for type, colour, motion and texture.",
   "author": "Nick Decker (https://nickdecker.net)",
   "license": "MIT",
   "homepage": "https://createomatic.xyz",

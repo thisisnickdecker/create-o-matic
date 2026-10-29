@@ -1,0 +1,44 @@
+{
+  "name": "Clean type",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 131,
+  "params": {
+    "format": "square",
+    "duration": 8,
+    "fps": "30",
+    "content": "TYPE\nSOMETHING",
+    "mode": "sequence",
+    "case": "upper",
+    "fontSource": "open",
+    "font": "Inter Tight",
+    "weightMin": 200,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 2,
+    "rows": 6,
+    "columnOffset": 0.3,
+    "rowOffset": 0.06,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.7,
+    "ease": 2,
+    "padding": 0.02,
+    "gradient": "off",
+    "gradientInks": [
+      "#FF4D00",
+      "#FF2E88",
+      "#FFB000",
+      "#7A00FF"
+    ],
+    "gradientDrift": 1,
+    "gradientSoftness": 0.5,
+    "palette": [
+      "#121211"
+    ],
+    "colourMode": "mono",
+    "blend": "source-over",
+    "grain": 0,
+    "background": "#F4F4F1"
+  }
+}

@@ -11,7 +11,6 @@ const SHOWCASE = [
   "kaleido", "signal", "sorted", "scatter", "golden-section", "c-fill", "led-sign", "decode", "heat", "black-glass", "phi", "night-shift", "bloom", "tiles",
   "liquid", "meltdown", "gradient-maker", "coming-clear", "sizes", "o-sweep",
 ]
-const HERO_SECONDS = 9
 
 const load = (name) => fetch(`${PRESETS}${name}.json`).then((r) => r.json())
 const openLink = (patch) => `/make/#${toHash(patch)}`
@@ -50,87 +49,132 @@ async function examples(host) {
 }
 
 // ---- the playground ----
-// The hero is a toy: your word (and your logo, if you add one) set in a run of looks, each a real
-// Motion preset with your words swapped in. The looks take turns until you touch something.
+// The top of the page is a toy you can work in. Type something (or add a logo), pick a look, and
+// adjust it: size, typeface, colour, how much it moves, the look's own effect, the loop's length.
+// Each look is a real Motion preset with your words in. Download it here, or open it in Motion.
 const PLAY = [
-  ["kaleido", "Kaleido"], ["signal", "ASCII"], ["decode", "Decode"], ["led-sign", "LED"], ["sorted", "Pixel sort"],
-  ["scatter", "Scatter"], ["heat", "Heat"], ["black-glass", "Black glass"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"],
+  ["clean-type", "Type"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"], ["black-glass", "Black glass"],
+  ["signal", "ASCII"], ["led-sign", "LED"], ["sorted", "Pixel sort"], ["decode", "Decode"], ["scatter", "Scatter"],
+  ["heat", "Heat"], ["kaleido", "Kaleido"],
 ]
+// Each look's own effect, on one 0 to 1 slider: the setting, and its value at each end.
+const EFFECT = {
+  signal: ["Character size", "ascii", 22, 5], "led-sign": ["Dot size", "dots", 18, 5], sorted: ["Pixel sort", "pixelSort", 0.15, 0.9],
+  decode: ["Scramble", "scramble", 0.1, 0.95], scatter: ["Scatter", "dotScatter", 0, 1], kaleido: ["Mirrors", "kaleido", 3, 14],
+}
+const PLACEHOLDER = "TYPE\nSOMETHING"
 
-// A preset with the word in place of its words. A logo joins as a mark; a shape fill fills the logo.
+// The look with your words in: a logo joins as a mark, and fills a shape fill whole.
 function playPatch(preset, words, logo) {
   const p = structuredClone(preset)
   const lines = words.trim().split(/\s+/).filter(Boolean)
-  const content = lines.length ? lines : ["PLAY"]
+  const content = lines.length ? lines : logo ? [] : PLACEHOLDER.split("\n")
   if (logo) {
     if (logo.svg) p.marks = { ...(p.marks ?? {}), [logo.name]: logo.svg }
-    // Your logo fills the frame whole: the preset's zoom keyframes were cut for its own shape.
     if (p.params.shape) { p.params.shape = logo.name; p.params.shapeScale = 0.92; p.params.shapeX = 0; p.params.shapeY = 0; p.keys = {} }
     else content.push(`@${logo.name}`)
   }
-  p.params.content = content.join("\n")
+  p.params.content = (content.length ? content : PLACEHOLDER.split("\n")).join("\n")
   delete p.name
   return p
 }
 
 const titleCase = (s) => s.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_, a, b) => a + b.toUpperCase())
+const fileSlug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24) || "create-o-matic"
 
 async function play(root) {
-  const card = root.querySelector("[data-hero]"), input = root.querySelector(".play-word"), chips = root.querySelector(".chips")
-  const open = root.querySelector("[data-open]"), brand = root.querySelector("[data-brand]"), hint = root.querySelector("[data-hint]")
+  const $ = (q) => root.querySelector(q)
+  const card = $("[data-hero]"), input = $(".play-word"), chips = $(".chips"), hint = $("[data-hint]")
+  const ui = { size: $("[data-size]"), font: $("[data-font]"), colours: $("[data-colours]"), motion: $("[data-motion]"), effect: $("[data-effect]"),
+    effectRow: $("[data-effect-row]"), effectName: $("[data-effect-name]"), speed: $("[data-speed]"), speedOut: $("[data-speed-out]") }
   const presets = await Promise.all(PLAY.map(([id]) => load(id)))
-  let look = 0, logo = null, auto = !matchMedia("(prefers-reduced-motion: reduce)").matches, stop = null, timer = 0
+  const { PALETTES } = await import("/assets/brand.js")
+  let look = 0, logo = null, colour = -1, stop = null
 
-  const slots = [0, 1].map(() => { const s = Object.assign(document.createElement("div"), { className: "slot" }); s.append(document.createElement("div")); card.append(s); return s })
-  let turn = 0
+  // Looks
   const buttons = PLAY.map(([, label], i) => {
     const b = Object.assign(document.createElement("button"), { type: "button", textContent: label })
     b.setAttribute("role", "radio")
-    b.onclick = () => { auto = false; look = i; show() }
+    b.onclick = () => { look = i; fromLook(); show(true) }
     chips.append(b)
     return b
   })
+  // Colours: the look's own, then the site's palettes.
+  const swatch = (label, inks, i) => {
+    const b = Object.assign(document.createElement("button"), { type: "button", title: label })
+    b.setAttribute("role", "radio")
+    b.setAttribute("aria-label", label)
+    b.style.background = inks ? `linear-gradient(90deg, ${inks.map((c, k) => `${c} ${(k / inks.length) * 100}% ${((k + 1) / inks.length) * 100}%`).join(", ")})` : ""
+    if (!inks) b.textContent = "Own"
+    b.onclick = () => { colour = i; show() }
+    ui.colours.append(b)
+    return b
+  }
+  const swatches = [swatch("The look's own colours", null, -1), ...PALETTES.slice(0, 6).map((pal, i) => swatch(pal.name, pal.colours, i))]
 
-  function show() {
-    const patch = playPatch(presets[look], input.value, logo)
-    const slot = slots[turn % 2], other = slots[(turn + 1) % 2]
-    const host = document.createElement("div")
-    slot.firstChild.replaceWith(host)
-    const next = mount(host, patch)
-    slot.classList.add("on"); other.classList.remove("on")
-    const prev = stop
-    setTimeout(() => prev?.(), 1000) // the outgoing loop stops once it has faded
-    stop = next
-    turn++
-    buttons.forEach((b, i) => { b.classList.toggle("on", i === look); b.setAttribute("aria-checked", String(i === look)) })
-    open.href = openLink(patch)
-    const name = titleCase(input.value.trim()) || "Your brand"
-    brand.href = `/brand/#${toHash({ instrument: "brand", params: { brandName: name, tagline: "", logo: logo?.name ?? "", logoColour: "original" }, marks: logo?.svg ? { [logo.name]: logo.svg } : {} })}`
-    clearTimeout(timer)
-    if (auto) timer = setTimeout(() => { look = (look + 1) % PLAY.length; show() }, HERO_SECONDS * 1000)
+  // The sliders start where the look itself sits.
+  function fromLook() {
+    const p = presets[look].params, e = EFFECT[PLAY[look][0]]
+    ui.motion.value = p.amount ?? 0.6
+    ui.speed.value = p.duration
+    ui.effectRow.hidden = !e
+    if (e) { const [name, key, a, b] = e; ui.effectName.textContent = name; ui.effect.value = Math.min(1, Math.max(0, ((p[key] ?? a) - a) / (b - a))) }
   }
 
-  // Typing redraws once the typing pauses.
-  let typing = 0
-  input.addEventListener("input", () => { auto = false; clearTimeout(typing); typing = setTimeout(show, 280) })
-  input.addEventListener("focus", () => input.select(), { once: true })
+  // The patch as it stands: the look, your words, and the controls.
+  function current() {
+    const patch = playPatch(presets[look], input.value, logo), p = patch.params, e = EFFECT[PLAY[look][0]]
+    if (ui.size.value) p.format = ui.size.value
+    if (ui.font.value) Object.assign(p, { font: ui.font.value, fontSource: "open" })
+    if (colour >= 0) { p.palette = PALETTES[colour].colours; if (p.gradient && p.gradient !== "off") p.gradientInks = PALETTES[colour].colours }
+    p.amount = +ui.motion.value
+    p.duration = +ui.speed.value
+    if (e) { const [, key, a, b] = e, v = a + (b - a) * +ui.effect.value; p[key] = key === "kaleido" ? Math.round(v) : v }
+    return patch
+  }
 
-  // A logo: chosen, or dropped anywhere on the page. SVG travels in the links; an image is kept
-  // in this browser, which is where Motion and the Brand bench will look for it.
+  // A new look fades in; a change to the controls updates the loop in place.
+  const slots = [0, 1].map(() => { const s = Object.assign(document.createElement("div"), { className: "slot" }); s.append(document.createElement("div")); card.append(s); return s })
+  let turn = 0
+  function show(fresh = false) {
+    const patch = current()
+    if (fresh || !stop) {
+      const slot = slots[turn % 2], other = slots[(turn + 1) % 2], host = document.createElement("div")
+      slot.firstChild.replaceWith(host)
+      const next = mount(host, patch)
+      slot.classList.add("on"); other.classList.remove("on")
+      const prev = stop
+      setTimeout(() => prev?.(), 1000)
+      stop = next
+      turn++
+    } else stop.update(patch)
+    buttons.forEach((b, i) => { b.classList.toggle("on", i === look); b.setAttribute("aria-checked", String(i === look)) })
+    swatches.forEach((b, i) => b.classList.toggle("on", i - 1 === colour))
+    ui.speedOut.textContent = `${(+ui.speed.value).toFixed(1)} s`
+    $("[data-open]").href = openLink(patch)
+    $("[data-brand]").href = `/brand/#${toHash({ instrument: "brand", params: { brandName: titleCase(input.value.trim()) || "Your brand", tagline: "", logo: logo?.name ?? "", logoColour: "original", ...(colour >= 0 ? { inks: PALETTES[colour].colours } : {}) }, marks: logo?.svg ? { [logo.name]: logo.svg } : {} })}`
+  }
+
+  let wait = 0
+  const soon = (ms = 160) => { clearTimeout(wait); wait = setTimeout(() => show(), ms) }
+  input.addEventListener("input", () => soon(280))
+  for (const el of [ui.size, ui.font]) el.addEventListener("change", () => show())
+  for (const el of [ui.motion, ui.effect, ui.speed]) el.addEventListener("input", () => soon())
+
+  // A logo: chosen, or dropped anywhere on the page.
   const { addMarkFile } = await import("/packages/core/marks.js")
   const useLogo = async (f) => {
     try {
       const { name, svg } = await addMarkFile(f)
       logo = { name, svg }
-      auto = false
-      hint.textContent = `${f.name} is in. Try Shape fill.`
-      show()
+      hint.textContent = `${f.name} is in${svg ? "" : ", with its background taken out"}. Try Shape fill, Black glass or ASCII; clear the words to fill every cell with it.`
+      show(true)
     } catch (e) { hint.textContent = e.message }
   }
   const file = Object.assign(document.createElement("input"), { type: "file", accept: ".svg,image/svg+xml,image/png,image/jpeg,image/webp", hidden: true })
   file.onchange = () => { if (file.files[0]) useLogo(file.files[0]); file.value = "" }
   root.append(file)
-  root.querySelector("[data-logo]").onclick = () => file.click()
+  $("[data-logo]").onclick = () => file.click()
   addEventListener("dragover", (e) => { if ([...e.dataTransfer.items].some((i) => i.kind === "file")) { e.preventDefault(); root.classList.add("dropping") } })
   addEventListener("dragleave", (e) => { if (!e.relatedTarget) root.classList.remove("dropping") })
   addEventListener("drop", (e) => {
@@ -141,7 +185,40 @@ async function play(root) {
     useLogo(f)
   })
 
-  show()
+  // Download here: rendered frame by frame at full size (GIF at half), the same as Motion does.
+  const engine = await import("/instruments/elastic/elastic.js")
+  const exporters = await import("/packages/core/export.js")
+  const { ensureFont } = await import("/packages/core/fonts.js")
+  const { prepareMarks } = await import("/packages/core/marks.js")
+  let busy = false
+  for (const b of root.querySelectorAll("[data-export]")) {
+    b.onclick = async () => {
+      if (busy) return
+      busy = true
+      const kind = b.dataset.export, label = b.textContent
+      try {
+        const patch = sanitize(engine.manifest, current())
+        const marks = await prepareMarks(patch)
+        await ensureFont(engine.fontRequest(patch))
+        engine.clearMetrics()
+        const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : 1
+        const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
+        const n = engine.frameCount(patch), fps = Number(patch.params.fps)
+        const draw = (c, i) => engine.render(c, patch, kind === "png" ? 0.25 : i / n, { scale: s, frame: i, marks })
+        const onProgress = (f) => { b.textContent = `${Math.round(f * 100)}%` }
+        const blob = kind === "png" ? await exporters.exportPng({ w, h, draw })
+          : kind === "gif" ? await exporters.exportGif({ w, h, fps, frames: n, draw, onProgress })
+          : await exporters.exportVideo({ kind, w, h, fps, frames: n, draw, onProgress })
+        exporters.download(blob, `${fileSlug(input.value || logo?.name || "create-o-matic")}-${w}x${h}.${kind}`)
+        hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${(blob.size / 1048576).toFixed(1)} MB).`
+      } catch (e) { hint.textContent = e.message }
+      b.textContent = label
+      busy = false
+    }
+  }
+
+  fromLook()
+  show(true)
 }
 
 // The Texture lab's looks, each drawn once onto its test card when it comes near the screen.

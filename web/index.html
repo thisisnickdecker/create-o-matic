@@ -46,12 +46,28 @@
       <p class="lead"><strong>Create-o-matic is a free, open-source lab for type, colour, motion and texture.</strong><span class="more"> Set specimens, study palettes, stretch words and logos into loops, run anything through print and code effects, and pull it all together into a brand kit. It all exports: video, images or code. We hope it's useful.</span></p>
       <div class="play" data-play>
         <div class="play-bar">
-          <input class="play-word" type="text" value="PLAY" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Your word" placeholder="Type a word">
-          <button class="btn" type="button" data-logo>Add a logo</button>
-          <div class="chips" role="radiogroup" aria-label="Looks"></div>
+          <input class="play-word" type="text" value="" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Your words" placeholder="Type something…">
+          <button class="btn" type="button" data-logo>Add your logo or wordmark</button>
         </div>
-        <div class="stage-card" data-hero aria-label="Your word, playing live in Create-o-matic"></div>
-        <p class="caption"><span data-hint>Type anything, or drop a logo anywhere on the page.</span><span class="caption-actions"><a data-open href="/make/">Open in Motion <span class="arrow"></span></a><a data-brand href="/brand/">Make it a brand <span class="arrow"></span></a></span></p>
+        <div class="chips" role="radiogroup" aria-label="Looks"></div>
+        <div class="stage-card" data-hero aria-label="Your words, playing live"></div>
+        <div class="play-controls" aria-label="Controls">
+          <label><span>Size</span><select data-size>
+            <option value="">The look's own</option><option value="square">Square 1:1</option><option value="landscape">Landscape 16:9</option><option value="story">Story 9:16</option><option value="portrait">Portrait 4:5</option>
+          </select></label>
+          <label><span>Typeface</span><select data-font>
+            <option value="">The look's own</option><option>Inter Tight</option><option>Archivo</option><option>Big Shoulders Display</option><option>Anton</option><option>Space Grotesk</option><option>Fraunces</option><option>DM Serif Display</option>
+          </select></label>
+          <div class="play-colour"><span>Colour</span><div class="swatch-row" data-colours role="radiogroup" aria-label="Colour"></div></div>
+          <label><span>Motion</span><input type="range" min="0" max="1" step="0.01" data-motion></label>
+          <label data-effect-row><span data-effect-name>Effect</span><input type="range" min="0" max="1" step="0.01" data-effect></label>
+          <label><span>Loop</span><input type="range" min="2" max="16" step="0.5" data-speed><output data-speed-out></output></label>
+        </div>
+        <div class="play-actions">
+          <div class="play-download"><span>Download</span><button class="btn solid" type="button" data-export="mp4">MP4</button><button class="btn" type="button" data-export="gif">GIF</button><button class="btn" type="button" data-export="png">PNG</button></div>
+          <div class="caption-actions"><a data-open href="/make/">Open in Motion, for every control <span class="arrow"></span></a><a data-brand href="/brand/">Make it a brand <span class="arrow"></span></a></div>
+        </div>
+        <p class="play-hint" data-hint>Type something, or add your logo. Then pick a look and play with it.</p>
       </div>
       <nav class="doors" aria-label="The tools">
         <a href="/make/"><b>Motion</b><span>Words and logos that stretch, fold and loop</span></a>

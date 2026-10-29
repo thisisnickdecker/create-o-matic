@@ -2,6 +2,7 @@
 //   import { mount } from "https://…/instruments/elastic/embed.js"
 //   const stop = mount(element, patch)        // patch: an object, or the URL of a .json
 //   mount(element, patch, { backdrop: "https://…/clip.mp4" })   // an image or video behind the type
+//   stop.update(patch)                         // a new patch for the same loop: it changes in place
 // Backdrops and added fonts live in the browser that made the patch, so a page supplies its own.
 // SVG marks travel inside the patch and just work; PNG or JPEG marks don't travel.
 // The canvas fits inside the element, keeping the patch's proportions (give the element a size or an
@@ -43,21 +44,33 @@ export function mount(el, patchOrUrl, { backdrop: backdropUrl } = {}) {
   const ro = new ResizeObserver(fit)
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting })
 
+  // Fonts and marks arrive before a patch is shown, so it never flashes in a fallback face.
+  let token = 0
+  const use = async (raw) => {
+    const mine = ++token
+    const next = sanitize(manifest, raw)
+    const ready = await prepareMarks(next)
+    await ensureFont(fontRequest(next))
+    if (mine !== token || stopped) return
+    clearMetrics()
+    patch = next
+    marks = ready
+    canvas.setAttribute("aria-label", patch.params.content.replace(/\s+/g, " ").trim())
+    fit()
+  }
+
   ;(async () => {
     const raw = typeof patchOrUrl === "string" ? await fetch(patchOrUrl).then((r) => r.json()) : patchOrUrl
-    patch = sanitize(manifest, raw)
-    canvas.setAttribute("aria-label", patch.params.content.replace(/\s+/g, " ").trim())
     if (backdropUrl) backdrop = await loadBackdrop(backdropUrl, still)
-    marks = await prepareMarks(patch)
-    await ensureFont(fontRequest(patch))
-    clearMetrics()
-    fit()
+    await use(raw)
     ro.observe(el)
     io.observe(el)
     if (!still && !stopped) raf = requestAnimationFrame(loop)
   })()
 
-  return () => { stopped = true; cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); canvas.remove() }
+  const stop = () => { stopped = true; cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); canvas.remove() }
+  stop.update = (raw) => use(raw)
+  return stop
 }
 
 async function loadBackdrop(url, still) {

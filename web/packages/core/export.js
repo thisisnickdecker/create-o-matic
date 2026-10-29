@@ -5,7 +5,7 @@
 //   png   one frame
 //   mp4   H.264 via WebCodecs + mp4-muxer   (Chrome, Edge, Safari 17+; not every Linux build)
 //   webm  VP9 via WebCodecs + webm-muxer    (Chrome, Edge, Firefox 130+)
-//   gif   gifenc, 256 colours per frame; best at reduced size
+//   gif   gifenc, one 256-colour palette for the whole loop; best at reduced size
 
 export async function exportPng({ w, h, draw }) {
   const { canvas, ctx } = surface(w, h)

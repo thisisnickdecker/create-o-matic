@@ -116,6 +116,25 @@ function parseAse(buf, fallback) {
   return groups.filter((g) => g.colours.length)
 }
 
+// Writes an .ase: one named group of RGB swatches, which Illustrator, Photoshop and InDesign read.
+export function writeAse(name, colours) {
+  const utf16 = (s) => { const out = new Uint8Array(2 + (s.length + 1) * 2), v = new DataView(out.buffer); v.setUint16(0, s.length + 1); [...s].forEach((ch, i) => v.setUint16(2 + i * 2, ch.charCodeAt(0))); return out }
+  const block = (type, body) => { const out = new Uint8Array(6 + body.length), v = new DataView(out.buffer); v.setUint16(0, type); v.setUint32(2, body.length); out.set(body, 6); return out }
+  const colour = (hex) => {
+    const label = utf16(hex), body = new Uint8Array(label.length + 4 + 12 + 2), v = new DataView(body.buffer)
+    body.set(label, 0)
+    let at = label.length
+    for (const ch of "RGB ") v.setUint8(at++, ch.charCodeAt(0))
+    for (const c of hexToRgb(hex)) { v.setFloat32(at, c / 255); at += 4 }
+    v.setUint16(at, 2) // a normal (not global or spot) swatch
+    return block(0x0001, body)
+  }
+  const blocks = [block(0xc001, utf16(name)), ...colours.map(colour), block(0xc002, new Uint8Array(0))]
+  const head = new Uint8Array(12), v = new DataView(head.buffer)
+  v.setUint32(0, 0x41534546); v.setUint16(4, 1); v.setUint16(6, 0); v.setUint32(8, blocks.length)
+  return new Blob([head, ...blocks], { type: "application/octet-stream" })
+}
+
 // ---- the popover ----
 let open = null
 

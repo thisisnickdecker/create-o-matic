@@ -2,7 +2,7 @@
 
 Instruments for making type, images and motion. Free and open source.
 
-Three instruments so far:
+Four instruments so far:
 
 - **Motion**: stretch words, logos and marks through a breathing grid or a golden spiral, keyframe
   anything, run it through liquid, halftone, a photocopier or onto a cube, and export the loop as
@@ -12,10 +12,13 @@ Three instruments so far:
   blend mode and opacity, and export at full size.
 - **Type tester**: live specimens. Rows of your own text, each in its own font from 2,000+ open
   families, your Adobe Fonts or your files, compared side by side, set moving, and exported.
+- **Colour lab**: palettes, studied. Swatch cards with HEX, RGB and OKLCH, Albers' nested squares,
+  proportion, tints and shades, WCAG contrast checks and OKLab blends; palettes dealt by harmony,
+  and exported as CSS, JSON or an Adobe swatch file.
 
 Everything is a small JSON patch: the same patch makes the same frames, every time.
 
-**[createomatic.xyz](https://createomatic.xyz)** · [Motion](https://createomatic.xyz/make/) · [Texture lab](https://createomatic.xyz/texture/) · [Type tester](https://createomatic.xyz/type/) · [Manual](https://createomatic.xyz/manual/)
+**[createomatic.xyz](https://createomatic.xyz)** · [Motion](https://createomatic.xyz/make/) · [Texture lab](https://createomatic.xyz/texture/) · [Type tester](https://createomatic.xyz/type/) · [Colour lab](https://createomatic.xyz/colour/) · [Manual](https://createomatic.xyz/manual/)
 
 Made by [Nick Decker](https://nickdecker.net).
 
@@ -36,14 +39,17 @@ plain ES modules served as files.
 ```
 web/                          the site, exactly as it's published
   index.html, manual/         home and manual
-  make/, texture/, type/      the instruments' pages (each just mounts its app)
+  make/, texture/, type/,     the instruments' pages (each just mounts its app)
+  colour/
   assets/                     site styles, the wordmark and colour knob, the home page's loops
   instruments/elastic/        Motion: instrument.json (every control), elastic.js (pure renderer),
                               app.js (its extras on the shell), embed.js (for other sites), presets/
   instruments/texture/        Texture lab: the same shape
   instruments/type/           Type tester: the same shape
+  instruments/colour/         Colour lab: the same shape
   packages/core/              shared: shell.js (the machine every instrument runs in), patches,
-                              keyframes, effects and the effect stack, fonts, marks, colour picker,
+                              keyframes, effects and the effect stack, fonts, marks, colour picker
+                              and colour maths (OKLab, contrast),
                               exporters, the control rack and timeline
 docs/instrument-standard.md   the contract an instrument meets
 scripts/                      the local server and the registry checker

@@ -1,0 +1,543 @@
+{
+  "id": "colour",
+  "name": "Colour lab",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "colour",
+    "palette"
+  ],
+  "description": "Colour studies from your own inks: a swatch card with HEX, RGB and OKLCH readouts, Albers' nested squares, proportion bands, tints and shades, a contrast check against WCAG, and blends mixed in OKLab. Vary deals new palettes by harmony; set them moving and export the study, or the palette as CSS, JSON or an Adobe swatch file.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "colour.js",
+    "app": "app.js"
+  },
+  "page": "/colour/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch gives the same frames, in any browser.",
+  "references": [
+    {
+      "title": "Josef Albers, Interaction of Color (1963)",
+      "note": "The nested-square study. The layout follows his proportions; the code and palettes are original."
+    },
+    {
+      "title": "Björn Ottosson, A perceptual color space for image processing (2020)",
+      "note": "OKLab and OKLCH, used for mixing, ramps and harmonies."
+    },
+    {
+      "title": "W3C, Web Content Accessibility Guidelines 2.2",
+      "note": "Contrast ratios and the AA and AAA thresholds."
+    }
+  ],
+  "groups": [
+    {
+      "id": "inks",
+      "label": "Swatch book",
+      "hint": "your colours"
+    },
+    {
+      "id": "study",
+      "label": "Study",
+      "hint": "how they're laid out"
+    },
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size and time"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "motion and keyframes"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "inks",
+      "group": "inks",
+      "label": "Inks",
+      "type": "palette",
+      "default": [
+        "#1E2A4A",
+        "#E4372B",
+        "#F4D35E",
+        "#0E6E6E",
+        "#F2C9C0"
+      ],
+      "help": "Two to twelve colours. Paste hex codes, or drop an .ase, .gpl or .json palette on the page."
+    },
+    {
+      "key": "harmony",
+      "group": "inks",
+      "label": "Vary deals",
+      "type": "select",
+      "default": "any",
+      "options": [
+        [
+          "any",
+          "Anything that works"
+        ],
+        [
+          "analogous",
+          "Neighbours (analogous)"
+        ],
+        [
+          "complementary",
+          "Opposites (complementary)"
+        ],
+        [
+          "split",
+          "Split complementary"
+        ],
+        [
+          "triad",
+          "Triad"
+        ],
+        [
+          "mono",
+          "One hue, many lights"
+        ],
+        [
+          "print",
+          "Print inks"
+        ],
+        [
+          "muted",
+          "Albers' greys and earths"
+        ]
+      ],
+      "help": "The kind of palette Vary makes. It keeps the number of inks."
+    },
+    {
+      "key": "labels",
+      "group": "inks",
+      "label": "Readouts",
+      "type": "select",
+      "default": "full",
+      "options": [
+        [
+          "off",
+          "Off"
+        ],
+        [
+          "hex",
+          "Hex"
+        ],
+        [
+          "full",
+          "Hex, RGB and OKLCH"
+        ]
+      ]
+    },
+    {
+      "key": "study",
+      "group": "study",
+      "label": "Study",
+      "type": "select",
+      "default": "card",
+      "options": [
+        [
+          "card",
+          "Swatch card"
+        ],
+        [
+          "albers",
+          "Homage (nested squares)"
+        ],
+        [
+          "proportion",
+          "Proportion"
+        ],
+        [
+          "ramp",
+          "Tints and shades"
+        ],
+        [
+          "contrast",
+          "Contrast check"
+        ],
+        [
+          "blend",
+          "Blend"
+        ]
+      ],
+      "help": "Swatch card: chips with readouts. Homage: Albers' squares, each ink seen inside the others. Proportion: bands sized by a rule. Tints and shades: a scale for each ink. Contrast check: every ink on every other, graded for text. Blend: the inks mixed into one another."
+    },
+    {
+      "key": "nest",
+      "group": "study",
+      "label": "Squares",
+      "type": "int",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "when": {
+        "study": "albers"
+      },
+      "help": "How many inks sit inside one another in each panel."
+    },
+    {
+      "key": "rule",
+      "group": "study",
+      "label": "Rule",
+      "type": "select",
+      "default": "sixty",
+      "options": [
+        [
+          "even",
+          "Even shares"
+        ],
+        [
+          "sixty",
+          "60 · 30 · 10"
+        ],
+        [
+          "golden",
+          "Golden (each 1/φ of the last)"
+        ],
+        [
+          "chance",
+          "Chance (from the seed)"
+        ]
+      ],
+      "when": {
+        "study": "proportion"
+      }
+    },
+    {
+      "key": "direction",
+      "group": "study",
+      "label": "Direction",
+      "type": "select",
+      "default": "across",
+      "options": [
+        [
+          "across",
+          "Across"
+        ],
+        [
+          "down",
+          "Down"
+        ]
+      ],
+      "when": {
+        "study": [
+          "proportion",
+          "blend"
+        ]
+      }
+    },
+    {
+      "key": "steps",
+      "group": "study",
+      "label": "Steps",
+      "type": "int",
+      "min": 3,
+      "max": 13,
+      "step": 1,
+      "default": 9,
+      "when": {
+        "study": "ramp"
+      },
+      "help": "From the lightest tint to the darkest shade. The ink itself is marked with a dot."
+    },
+    {
+      "key": "bands",
+      "group": "study",
+      "label": "Bands",
+      "type": "int",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 0,
+      "when": {
+        "study": "blend"
+      },
+      "help": "0 is a smooth blend; any other number cuts it into that many flat bands."
+    },
+    {
+      "key": "gap",
+      "group": "study",
+      "label": "Gap",
+      "type": "int",
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "key": "corner",
+      "group": "study",
+      "label": "Corners",
+      "type": "int",
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "landscape",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "format",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "format",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 6,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "margin",
+      "group": "format",
+      "label": "Margin",
+      "type": "int",
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "key": "background",
+      "group": "format",
+      "label": "Paper",
+      "type": "color",
+      "default": "#F4F4F1"
+    },
+    {
+      "key": "motion",
+      "group": "motion",
+      "label": "Motion",
+      "type": "select",
+      "default": "none",
+      "options": [
+        [
+          "none",
+          "Still"
+        ],
+        [
+          "swing",
+          "Hue swing"
+        ],
+        [
+          "lights",
+          "Lights up"
+        ],
+        [
+          "carousel",
+          "Carousel"
+        ],
+        [
+          "breathe",
+          "Breathe"
+        ]
+      ],
+      "help": "Hue swing turns every ink around the colour wheel and back. Lights up lifts each ink's lightness in turn. Carousel passes the inks along, all the way round once per beat. Breathe swells and shrinks the shapes."
+    },
+    {
+      "key": "amount",
+      "group": "motion",
+      "label": "Amount",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.5,
+      "when": {
+        "motion": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "key": "stagger",
+      "group": "motion",
+      "label": "Stagger",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.15,
+      "when": {
+        "motion": {
+          "not": "none"
+        }
+      },
+      "help": "How far behind the one before each ink runs, as a share of the loop."
+    },
+    {
+      "key": "beats",
+      "group": "motion",
+      "label": "Beats per loop",
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "when": {
+        "motion": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

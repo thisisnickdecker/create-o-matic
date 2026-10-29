@@ -1,0 +1,23 @@
+{
+  "name": "Sunset strip",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "blend",
+    "bands": 0,
+    "direction": "across",
+    "inks": [
+      "#2B1B4B",
+      "#B8336A",
+      "#F26B1D",
+      "#FFD166"
+    ],
+    "labels": "hex",
+    "margin": 0,
+    "gap": 0,
+    "motion": "breathe",
+    "amount": 0.7,
+    "duration": 8
+  }
+}

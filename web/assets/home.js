@@ -135,6 +135,34 @@ async function specimens(host) {
   }))
 }
 
+// The Colour lab's studies, drawn once when they come near the screen.
+const STUDIES = ["homage", "tints-and-shades", "will-it-read"]
+async function studies(host) {
+  const colour = await import("/instruments/colour/colour.js")
+  const patches = await Promise.all(STUDIES.map((n) => fetch(`/instruments/colour/presets/${n}.json`).then((r) => r.json())))
+  const near = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue
+      near.unobserve(e.target)
+      const patch = sanitize(colour.manifest, e.target._patch), c = e.target.querySelector("canvas")
+      document.fonts.ready.then(() => {
+        const { w, h } = colour.size(patch), k = Math.min(c.clientWidth / w, c.clientHeight / h) * Math.min(devicePixelRatio || 1, 2)
+        c.width = Math.round(w * k); c.height = Math.round(h * k)
+        colour.render(c.getContext("2d"), patch, 0, { scale: k })
+      })
+    }
+  }, { rootMargin: "300px 0px" })
+  host.replaceChildren(...patches.map((patch) => {
+    const tile = Object.assign(document.createElement("a"), { className: "tile", href: `/colour/#${toHash(sanitize(colour.manifest, patch))}` })
+    tile.innerHTML = `<div class="art"><canvas></canvas></div><div class="meta"><span></span><span></span></div>`
+    tile.querySelector(".meta span").textContent = patch.name
+    tile.querySelector(".meta span:last-child").textContent = `${patch.params.inks.length} inks`
+    tile.querySelector(".art")._patch = patch
+    near.observe(tile.querySelector(".art"))
+    return tile
+  }))
+}
+
 const card = document.querySelector("[data-hero]")
 if (card) hero(card, document.querySelector("[data-hero-caption]"))
 const grid = document.querySelector("[data-examples]")
@@ -143,3 +171,5 @@ const lookGrid = document.querySelector("[data-looks]")
 if (lookGrid) looks(lookGrid)
 const specimenGrid = document.querySelector("[data-specimens]")
 if (specimenGrid) specimens(specimenGrid)
+const studyGrid = document.querySelector("[data-studies]")
+if (studyGrid) studies(studyGrid)

@@ -1,0 +1,20 @@
+{
+  "name": "Swatch card",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "card",
+    "inks": [
+      "#1A1714",
+      "#C43A3E",
+      "#FBA83B",
+      "#7585A6",
+      "#F2C9C0"
+    ],
+    "labels": "full",
+    "corner": 10,
+    "gap": 32,
+    "margin": 96
+  }
+}

@@ -29,6 +29,7 @@
       <a href="/make/">Motion</a>
       <a href="/texture/">Texture lab</a>
       <a href="/type/">Type tester</a>
+      <a href="/colour/">Colour lab</a>
       <a href="/#examples">Examples</a>
       <a href="/manual/" aria-current="page">Manual</a>
       <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
@@ -42,6 +43,7 @@
       <a href="#start">Start here</a>
       <a href="#texture">The Texture lab</a>
       <a href="#tester">The Type tester</a>
+      <a href="#colourlab">The Colour lab</a>
       <a href="#type">Type and marks</a>
       <a href="#fonts">Fonts</a>
       <a href="#colour">Colour</a>
@@ -66,7 +68,7 @@
       <p class="lead">Everything the machine does, and how to take what it makes into the rest of your work.</p>
 
       <h2 id="start">Start here</h2>
-      <p>Create-o-matic has three instruments so far: <a href="/make/">Motion</a>, for type and marks that move; <a href="/texture/">the Texture lab</a>, for treating images and video; and <a href="/type/">the Type tester</a>, for comparing type. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
+      <p>Create-o-matic has four instruments so far: <a href="/make/">Motion</a>, for type and marks that move; <a href="/texture/">the Texture lab</a>, for treating images and video; <a href="/type/">the Type tester</a>, for comparing type; and <a href="/colour/">the Colour lab</a>, for studying palettes. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
       <ol>
         <li>Pick a preset from <b>Presets</b>, or start from what's there.</li>
         <li>Change the words in <b>Content</b>, one per line.</li>
@@ -96,6 +98,19 @@
       <p><a href="/type/">The Type tester</a> sets your own words as a specimen sheet. The <b>Galley</b> holds the rows: open a row to type in it and set its font (<b>Browse</b> searches the open library, your Adobe Fonts project, installed fonts and My fonts), size or <b>Fill the width</b>, weight, italic, tracking, leading, case and ink. The arrows reorder rows, ⧉ copies one, and <b>Add a row</b> copies the last. Drop a font file anywhere and it arrives as a new row, so comparing a font you've just bought against its rivals is one drag.</p>
       <p>The <b>Chase</b> sets the page: rows stacked or in a grid of columns (side-by-side pairings), aligned left, centre or right, sitting at the top, middle or bottom, with hairline rules and small labels naming each row's font, weight and size. <b>Clockwork</b> sets it moving: <b>Weight sweep</b> (a variable font's weight axis, rows staggered), <b>Tracking breathes</b>, <b>Size pulse</b>, <b>Wave</b>, <b>Marquee</b> (each row a ticker, alternating direction) and <b>Typewriter</b>. Every row runs a little behind the one above by the <b>Stagger</b>.</p>
       <p><b>Vary</b> deals every row a different open font of the same kind, chosen from real text families (Latin Extended, three weights or a variable axis), a quick way to meet faces you'd never have scrolled to. Export the sheet as PNG, or the motion as MP4, WebM or GIF.</p>
+
+      <h2 id="colourlab">The Colour lab</h2>
+      <p><a href="/colour/">The Colour lab</a> lays out your own colours as a study. The <b>Swatch book</b> holds the inks: two to twelve, picked with the swatch picker, pasted as hex codes, or dropped on the page as a palette file (Adobe <code>.ase</code>, GIMP <code>.gpl</code>, <code>.json</code>, or any text with hex codes in it, such as a stylesheet). <b>Readouts</b> label each ink with its hex, RGB and OKLCH values.</p>
+      <table>
+        <tr><th>Swatch card</th><td>Printer's chips: the ink above, its readouts on white below.</td></tr>
+        <tr><th>Homage</th><td>After Josef Albers' <i>Homage to the Square</i>: each panel nests two to four inks inside one another, the inner squares sitting low as his do, so you see every ink against the others.</td></tr>
+        <tr><th>Proportion</th><td>Bands sized by a rule: even shares; 60 · 30 · 10 (one ink dominates, one supports, the rest share the accent); golden, each band 1/φ of the last; or chance, from the seed.</td></tr>
+        <tr><th>Tints and shades</th><td>A scale for each ink, from tint to shade at the same hue, with the ink itself on its nearest step (marked with a dot). Nine steps are named 100 to 900, as in a design system.</td></tr>
+        <tr><th>Contrast check</th><td>Every ink set on every other, with its WCAG contrast ratio and grade: AAA (7:1), AA (4.5:1), AA large text only (3:1), or Fails.</td></tr>
+        <tr><th>Blend</th><td>The inks mixed into one another, smooth or cut into flat bands.</td></tr>
+      </table>
+      <p>The maths happens in OKLab and OKLCH, colour spaces where equal steps look equal. Blends don't sag into grey halfway, tints keep their hue, and colours a screen can't show are brought into range by giving up chroma, not hue or lightness. <b>Vary</b> deals a new palette in the harmony set under <b>Vary deals</b>: neighbours, opposites, split complementary, triad, one hue in many lights, print inks, or Albers' greys and earths. It keeps the number of inks, and spreads them from dark to light so they read against one another.</p>
+      <p><b>Clockwork</b> sets the palette moving. <b>Hue swing</b> turns every ink round the colour wheel and back. <b>Lights up</b> lifts each ink's lightness in turn. <b>Carousel</b> passes the inks along, going round the hue wheel between them so nothing turns muddy on the way. <b>Breathe</b> swells and shrinks the shapes. The <b>Print shop</b> exports the study as PNG, MP4, WebM or GIF, and the palette as CSS custom properties (<b>Copy CSS</b>), JSON, or an Adobe swatch file for Illustrator, Photoshop and InDesign.</p>
 
       <h2 id="type">Type and marks</h2>
       <p>Each line of <b>Content</b> is a slot. <b>Content mode</b> decides which slot goes in which cell:</p>
@@ -276,6 +291,7 @@ npm run check      <span class="c"># manifests, presets and tests</span></code><
       <a href="/make/">Motion</a>
       <a href="/texture/">Texture lab</a>
       <a href="/type/">Type tester</a>
+      <a href="/colour/">Colour lab</a>
       <a href="/manual/">Manual</a>
       <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
       <a href="https://hirenick.xyz">Hire Nick</a>

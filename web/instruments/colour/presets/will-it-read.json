@@ -1,0 +1,21 @@
+{
+  "name": "Will it read?",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "contrast",
+    "inks": [
+      "#121211",
+      "#F4F4F1",
+      "#FF4FA3",
+      "#0000FF",
+      "#FFE800"
+    ],
+    "format": "square",
+    "labels": "full",
+    "gap": 12,
+    "corner": 10,
+    "margin": 56
+  }
+}

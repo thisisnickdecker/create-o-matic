@@ -59,8 +59,8 @@ Types: `number`, `int`, `select` (with `options: [[value, label]]`), `bool`, `co
 `palette` (a list of colours), `text` (multi-line), `string`, `font` (a family name, with the font
 browser), `media` (the name of a backdrop file kept in the browser), `mark` (a menu of the marks
 available).
-`when` shows a control only while another parameter has a given value, or, as `{ "not": value }`,
-while it has any other. Groups take an optional `hint`: a plain description shown beside a fun name.
+`when` shows a control only while another parameter has a given value, any of a list of values
+(`["a", "b"]`), or, as `{ "not": value }`, any value but that one. Groups take an optional `hint`: a plain description shown beside a fun name.
 Numbers and colours can be keyframed; `"animate": false` opts one out (sizes, loop length).
 
 ## Patches

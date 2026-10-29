@@ -1,0 +1,24 @@
+{
+  "name": "Carousel",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "card",
+    "inks": [
+      "#0078BF",
+      "#FF48B0",
+      "#FFE800",
+      "#00A95C",
+      "#FF665E",
+      "#765BA7"
+    ],
+    "labels": "hex",
+    "corner": 14,
+    "gap": 28,
+    "margin": 96,
+    "motion": "carousel",
+    "amount": 0.35,
+    "duration": 6
+  }
+}

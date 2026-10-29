@@ -1,0 +1,21 @@
+{
+  "name": "Tints and shades",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "ramp",
+    "steps": 9,
+    "inks": [
+      "#0000FF",
+      "#E4372B",
+      "#0E6E6E",
+      "#D9A21B",
+      "#7A746C"
+    ],
+    "labels": "full",
+    "gap": 20,
+    "corner": 6,
+    "margin": 72
+  }
+}

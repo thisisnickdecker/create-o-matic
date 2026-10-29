@@ -1,0 +1,23 @@
+{
+  "name": "Sixty, thirty, ten",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "proportion",
+    "rule": "sixty",
+    "direction": "across",
+    "inks": [
+      "#1E2A4A",
+      "#F4EAD5",
+      "#E4372B"
+    ],
+    "labels": "full",
+    "gap": 0,
+    "margin": 0,
+    "motion": "breathe",
+    "amount": 0.45,
+    "stagger": 0.33,
+    "duration": 6
+  }
+}

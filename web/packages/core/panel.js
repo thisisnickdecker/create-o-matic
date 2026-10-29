@@ -19,7 +19,8 @@ import { EFFECTS, GROUPS, BLENDS, effectById, newLayer } from "./effects/index.j
 import { newListItem } from "./patch.js"
 
 // Whether a control shows, by its "when": exact values, or { not: value }.
-const shows = (when, params) => !when || Object.entries(when).every(([k, v]) => (v !== null && typeof v === "object" ? params[k] !== v.not : params[k] === v))
+const shows = (when, params) => !when || Object.entries(when).every(([k, v]) =>
+  Array.isArray(v) ? v.includes(params[k]) : v !== null && typeof v === "object" ? params[k] !== v.not : params[k] === v)
 
 // A range input's track fills up to its value; the stylesheet reads --p.
 export const fillRange = (r) => r.style.setProperty("--p", `${((r.value - r.min) / (r.max - r.min || 1)) * 100}%`)

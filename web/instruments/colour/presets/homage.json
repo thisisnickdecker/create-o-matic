@@ -1,0 +1,25 @@
+{
+  "name": "Homage",
+  "instrument": "colour",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": {
+    "study": "albers",
+    "nest": 4,
+    "inks": [
+      "#7C2E2A",
+      "#B8432F",
+      "#D97B2B",
+      "#E9B44C"
+    ],
+    "format": "square",
+    "labels": "hex",
+    "gap": 40,
+    "margin": 72,
+    "background": "#EFE9DE",
+    "motion": "lights",
+    "amount": 0.3,
+    "stagger": 0.25,
+    "duration": 8
+  }
+}

@@ -109,7 +109,7 @@ function label(ctx, text, x, y, px, max, colour, { weight = 400, align = "left" 
   ctx.fillText(text, x, y)
 }
 
-// The readout lines for an ink, by the Readouts setting.
+// The readout lines for an ink, by the Colour codes setting.
 const readout = (hex, mode) => (mode === "full" ? [hex, `RGB ${rgbText(hex)}`, `OKLCH ${oklchText(hex)}`] : mode === "hex" ? [hex] : [])
 
 // The biggest grid of n cells of the given aspect (width / height) that fits in w × h.
@@ -257,7 +257,7 @@ function contrastCheck(ctx, p, t, inks, box, u) {
     const x = box.x + col.at, y = box.y + row.at, w = col.len, h = row.len, bg = inks[r], fg = inks[c]
     rect(ctx, x, y, w, h, p.corner, bg, p.background)
     const pad = Math.min(w, h) * 0.1, sub = inkOn(bg)
-    if (r === c) { label(ctx, bg, x + pad, y + h - pad, Math.min(w, h) * 0.12, w - 2 * pad, sub, { weight: 500 }); return }
+    if (r === c) { if (p.labels !== "off") label(ctx, bg, x + pad, y + h - pad, Math.min(w, h) * 0.12, w - 2 * pad, sub, { weight: 500 }); return }
     const big = Math.min(w * 0.34, h * 0.42) * swell(p, t, r * n + c)
     label(ctx, "Aa", x + w / 2, y + h * 0.52, big, w - 2 * pad, fg, { weight: 500, align: "center" })
     if (p.labels === "off") return

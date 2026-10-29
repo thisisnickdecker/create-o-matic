@@ -131,13 +131,13 @@
     {
       "key": "labels",
       "group": "inks",
-      "label": "Readouts",
+      "label": "Colour codes",
       "type": "select",
       "default": "full",
       "options": [
         [
           "off",
-          "Off"
+          "Hidden"
         ],
         [
           "hex",
@@ -147,7 +147,8 @@
           "full",
           "Hex, RGB and OKLCH"
         ]
-      ]
+      ],
+      "help": "The codes printed on the study. Hidden gives a clean image of the colours alone."
     },
     {
       "key": "study",

@@ -1,0 +1,60 @@
+{
+  "name": "Coming clear",
+  "instrument": "elastic",
+  "version": "0.2.0",
+  "seed": 1029,
+  "params": {
+    "format": "story",
+    "duration": 8,
+    "fps": "30",
+    "content": "CREATE\nO\nMATIC",
+    "mode": "sequence",
+    "case": "upper",
+    "fontSource": "open",
+    "font": "Archivo",
+    "weightMin": 900,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 2,
+    "rows": 13,
+    "columnOffset": 0.25,
+    "rowOffset": 0.06,
+    "wave": "sine",
+    "cycles": 1,
+    "ease": 1.6,
+    "background": "#F4F4F1",
+    "palette": [
+      "#1A1714",
+      "#C43A3E"
+    ],
+    "colourMode": "strip",
+    "keyMode": "boomerang",
+    "grain": 0.08
+  },
+  "keys": {
+    "copier": [
+      {
+        "t": 0,
+        "v": 1,
+        "ease": "smooth"
+      },
+      {
+        "t": 0.8,
+        "v": 0,
+        "ease": "smooth"
+      }
+    ],
+    "amount": [
+      {
+        "t": 0,
+        "v": 0.55,
+        "ease": "smooth"
+      },
+      {
+        "t": 1,
+        "v": 0.97,
+        "ease": "smooth"
+      }
+    ]
+  }
+}

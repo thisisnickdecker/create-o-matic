@@ -1,0 +1,34 @@
+{
+  "name": "S, M, L, XL",
+  "instrument": "elastic",
+  "version": "0.1.0",
+  "seed": 20261029,
+  "params": {
+    "format": "story",
+    "duration": 6,
+    "fps": "30",
+    "content": "S\nM\nL\nXL",
+    "mode": "size",
+    "fontSource": "google",
+    "font": "Inter Tight",
+    "weightMin": 500,
+    "weightMax": 900,
+    "direction": "vertical",
+    "columns": 4,
+    "rows": 14,
+    "columnOffset": 0.31,
+    "rowOffset": 0.065,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.96,
+    "ease": 2.7,
+    "background": "#F4F4F1",
+    "palette": [
+      "#1A1714",
+      "#C43A3E",
+      "#0000FF",
+      "#F26B1D"
+    ],
+    "colourMode": "slot"
+  }
+}

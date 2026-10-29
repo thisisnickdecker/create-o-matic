@@ -1,0 +1,46 @@
+{
+  "name": "Newsprint",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 14,
+  "params": {
+    "layers": [
+      {
+        "id": "adjust-8",
+        "effect": "adjust",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "adjSaturation": -0.35,
+          "adjContrast": 0.1
+        }
+      },
+      {
+        "id": "halftone-9",
+        "effect": "halftone",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "halftone": 7,
+          "halftoneAngle": 45,
+          "halftoneShape": "round",
+          "halftoneGain": 1.1
+        }
+      },
+      {
+        "id": "paper-10",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.85,
+          "paperKind": "newsprint"
+        }
+      }
+    ],
+    "background": "#E4DFD2"
+  }
+}

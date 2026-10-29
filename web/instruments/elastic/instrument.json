@@ -1,0 +1,1064 @@
+{
+  "id": "elastic",
+  "name": "Elastic",
+  "version": "0.4.0",
+  "status": "experimental",
+  "category": [
+    "typography",
+    "motion"
+  ],
+  "description": "A stretch-type engine. Words fill the cells of a grid; the cells breathe in waves that travel down rows and across columns, so letterforms stretch, squash and swap as they grow. Any number or colour can be keyframed across the loop. Every frame is a pure function of the patch and the time, so a loop always closes and an export always matches the preview.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "elastic.js",
+    "app": "app.js",
+    "embed": "embed.js"
+  },
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": true
+  },
+  "outputs": {
+    "interactive-web": "verified",
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
+    "embed": "verified",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch, seed and font files give the same frames in the same browser. Different browsers or font versions can shift glyph outlines slightly.",
+  "references": [
+    {
+      "title": "DIA, type tool (screenshots via Are.na)",
+      "url": "https://www.are.na/block/44102986",
+      "note": "Inspiration for the mechanic: rows, columns, per-row and per-column phase offset, ease, content mapped to cell size. No DIA code or assets used; the tool URL no longer resolves."
+    },
+    {
+      "title": "DIA",
+      "url": "https://www.dia.studio/",
+      "note": "Benchmark for motion, type, colour and time."
+    }
+  ],
+  "groups": [
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size and time"
+    },
+    {
+      "id": "type",
+      "label": "Type case",
+      "hint": "words, marks, fonts"
+    },
+    {
+      "id": "grid",
+      "label": "Loom",
+      "hint": "the grid"
+    },
+    {
+      "id": "shape",
+      "label": "Stencil",
+      "hint": "shape fill"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "motion and keyframes"
+    },
+    {
+      "id": "colour",
+      "label": "Ink well",
+      "hint": "colour"
+    },
+    {
+      "id": "backdrop",
+      "label": "Stage",
+      "hint": "gradient, image, video"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "story",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "format",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "format",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 6,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "margin",
+      "group": "format",
+      "label": "Margin",
+      "type": "int",
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "key": "content",
+      "group": "type",
+      "label": "Content",
+      "type": "text",
+      "default": "S\nM\nL\nXL",
+      "help": "One slot per line. A line like @studiolo puts that mark (a logo or graphic you've added) in the slot. In Size mode the first line goes in the smallest cells, the last in the largest."
+    },
+    {
+      "key": "mode",
+      "group": "type",
+      "label": "Content mode",
+      "type": "select",
+      "default": "size",
+      "options": [
+        [
+          "size",
+          "By size"
+        ],
+        [
+          "sequence",
+          "In sequence"
+        ],
+        [
+          "letters",
+          "Letters"
+        ],
+        [
+          "random",
+          "Random"
+        ]
+      ]
+    },
+    {
+      "key": "case",
+      "group": "type",
+      "label": "Case",
+      "type": "select",
+      "default": "as-is",
+      "options": [
+        [
+          "as-is",
+          "As typed"
+        ],
+        [
+          "upper",
+          "Upper"
+        ],
+        [
+          "lower",
+          "Lower"
+        ]
+      ]
+    },
+    {
+      "key": "fontSource",
+      "group": "type",
+      "label": "Font source",
+      "type": "select",
+      "default": "open",
+      "options": [
+        [
+          "open",
+          "Font library (Google + open source)"
+        ],
+        [
+          "google",
+          "Google Fonts (by name)"
+        ],
+        [
+          "adobe",
+          "Adobe Fonts kit"
+        ],
+        [
+          "system",
+          "Installed on this computer"
+        ],
+        [
+          "file",
+          "My fonts (files you added)"
+        ]
+      ]
+    },
+    {
+      "key": "font",
+      "group": "type",
+      "label": "Family",
+      "type": "font",
+      "default": "Inter Tight",
+      "help": "Pick from the font browser, or type a family name."
+    },
+    {
+      "key": "adobeKit",
+      "group": "type",
+      "label": "Adobe kit ID",
+      "type": "string",
+      "default": "",
+      "when": {
+        "fontSource": "adobe"
+      },
+      "help": "Your Adobe Fonts web project ID (fonts.adobe.com › Web Projects). Add this site's domain to the project, or Adobe won't serve the fonts here."
+    },
+    {
+      "key": "weightMin",
+      "group": "type",
+      "label": "Weight, small",
+      "type": "int",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "default": 800
+    },
+    {
+      "key": "weightMax",
+      "group": "type",
+      "label": "Weight, large",
+      "type": "int",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "default": 800,
+      "help": "Different weights only interpolate with a variable font."
+    },
+    {
+      "key": "fit",
+      "group": "type",
+      "label": "Fit",
+      "type": "select",
+      "default": "ink",
+      "options": [
+        [
+          "ink",
+          "Stretch to ink"
+        ],
+        [
+          "cap",
+          "Stretch to cap height"
+        ],
+        [
+          "contain",
+          "Keep proportions (editorial)"
+        ]
+      ]
+    },
+    {
+      "key": "align",
+      "group": "type",
+      "label": "Align",
+      "type": "select",
+      "default": "start",
+      "options": [
+        [
+          "start",
+          "Top left"
+        ],
+        [
+          "center",
+          "Centre"
+        ],
+        [
+          "end",
+          "Bottom left"
+        ]
+      ],
+      "when": {
+        "fit": "contain"
+      }
+    },
+    {
+      "key": "padding",
+      "group": "type",
+      "label": "Cell padding",
+      "type": "number",
+      "min": 0,
+      "max": 0.45,
+      "step": 0.005,
+      "default": 0.02
+    },
+    {
+      "key": "markFit",
+      "group": "type",
+      "label": "Marks fit",
+      "type": "select",
+      "default": "stretch",
+      "options": [
+        [
+          "stretch",
+          "Stretch like type"
+        ],
+        [
+          "contain",
+          "Keep proportions"
+        ]
+      ],
+      "help": "Keep proportions when a logo mustn't be distorted."
+    },
+    {
+      "key": "markColour",
+      "group": "type",
+      "label": "Marks colour",
+      "type": "select",
+      "default": "ink",
+      "options": [
+        [
+          "ink",
+          "Take the inks"
+        ],
+        [
+          "original",
+          "Original colours"
+        ]
+      ]
+    },
+    {
+      "key": "layout",
+      "group": "grid",
+      "label": "Layout",
+      "type": "select",
+      "default": "grid",
+      "options": [
+        [
+          "grid",
+          "Stretch grid"
+        ],
+        [
+          "golden",
+          "Golden section"
+        ]
+      ],
+      "help": "Stretch grid: rows and columns that breathe. Golden section: a spiral of golden rectangles, each 1/φ of the last."
+    },
+    {
+      "key": "direction",
+      "group": "grid",
+      "label": "Direction",
+      "type": "select",
+      "default": "vertical",
+      "options": [
+        [
+          "vertical",
+          "Vertical"
+        ],
+        [
+          "horizontal",
+          "Horizontal"
+        ]
+      ],
+      "when": {
+        "layout": "grid"
+      }
+    },
+    {
+      "key": "columns",
+      "group": "grid",
+      "label": "Columns",
+      "type": "int",
+      "min": 1,
+      "max": 64,
+      "step": 1,
+      "default": 6,
+      "when": {
+        "layout": "grid"
+      }
+    },
+    {
+      "key": "rows",
+      "group": "grid",
+      "label": "Rows",
+      "type": "int",
+      "min": 1,
+      "max": 64,
+      "step": 1,
+      "default": 12,
+      "when": {
+        "layout": "grid"
+      }
+    },
+    {
+      "key": "columnOffset",
+      "group": "grid",
+      "label": "Column lag",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.005,
+      "default": 0.17,
+      "help": "How far behind its neighbour each column runs, as a fraction of a wave.",
+      "when": {
+        "layout": "grid"
+      }
+    },
+    {
+      "key": "rowOffset",
+      "group": "grid",
+      "label": "Row lag",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.005,
+      "default": 0.09,
+      "help": "How far behind its neighbour each row runs, as a fraction of a wave."
+    },
+    {
+      "key": "crossAmount",
+      "group": "grid",
+      "label": "Lungs",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0,
+      "help": "Lets the columns (or rows, when horizontal) breathe as well as the cells.",
+      "when": {
+        "layout": "grid"
+      }
+    },
+    {
+      "key": "goldenDepth",
+      "group": "grid",
+      "label": "Golden cuts",
+      "type": "int",
+      "min": 1,
+      "max": 18,
+      "step": 1,
+      "default": 7,
+      "when": {
+        "layout": "golden"
+      }
+    },
+    {
+      "key": "goldenStart",
+      "group": "grid",
+      "label": "First cut",
+      "type": "select",
+      "default": "left",
+      "options": [
+        [
+          "left",
+          "From the left"
+        ],
+        [
+          "top",
+          "From the top"
+        ],
+        [
+          "right",
+          "From the right"
+        ],
+        [
+          "bottom",
+          "From the bottom"
+        ]
+      ],
+      "when": {
+        "layout": "golden"
+      }
+    },
+    {
+      "key": "goldenTurn",
+      "group": "grid",
+      "label": "Spiral",
+      "type": "select",
+      "default": "cw",
+      "options": [
+        [
+          "cw",
+          "Clockwise"
+        ],
+        [
+          "ccw",
+          "Anticlockwise"
+        ]
+      ],
+      "when": {
+        "layout": "golden"
+      }
+    },
+    {
+      "key": "goldenSwing",
+      "group": "grid",
+      "label": "Golden swing",
+      "type": "number",
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01,
+      "default": 0.2,
+      "when": {
+        "layout": "golden"
+      },
+      "help": "How far each cut breathes away from φ as the wave passes. 0 holds it exactly golden."
+    },
+    {
+      "key": "gap",
+      "group": "grid",
+      "label": "Gap",
+      "type": "number",
+      "min": 0,
+      "max": 60,
+      "step": 0.5,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "key": "shape",
+      "group": "shape",
+      "label": "Shape",
+      "type": "mark",
+      "default": "",
+      "help": "A mark whose silhouette the type fills. Add marks in the Type group (SVG gives the sharpest edges)."
+    },
+    {
+      "key": "shapeMode",
+      "group": "shape",
+      "label": "Fill",
+      "type": "select",
+      "default": "clip",
+      "options": [
+        [
+          "clip",
+          "Inside, cut to the edge"
+        ],
+        [
+          "cells",
+          "Inside, whole cells only"
+        ],
+        [
+          "around",
+          "Around, cut to the edge"
+        ],
+        [
+          "around-cells",
+          "Around, whole cells only"
+        ]
+      ],
+      "when": {
+        "shape": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "shapeFit",
+      "group": "shape",
+      "label": "Shape fit",
+      "type": "select",
+      "default": "contain",
+      "options": [
+        [
+          "contain",
+          "Keep proportions"
+        ],
+        [
+          "stretch",
+          "Stretch to the frame"
+        ]
+      ],
+      "when": {
+        "shape": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "shapeScale",
+      "group": "shape",
+      "label": "Shape size",
+      "type": "number",
+      "min": 0.05,
+      "max": 3,
+      "step": 0.01,
+      "default": 0.9,
+      "when": {
+        "shape": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "shapeX",
+      "group": "shape",
+      "label": "Shape across",
+      "type": "number",
+      "min": -2,
+      "max": 2,
+      "step": 0.005,
+      "default": 0,
+      "help": "-1 to 1 moves it a half frame left or right. Keyframe it to move the shape through the type.",
+      "when": {
+        "shape": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "shapeY",
+      "group": "shape",
+      "label": "Shape down",
+      "type": "number",
+      "min": -2,
+      "max": 2,
+      "step": 0.005,
+      "default": 0,
+      "when": {
+        "shape": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "shapeGhost",
+      "group": "shape",
+      "label": "Silhouette",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0,
+      "help": "Shows the shape faintly behind the type, in the first ink.",
+      "when": {
+        "shape": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "wave",
+      "group": "motion",
+      "label": "Waveform",
+      "type": "select",
+      "default": "sine",
+      "options": [
+        [
+          "sine",
+          "Sine"
+        ],
+        [
+          "saw",
+          "Saw"
+        ],
+        [
+          "noise",
+          "Seeded noise"
+        ],
+        [
+          "steps",
+          "Steps"
+        ]
+      ]
+    },
+    {
+      "key": "cycles",
+      "group": "motion",
+      "label": "Beats per loop",
+      "type": "int",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 1,
+      "help": "How many times the wave passes in one loop."
+    },
+    {
+      "key": "amount",
+      "group": "motion",
+      "label": "Stretch",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.92
+    },
+    {
+      "key": "ease",
+      "group": "motion",
+      "label": "Swell",
+      "type": "number",
+      "min": 0.25,
+      "max": 8,
+      "step": 0.05,
+      "default": 2.5,
+      "help": "Above 1, a few cells swell and most stay small; below 1, most stay large."
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ],
+      "help": "How keyframed settings play across the loop. Boomerang always closes seamlessly."
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused.",
+      "animate": false
+    },
+    {
+      "key": "background",
+      "group": "colour",
+      "label": "Background",
+      "type": "color",
+      "default": "#F4F4F1"
+    },
+    {
+      "key": "palette",
+      "group": "colour",
+      "label": "Inks",
+      "type": "palette",
+      "default": [
+        "#1A1714",
+        "#C43A3E",
+        "#0000FF",
+        "#F26B1D"
+      ]
+    },
+    {
+      "key": "colourMode",
+      "group": "colour",
+      "label": "Ink by",
+      "type": "select",
+      "default": "slot",
+      "options": [
+        [
+          "slot",
+          "Content slot"
+        ],
+        [
+          "strip",
+          "Column or row"
+        ],
+        [
+          "cell",
+          "Cell"
+        ],
+        [
+          "mono",
+          "First ink only"
+        ],
+        [
+          "blocks",
+          "Blocks (inks fill cells)"
+        ]
+      ]
+    },
+    {
+      "key": "blend",
+      "group": "colour",
+      "label": "Type blend",
+      "type": "select",
+      "default": "source-over",
+      "options": [
+        [
+          "source-over",
+          "Normal"
+        ],
+        [
+          "multiply",
+          "Multiply"
+        ],
+        [
+          "screen",
+          "Screen"
+        ],
+        [
+          "overlay",
+          "Overlay"
+        ],
+        [
+          "difference",
+          "Difference"
+        ],
+        [
+          "exclusion",
+          "Exclusion"
+        ],
+        [
+          "color-burn",
+          "Colour burn"
+        ],
+        [
+          "soft-light",
+          "Soft light"
+        ]
+      ]
+    },
+    {
+      "key": "gradient",
+      "group": "backdrop",
+      "label": "Gradient",
+      "type": "select",
+      "default": "off",
+      "options": [
+        [
+          "off",
+          "None"
+        ],
+        [
+          "mesh",
+          "Mesh"
+        ],
+        [
+          "linear",
+          "Linear"
+        ],
+        [
+          "radial",
+          "Radial"
+        ]
+      ],
+      "help": "A moving gradient behind everything. Leave Content empty for a pure gradient."
+    },
+    {
+      "key": "gradientInks",
+      "group": "backdrop",
+      "label": "Gradient inks",
+      "type": "palette",
+      "default": [
+        "#FF2E88",
+        "#7A00FF",
+        "#00B3FF",
+        "#FF7A00"
+      ],
+      "when": {
+        "gradient": {
+          "not": "off"
+        }
+      }
+    },
+    {
+      "key": "gradientDrift",
+      "group": "backdrop",
+      "label": "Drift",
+      "type": "int",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "default": 1,
+      "help": "Times the gradient swirls or turns per loop. 0 holds it still.",
+      "when": {
+        "gradient": {
+          "not": "off"
+        }
+      }
+    },
+    {
+      "key": "gradientAngle",
+      "group": "backdrop",
+      "label": "Angle",
+      "type": "number",
+      "min": 0,
+      "max": 360,
+      "step": 1,
+      "default": 30,
+      "unit": "°",
+      "when": {
+        "gradient": "linear"
+      }
+    },
+    {
+      "key": "gradientSoftness",
+      "group": "backdrop",
+      "label": "Softness",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.6,
+      "when": {
+        "gradient": "mesh"
+      }
+    },
+    {
+      "key": "backdrop",
+      "group": "backdrop",
+      "label": "Image or video",
+      "type": "media",
+      "default": "",
+      "help": "Drop an image or video on the page, or choose one. Kept in this browser; the patch stores its name."
+    },
+    {
+      "key": "backdropFit",
+      "group": "backdrop",
+      "label": "Fit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        [
+          "cover",
+          "Fill the frame"
+        ],
+        [
+          "contain",
+          "Fit inside"
+        ]
+      ]
+    },
+    {
+      "key": "backdropOpacity",
+      "group": "backdrop",
+      "label": "Opacity",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 1
+    },
+    {
+      "key": "backdropSpeed",
+      "group": "backdrop",
+      "label": "Video speed",
+      "type": "number",
+      "min": 0,
+      "max": 4,
+      "step": 0.05,
+      "default": 1,
+      "help": "Video playback rate. The video restarts with each loop."
+    }
+  ],
+  "effects": [
+    "kaleidoscope",
+    "liquid",
+    "melt",
+    "halftone",
+    "photocopy",
+    "grain",
+    "reflector",
+    "cube",
+    "pin"
+  ],
+  "page": "/make/"
+}

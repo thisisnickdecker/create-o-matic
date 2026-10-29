@@ -1,0 +1,39 @@
+{
+  "name": "Gradient wash",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 20,
+  "params": {
+    "layers": [
+      {
+        "id": "gradient-26",
+        "effect": "gradient",
+        "on": true,
+        "opacity": 0.85,
+        "blend": "soft-light",
+        "params": {
+          "gradient": "mesh",
+          "gradientInks": [
+            "#FF2E88",
+            "#7A00FF",
+            "#00B3FF",
+            "#FF7A00"
+          ],
+          "gradientDrift": 1,
+          "gradientSoftness": 0.6
+        }
+      },
+      {
+        "id": "grain-27",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.18,
+          "grainBoil": true
+        }
+      }
+    ]
+  }
+}

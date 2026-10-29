@@ -1,0 +1,167 @@
+{
+  "instruments": [
+    {
+      "id": "elastic",
+      "name": "Elastic",
+      "version": "0.4.0",
+      "status": "experimental",
+      "category": [
+        "typography",
+        "motion"
+      ],
+      "description": "A stretch-type engine. Words fill the cells of a grid; the cells breathe in waves that travel down rows and across columns, so letterforms stretch, squash and swap as they grow. Any number or colour can be keyframed across the loop. Every frame is a pure function of the patch and the time, so a loop always closes and an export always matches the preview.",
+      "path": "/make/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": true
+      },
+      "outputs": {
+        "interactive-web": "verified",
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "embed": "verified",
+        "patch-json": "verified"
+      },
+      "effects": [
+        "kaleidoscope",
+        "liquid",
+        "melt",
+        "halftone",
+        "photocopy",
+        "grain"
+      ],
+      "parameters": [
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "margin",
+        "content",
+        "mode",
+        "case",
+        "fontSource",
+        "font",
+        "adobeKit",
+        "weightMin",
+        "weightMax",
+        "fit",
+        "padding",
+        "markFit",
+        "markColour",
+        "direction",
+        "columns",
+        "rows",
+        "columnOffset",
+        "rowOffset",
+        "crossAmount",
+        "gap",
+        "shape",
+        "shapeMode",
+        "shapeFit",
+        "shapeScale",
+        "shapeX",
+        "shapeY",
+        "shapeGhost",
+        "wave",
+        "cycles",
+        "amount",
+        "ease",
+        "keyMode",
+        "phase",
+        "background",
+        "palette",
+        "colourMode",
+        "blend",
+        "backdrop",
+        "backdropFit",
+        "backdropOpacity",
+        "backdropSpeed",
+        "kaleido",
+        "kaleidoSpin",
+        "kaleidoZoom",
+        "liquid",
+        "liquidScale",
+        "liquidFlow",
+        "melt",
+        "meltDrips",
+        "meltCycles",
+        "halftone",
+        "halftoneAngle",
+        "halftoneShape",
+        "halftoneGain",
+        "copier",
+        "boil",
+        "grain"
+      ],
+      "presets": [
+        {
+          "file": "sizes.json",
+          "name": "Sizes · paper"
+        },
+        {
+          "file": "hire-nick.json",
+          "name": "Hire Nick · job printer"
+        },
+        {
+          "file": "night-shift.json",
+          "name": "Night shift · blocks"
+        },
+        {
+          "file": "copier.json",
+          "name": "Generation loss"
+        },
+        {
+          "file": "bloom.json",
+          "name": "Bloom · widescreen"
+        },
+        {
+          "file": "coming-clear.json",
+          "name": "Coming clear · keyframed copier"
+        },
+        {
+          "file": "kaleido.json",
+          "name": "Kaleido"
+        },
+        {
+          "file": "meltdown.json",
+          "name": "Meltdown · halftone"
+        },
+        {
+          "file": "liquid.json",
+          "name": "Liquid · blue hour"
+        },
+        {
+          "file": "studiolo-stack.json",
+          "name": "Studiolo × ND · stack"
+        },
+        {
+          "file": "signature-halftone.json",
+          "name": "Signature · halftone"
+        },
+        {
+          "file": "signature-fill.json",
+          "name": "Signature fill"
+        },
+        {
+          "file": "studiolo-sweep.json",
+          "name": "Studiolo sweep · around"
+        },
+        {
+          "file": "campaign-button.json",
+          "name": "Campaign button · Hire Nick"
+        }
+      ]
+    }
+  ]
+}

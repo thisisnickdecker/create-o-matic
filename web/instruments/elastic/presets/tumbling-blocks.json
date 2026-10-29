@@ -1,0 +1,38 @@
+{
+  "name": "Tumbling blocks",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 909,
+  "params": {
+    "format": "square",
+    "duration": 8,
+    "fps": "30",
+    "content": "O",
+    "mode": "sequence",
+    "fontSource": "open",
+    "font": "Archivo",
+    "weightMin": 900,
+    "weightMax": 900,
+    "direction": "vertical",
+    "columns": 1,
+    "rows": 1,
+    "columnOffset": 0.25,
+    "rowOffset": 0.25,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.6,
+    "ease": 1.8,
+    "padding": 0.14,
+    "background": "#F3EBD8",
+    "palette": [
+      "#E4372B"
+    ],
+    "colourMode": "blocks",
+    "cube": 0.17,
+    "cubeTile": true,
+    "cubeShade": 0.5,
+    "cubeSpin": 1,
+    "fit": "ink",
+    "crossAmount": 0
+  }
+}

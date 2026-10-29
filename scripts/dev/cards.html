@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Social cards</title>
+<link rel="stylesheet" href="https://use.typekit.net/gfn7ugl.css">
+<style>
+  body { margin: 0; padding: 24px; background: #E8E8E5; font: 400 14px/1.4 "neue-haas-grotesk-text", sans-serif; }
+  canvas { display: block; width: 600px; height: auto; margin-bottom: 16px; box-shadow: 0 10px 30px -12px rgba(0,0,0,.4); }
+</style>
+</head>
+<body>
+  <!-- The social cards (1200×630) for each page, drawn with the real engine and wordmark.
+       Open /__dev/cards.html?save=1 with `npm run dev` running: it writes web/og/<page>.png. -->
+  <p id="status">Drawing…</p>
+  <script type="module">
+    import * as elastic from "/instruments/elastic/elastic.js"
+    import * as texture from "/instruments/texture/texture.js"
+    import { sanitize } from "/packages/core/patch.js"
+    import { ensureFont } from "/packages/core/fonts.js"
+    import { prepareMarks } from "/packages/core/marks.js"
+    import { WORDMARK, WORDMARK_BOX, PALETTES } from "/assets/brand.js"
+
+    const CARDS = [
+      { name: "home", title: "A machine for making type move.", preset: "phi", t: 0.3 },
+      { name: "make", title: "The machine. Free, in your browser.", preset: "heat", t: 0.25 },
+      { name: "manual", title: "The Create-o-matic manual.", preset: "golden-section", t: 0.2 },
+      { name: "texture", title: "Texture lab: a darkroom for anything.", preset: "riso-duo", t: 0.25, engine: "texture" },
+    ]
+    const W = 1200, H = 630, PAD = 64
+    const save = new URLSearchParams(location.search).has("save")
+    await document.fonts.load('500 64px "neue-haas-grotesk-display"')
+    await document.fonts.load('400 22px "neue-haas-grotesk-text"')
+
+    function wrap(ctx, text, width) {
+      const lines = [""]
+      for (const word of text.split(" ")) {
+        const next = lines.at(-1) ? `${lines.at(-1)} ${word}` : word
+        if (ctx.measureText(next).width > width && lines.at(-1)) lines.push(word)
+        else lines[lines.length - 1] = next
+      }
+      return lines
+    }
+
+    for (const card of CARDS) {
+      const canvas = Object.assign(document.createElement("canvas"), { width: W, height: H })
+      const ctx = canvas.getContext("2d", { willReadFrequently: true })
+      ctx.fillStyle = "#FFFFFF"
+      ctx.fillRect(0, 0, W, H)
+
+      // The wordmark, a letter at a time in the first palette.
+      const colours = PALETTES[0].colours, mh = 44, k = mh / WORDMARK_BOX[1]
+      ctx.save()
+      ctx.translate(PAD, PAD)
+      ctx.scale(k, k)
+      WORDMARK.forEach((d, i) => { ctx.fillStyle = colours[i % colours.length]; ctx.fill(new Path2D(d)) })
+      ctx.restore()
+
+      // The headline and the line underneath.
+      ctx.fillStyle = "#121211"
+      ctx.font = '500 66px "neue-haas-grotesk-display"'
+      ctx.letterSpacing = "-2px"
+      wrap(ctx, card.title, 520).forEach((line, i) => ctx.fillText(line, PAD, 230 + i * 66))
+      ctx.letterSpacing = "0px"
+      ctx.fillStyle = "#6B6B65"
+      ctx.font = '400 22px "neue-haas-grotesk-text"'
+      ctx.fillText("Free and open source · createomatic.xyz", PAD, H - PAD)
+
+      // A frame from a preset, in a grey stage.
+      const x = 640, y = 40, w = W - x - 40, h = H - 80
+      ctx.fillStyle = "#F0F0EE"
+      ctx.beginPath(); ctx.roundRect(x, y, w, h, 28); ctx.fill()
+      const engine = card.engine === "texture" ? texture : elastic
+      const raw = await fetch(`/instruments/${card.engine || "elastic"}/presets/${card.preset}.json`).then((r) => r.json())
+      const patch = sanitize(engine.manifest, raw)
+      let marks = null
+      if (engine === elastic) {
+        await ensureFont(elastic.fontRequest(patch))
+        elastic.clearMetrics()
+        marks = await prepareMarks(patch)
+      }
+      const { w: pw, h: ph } = engine.size(patch)
+      const s = Math.min((w - 72) / pw, (h - 72) / ph)
+      const art = Object.assign(document.createElement("canvas"), { width: Math.round(pw * s), height: Math.round(ph * s) })
+      engine.render(art.getContext("2d", { willReadFrequently: true }), patch, card.t, { scale: s, frame: Math.floor(card.t * engine.frameCount(patch)), marks, caption: false })
+      const ax = x + (w - art.width) / 2, ay = y + (h - art.height) / 2
+      ctx.save()
+      ctx.shadowColor = "rgba(18, 18, 17, .22)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12
+      ctx.drawImage(art, ax, ay)
+      ctx.restore()
+
+      document.body.append(canvas)
+      if (save) {
+        const blob = await new Promise((r) => canvas.toBlob(r, "image/png"))
+        await fetch(`/api/card?name=${card.name}`, { method: "POST", body: blob })
+      }
+    }
+    document.getElementById("status").textContent = save ? "Saved to web/og/." : "Add ?save=1 to write them to web/og/."
+  </script>
+</body>
+</html>

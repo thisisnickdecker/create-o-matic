@@ -1,0 +1,17 @@
+{
+  "name": "create-o-matic",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "A machine for making type move. Free and open source.",
+  "author": "Nick Decker (https://nickdecker.net)",
+  "license": "MIT",
+  "homepage": "https://createomatic.xyz",
+  "repository": { "type": "git", "url": "https://github.com/thisisnickdecker/create-o-matic.git" },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "registry": "node scripts/registry.mjs",
+    "check": "node scripts/registry.mjs --check && node --test \"tests/*.test.mjs\""
+  },
+  "engines": { "node": ">=22" }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "Acid house",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 17,
+  "params": {
+    "layers": [
+      {
+        "id": "acid-18",
+        "effect": "acid",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "acid": 0.85,
+          "acidCycles": 1
+        }
+      },
+      {
+        "id": "posterize-19",
+        "effect": "posterize",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "posterize": 5
+        }
+      },
+      {
+        "id": "grain-20",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.2
+        }
+      }
+    ]
+  }
+}

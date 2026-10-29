@@ -1,0 +1,37 @@
+{
+  "name": "Monolith",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 42,
+  "params": {
+    "format": "square",
+    "duration": 8,
+    "fps": "30",
+    "content": "CREATE\nO\nMATIC",
+    "mode": "sequence",
+    "fontSource": "open",
+    "font": "Archivo",
+    "weightMin": 900,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 1,
+    "rows": 9,
+    "rowOffset": 0.11,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.9,
+    "ease": 1.7,
+    "padding": 0.03,
+    "crossAmount": 0.7,
+    "background": "#E8E6E1",
+    "palette": [
+      "#121211",
+      "#FF2E88",
+      "#0000FF"
+    ],
+    "colourMode": "slot",
+    "cube": 0.8,
+    "cubeShade": 0.42,
+    "cubeSpin": 1
+  }
+}

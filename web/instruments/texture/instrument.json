@@ -1,0 +1,327 @@
+{
+  "id": "texture",
+  "name": "Texture lab",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "image",
+    "texture",
+    "print"
+  ],
+  "description": "A darkroom for any image or video. Stack print and texture effects (risograph, halftone, photocopy, paper, grunge, film, chroma, holographic foil, gradient maps, your own overlays) in any order, each with its own blend mode and opacity, and export at the source's full size or any format.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "texture.js",
+    "app": "app.js"
+  },
+  "page": "/texture/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch, seed and source file give the same frames in the same browser.",
+  "references": [
+    {
+      "title": "Texturelabs, True Grit Texture Supply, Retro Supply Co.",
+      "note": "The quality bar for print and texture effects. All textures here are generated in code; none of their assets are used."
+    }
+  ],
+  "groups": [
+    {
+      "id": "source",
+      "label": "Light table",
+      "hint": "image or video"
+    },
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size and time"
+    },
+    {
+      "id": "stack",
+      "label": "Darkroom",
+      "hint": "the effect stack"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "keyframes"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "source",
+      "group": "source",
+      "label": "Image or video",
+      "type": "media",
+      "default": "",
+      "help": "Drop any image or video on the page, at any size. It's kept in this browser; the patch stores its name."
+    },
+    {
+      "key": "sourceWidth",
+      "group": "source",
+      "label": "Source width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 1,
+      "default": 1600,
+      "hidden": true,
+      "animate": false
+    },
+    {
+      "key": "sourceHeight",
+      "group": "source",
+      "label": "Source height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 1,
+      "default": 1200,
+      "hidden": true,
+      "animate": false
+    },
+    {
+      "key": "fit",
+      "group": "source",
+      "label": "Fit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        [
+          "cover",
+          "Fill the frame"
+        ],
+        [
+          "contain",
+          "Fit inside"
+        ]
+      ]
+    },
+    {
+      "key": "zoom",
+      "group": "source",
+      "label": "Zoom",
+      "type": "number",
+      "min": 1,
+      "max": 4,
+      "step": 0.01,
+      "default": 1,
+      "help": "Keyframe zoom and pan for a slow camera move across a still."
+    },
+    {
+      "key": "panX",
+      "group": "source",
+      "label": "Pan across",
+      "type": "number",
+      "min": -1,
+      "max": 1,
+      "step": 0.005,
+      "default": 0
+    },
+    {
+      "key": "panY",
+      "group": "source",
+      "label": "Pan down",
+      "type": "number",
+      "min": -1,
+      "max": 1,
+      "step": 0.005,
+      "default": 0
+    },
+    {
+      "key": "videoSpeed",
+      "group": "source",
+      "label": "Video speed",
+      "type": "number",
+      "min": 0,
+      "max": 4,
+      "step": 0.05,
+      "default": 1,
+      "help": "Playback rate for a video source. It restarts with each loop."
+    },
+    {
+      "key": "background",
+      "group": "source",
+      "label": "Background",
+      "type": "color",
+      "default": "#FFFFFF",
+      "help": "Shows around the image when it fits inside the frame, and is the paper colour for print effects."
+    },
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "source",
+      "options": [
+        [
+          "source",
+          "Same as the image"
+        ],
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "format",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "format",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 6,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "layers",
+      "group": "stack",
+      "label": "Layers",
+      "type": "stack",
+      "default": [],
+      "help": "Applied top to bottom. Each layer has its own blend mode and opacity."
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "Meltdown",
+  "instrument": "elastic",
+  "version": "0.2.0",
+  "seed": 404,
+  "params": {
+    "format": "poster",
+    "duration": 8,
+    "fps": "30",
+    "content": "MELT",
+    "mode": "letters",
+    "fontSource": "open",
+    "font": "Anton",
+    "weightMin": 400,
+    "weightMax": 400,
+    "direction": "horizontal",
+    "columns": 4,
+    "rows": 6,
+    "columnOffset": 0.08,
+    "rowOffset": 0.12,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.8,
+    "ease": 1.4,
+    "background": "#F4D35E",
+    "palette": [
+      "#1D1D1B",
+      "#E4372B"
+    ],
+    "colourMode": "strip",
+    "keyMode": "boomerang",
+    "meltDrips": 46,
+    "meltCycles": 0,
+    "halftone": 9,
+    "halftoneAngle": 22.5,
+    "halftoneGain": 1.15
+  },
+  "keys": {
+    "melt": [
+      {
+        "t": 0,
+        "v": 0,
+        "ease": "smooth"
+      },
+      {
+        "t": 1,
+        "v": 0.55,
+        "ease": "smooth"
+      }
+    ]
+  }
+}

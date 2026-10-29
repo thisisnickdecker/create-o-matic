@@ -1,0 +1,125 @@
+/* Create-o-matic: the shared foundation for the site and the machine.
+   White and greys, one typeface (Neue Haas Grotesk: Regular for running text, Medium for anything
+   larger or louder), soft corners, and colour from one place: the palette the knob is set to
+   (--accent is its first colour; chrome.js sets it). Everything else is the work. */
+:root {
+  --white: #FFFFFF;
+  --g50: #F7F7F6;
+  --g100: #F0F0EE;
+  --g150: #E8E8E5;
+  --g200: #DEDEDA;
+  --g300: #C9C9C4;
+  --g500: #8E8E88;
+  --g600: #6B6B65;
+  --ink: #121211;
+
+  --h: 0;
+  --accent: #E93D4C;
+
+  --display: "neue-haas-grotesk-display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --text: "neue-haas-grotesk-text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --r-s: 8px;
+  --r-m: 12px;
+  --r-l: 20px;
+  --r-xl: 28px;
+  --gutter: clamp(16px, 2.4vw, 32px);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --shadow: 0 1px 2px rgba(18, 18, 17, .06), 0 12px 32px -12px rgba(18, 18, 17, .22);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  background: var(--white); color: var(--ink);
+  font: 400 15px/1.5 var(--text); font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; font-variant-numeric: tabular-nums; }
+img, svg, canvas, video { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: var(--r-s); }
+::selection { background: var(--ink); color: var(--white); }
+
+/* the masthead: wordmark, a quiet nav, the knob */
+.masthead {
+  display: flex; align-items: center; gap: 24px;
+  height: 64px; padding: 0 var(--gutter);
+}
+/* The wordmark stands as tall as the nav's pills. */
+.masthead .home { flex: none; display: block; height: 36px; }
+.wordmark { display: block; height: 100%; width: auto; overflow: visible; }
+.wordmark path { fill: var(--ink); transition: fill .25s var(--ease); }
+.nav { display: flex; gap: 4px; margin-left: auto; font-weight: 500; }
+.nav a { padding: 7px 12px; border-radius: 999px; color: var(--g600); transition: background .2s var(--ease), color .2s var(--ease); }
+.nav a:hover { color: var(--ink); background: var(--g100); }
+.nav a[aria-current="page"] { color: var(--ink); background: var(--g100); }
+.menu-toggle { display: none; margin-left: auto; border: 0; background: var(--g100); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-weight: 500; }
+
+
+/* the colour knob: a small machined dial, like the one on nickdecker.net */
+.knob { display: flex; align-items: center; gap: 10px; flex: none; user-select: none; -webkit-user-select: none; }
+.knob-dial {
+  position: relative; width: 40px; height: 40px; flex: none; border: 0; border-radius: 50%; padding: 0; cursor: grab; touch-action: none;
+  background: radial-gradient(circle at 35% 30%, #FFF 0%, #F3F2EF 40%, #DAD8D2 75%, #C8C5BE 100%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .2), 0 1px 1px rgba(0, 0, 0, .2), inset 0 -1px 0 rgba(0, 0, 0, .08), inset 0 1px 0 #FFF;
+}
+.knob-dial:active { cursor: grabbing; }
+.knob-dial::before {
+  content: ""; position: absolute; inset: -7px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(from -1deg, var(--ink) 0 2deg, transparent 2deg 30deg);
+  -webkit-mask: radial-gradient(circle, transparent 69%, #000 70%, #000 78%, transparent 79%);
+  mask: radial-gradient(circle, transparent 69%, #000 70%, #000 78%, transparent 79%);
+  opacity: .5;
+}
+.knob-dial .pointer { position: absolute; inset: 0; transform: rotate(calc(var(--h) * 1deg)); transition: transform .12s var(--ease); }
+.knob-dial .pointer::after { content: ""; position: absolute; left: 50%; top: 4px; width: 2.5px; height: 11px; margin-left: -1.25px; border-radius: 2px; background: var(--accent); }
+.knob-read { display: grid; gap: 3px; min-width: 76px; font-size: 10px; line-height: 1; letter-spacing: .08em; text-transform: uppercase; color: var(--g600); }
+.knob-read output { font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--accent); }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 36px; padding: 6px 16px; border: 0; border-radius: 999px; cursor: pointer; font-weight: 500; text-align: center;
+  background: var(--g100); color: var(--ink); transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+}
+.btn:hover { background: var(--g150); }
+.btn:active { transform: scale(.98); }
+.btn.solid { background: var(--ink); color: var(--white); }
+.btn.solid:hover { background: #2B2B29; }
+.btn.big { min-height: 48px; padding: 10px 22px; font-size: 16px; }
+.btn:disabled { opacity: .35; pointer-events: none; }
+.btn[hidden] { display: none; }
+.arrow::after { content: "→"; transition: transform .2s var(--ease); }
+.btn:hover .arrow::after, a:hover > .arrow::after { transform: translateX(2px); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+/* words coloured a letter at a time from the palette (see chrome.js) */
+[data-colourful] span { transition: color .25s var(--ease); }
+
+/* code blocks with a copy button */
+.code { position: relative; }
+.code .copy {
+  position: absolute; top: 10px; right: 10px; border: 0; border-radius: 999px; padding: 5px 12px; cursor: pointer;
+  background: rgba(255, 255, 255, .12); color: #EDEDE9; font-size: 12px; font-weight: 500; transition: background .2s var(--ease);
+}
+.code .copy:hover { background: rgba(255, 255, 255, .22); }
+
+/* Below 1120px the nav folds into a menu; on phones the knob loses its label. Last in the file, so
+   these win over the rules above. */
+@media (max-width: 1120px) {
+  .masthead { height: 56px; gap: 12px; }
+  .masthead .home { height: 28px; }
+  .menu-toggle { display: block; }
+  .nav {
+    position: fixed; inset: 56px 0 auto 0; z-index: 40; margin: 0; padding: 8px var(--gutter) 16px;
+    flex-direction: column; gap: 2px; background: var(--white); box-shadow: 0 24px 40px -24px rgba(0, 0, 0, .3);
+    visibility: hidden; opacity: 0; transform: translateY(-6px); transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s;
+  }
+  .nav a { padding: 12px 0; border-radius: 0; font-size: 20px; color: var(--ink); background: none !important; }
+  .masthead.open .nav { visibility: visible; opacity: 1; transform: none; }
+}
+@media (max-width: 480px) {
+  .masthead .home { height: 22px; }
+  .knob-read { display: none; }
+}

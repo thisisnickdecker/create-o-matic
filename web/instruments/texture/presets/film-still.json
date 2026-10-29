@@ -1,0 +1,55 @@
+{
+  "name": "Film still",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 15,
+  "params": {
+    "layers": [
+      {
+        "id": "adjust-11",
+        "effect": "adjust",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "adjWarmth": 0.25,
+          "adjContrast": 0.12
+        }
+      },
+      {
+        "id": "film-12",
+        "effect": "film",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "filmHalation": 0.65,
+          "filmFade": 0.3,
+          "filmVignette": 0.45
+        }
+      },
+      {
+        "id": "chroma-13",
+        "effect": "chroma",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "chroma": 1.5,
+          "chromaAngle": 0
+        }
+      },
+      {
+        "id": "grain-14",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.3,
+          "grainBoil": true
+        }
+      }
+    ]
+  }
+}

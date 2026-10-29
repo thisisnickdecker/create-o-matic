@@ -1,0 +1,48 @@
+{
+  "name": "Kraft print",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 18,
+  "params": {
+    "layers": [
+      {
+        "id": "gradmap-21",
+        "effect": "gradmap",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "gradmap": 1,
+          "gradmapInks": [
+            "#24170F",
+            "#7A4A2A",
+            "#E2C59A"
+          ]
+        }
+      },
+      {
+        "id": "halftone-22",
+        "effect": "halftone",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "halftone": 4,
+          "halftoneAngle": 15
+        }
+      },
+      {
+        "id": "paper-23",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.9,
+          "paperKind": "kraft"
+        }
+      }
+    ],
+    "background": "#C59B6A"
+  }
+}

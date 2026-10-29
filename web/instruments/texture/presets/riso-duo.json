@@ -1,0 +1,37 @@
+{
+  "name": "Riso duo",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 11,
+  "params": {
+    "layers": [
+      {
+        "id": "riso-1",
+        "effect": "riso",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "riso": 1,
+          "risoInks": [
+            "#0078BF",
+            "#FF48B0"
+          ],
+          "risoGrain": 0.75,
+          "risoShift": 7
+        }
+      },
+      {
+        "id": "paper-2",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.5,
+          "paperKind": "paper"
+        }
+      }
+    ]
+  }
+}

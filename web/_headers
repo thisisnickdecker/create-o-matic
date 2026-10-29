@@ -1,0 +1,16 @@
+# Cloudflare Pages headers
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-Frame-Options: SAMEORIGIN
+
+# The engine is meant to be embedded on other sites.
+/instruments/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+/packages/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+/assets/*
+  Cache-Control: public, max-age=3600

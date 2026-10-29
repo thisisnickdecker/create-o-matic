@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual · Create-o-matic</title>
+<meta name="description" content="How to use Create-o-matic: type and marks, fonts, colour, grid and motion, shape fill, keyframes, effects, backdrops, exports, patches, presets, embedding, Figma and running it yourself.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Create-o-matic">
+<meta property="og:title" content="Manual · Create-o-matic">
+<meta property="og:description" content="How to use Create-o-matic, and how to take what it makes into the rest of your work.">
+<meta property="og:url" content="https://createomatic.xyz/manual/">
+<meta property="og:image" content="https://createomatic.xyz/og/manual.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The create-o-matic wordmark beside a frame made with it.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://createomatic.xyz/manual/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://use.typekit.net/gfn7ugl.css">
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body class="site">
+  <header class="masthead">
+    <a class="home" href="/" data-wordmark aria-label="Create-o-matic, home"></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Site">
+      <a href="/make/">Motion</a>
+      <a href="/texture/">Texture lab</a>
+      <a href="/#examples">Examples</a>
+      <a href="/manual/" aria-current="page">Manual</a>
+      <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      <a href="/#nick">Work with Nick</a>
+    </nav>
+    <div class="knob" data-knob></div>
+  </header>
+
+  <main class="manual">
+    <nav class="toc" aria-label="Contents">
+      <a href="#start">Start here</a>
+      <a href="#texture">The Texture lab</a>
+      <a href="#type">Type and marks</a>
+      <a href="#fonts">Fonts</a>
+      <a href="#colour">Colour</a>
+      <a href="#motion">Grid and motion</a>
+      <a href="#shape">Shape fill</a>
+      <a href="#keyframes">Keyframes</a>
+      <a href="#effects-guide">Effects</a>
+      <a href="#backdrop">Gradients and backdrops</a>
+      <a href="#export">Exporting</a>
+      <a href="#patches">Patches</a>
+      <a href="#presets">Presets</a>
+      <a href="#embed">On your website</a>
+      <a href="#figma">In Figma</a>
+      <a href="#agents">With Claude and other agents</a>
+      <a href="#run">Running it yourself</a>
+      <a href="#effects">Writing an effect</a>
+      <a href="#limits">What it can't do yet</a>
+    </nav>
+
+    <article class="doc">
+      <h1>Manual</h1>
+      <p class="lead">Everything the machine does, and how to take what it makes into the rest of your work.</p>
+
+      <h2 id="start">Start here</h2>
+      <p>Create-o-matic has two instruments so far: <a href="/make/">Motion</a>, for type and marks that move, and <a href="/texture/">the Texture lab</a>, for treating images and video. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
+      <ol>
+        <li>Pick a preset from <b>Presets</b>, or start from what's there.</li>
+        <li>Change the words in <b>Content</b>, one per line.</li>
+        <li>Pick a <b>Format</b>: 9:16 for Reels and Stories, 4:5 for the feed, 16:9 for YouTube, A3 for print.</li>
+        <li>Press <b>Vary</b> a few times. It deals a new grid and motion and leaves your type, colour and format alone.</li>
+        <li>Export: <b>MP4</b> for social, <b>PNG</b> for a still.</li>
+      </ol>
+      <p>The rack's groups have workshop names, each with a plain description beside it: <b>Patch bay</b> (presets and saving), <b>Paper</b> (size and time), <b>Type case</b> (words, marks, fonts), <b>Loom</b> (the grid), <b>Stencil</b> (shape fill), <b>Clockwork</b> (motion and keyframes), <b>Ink well</b> (colour), <b>Stage</b> (gradient, image, video), <b>Darkroom</b> (effects) and <b>Print shop</b> (export). Hover any control's name for what it does.</p>
+      <p>Keyboard: <code>Space</code> plays and pauses, <code>←</code> and <code>→</code> step a frame. Drop a font, an SVG, an image, a video or a patch anywhere on the page.</p>
+
+      <h2 id="texture">The Texture lab</h2>
+      <p><a href="/texture/">The Texture lab</a> is a darkroom for any image or video. Drop a file anywhere on the page and it's on the <b>Light table</b>; the frame takes its exact size (up to 6,000 pixels on the long side; export at double for more). Choose another <b>Format</b> to reframe it, for instance a landscape video as 9:16. <b>Zoom</b> and <b>Pan</b> can be keyframed for a slow camera move across a still.</p>
+      <h3>The stack</h3>
+      <p>The <b>Darkroom</b> is a stack of layers, applied from the top down. <b>Add an effect…</b> puts a new layer at the bottom. On each layer: the dot switches it on and off, the arrows move it, × removes it, and its name opens its settings, including a <b>Blend</b> mode and <b>Opacity</b>. The same effect can be used as many times as you like.</p>
+      <table>
+        <tr><th>Colour</th><td>Adjust (brightness, contrast, saturation, hue, warmth), Gradient map (duotones and tritones), Acid, Holographic foil, Invert, Posterize.</td></tr>
+        <tr><th>Print</th><td>Risograph (two to four drums, misregistration, dot grain), Halftone, Photocopy, Paper (uncoated, kraft, newsprint, card, blotting).</td></tr>
+        <tr><th>Texture</th><td>Chroma split, Film (halation, fade, vignette), Grunge (dust, scratches, stains), Grain.</td></tr>
+        <tr><th>Paint</th><td>Gradient (mesh, linear or radial) and Texture overlay: your own scan, photograph or light leak, blended in.</td></tr>
+        <tr><th>Distort and mount</th><td>Kaleidoscope, Liquid, Melt, Reflector, Cube, Pin button.</td></tr>
+      </table>
+      <p>Blend modes work as they do in Photoshop. <b>Multiply</b> for paper, dirt and ink. <b>Screen</b> for light leaks, dust on black and glows. <b>Overlay</b> and <b>Soft light</b> for gradients and colour washes. <b>Colour</b> and <b>Luminosity</b> to move just the hue or just the tone.</p>
+      <p>The textures are generated in code from the seed, so they're original, never repeat, and come out the same every time. <b>Reroll</b> gives you new dust, fibre and grain without changing anything else. For your own textures, add a <b>Texture overlay</b> layer and choose the file; photographs of real paper, risograph prints and photocopies make the best ones.</p>
+      <p><b>Presets</b> here are looks: choosing one changes the stack and keeps your image. <b>Vary</b> nudges every setting in the stack a little either way. A video plays through its loop, and every exported frame waits for the video to reach its exact time.</p>
+
+      <h2 id="type">Type and marks</h2>
+      <p>Each line of <b>Content</b> is a slot. <b>Content mode</b> decides which slot goes in which cell:</p>
+      <table>
+        <tr><th>By size</th><td>The first line goes in the smallest cells, the last in the largest. Write <code>S</code>, <code>M</code>, <code>L</code>, <code>XL</code> and the words swap as cells grow.</td></tr>
+        <tr><th>In sequence</th><td>Slots in reading order.</td></tr>
+        <tr><th>Letters</th><td>Your words spelled out, one letter per cell, across each row.</td></tr>
+        <tr><th>Random</th><td>A pick for each cell, decided by the seed.</td></tr>
+      </table>
+      <h3>Marks: logos and graphics</h3>
+      <p>Drop an SVG on the page, or use <b>Add mark…</b> under Content. It becomes a line such as <code>@studiolo</code>, and from then on it behaves exactly like a word: it stretches, takes the inks, blends and goes through the effects. <b>Marks fit</b> can keep a logo's proportions; <b>Marks colour</b> can keep its own colours.</p>
+      <p>SVG gives the best result: it's drawn as vectors, sharp at any export size, and travels inside the patch. Only filled shapes come through, so outline strokes and text first (in Illustrator: <i>Object › Expand</i> and <i>Type › Create Outlines</i>). PNG and JPEG work too: transparent images use their alpha as the shape, opaque ones use their darkness. Those stay in your browser rather than in the patch.</p>
+
+      <h2 id="fonts">Fonts</h2>
+      <p>Press <b>Browse</b> beside Family to search everything the machine can reach, each name set in its own face:</p>
+      <ul>
+        <li><b>Font library</b>: every Google family and about 120 more open-source faces, around 2,100 in all, served by <a href="https://fontsource.org">Fontsource</a>. Free to use and ship.</li>
+        <li><b>Adobe kit</b>: the families in your own Adobe Fonts web project. Choose the source, enter the project ID, and add this site's domain to the project in Adobe Fonts.</li>
+        <li><b>Installed</b>: fonts on your computer (Chrome and Edge ask permission first). Fine for exports; an embed on your website can't use them.</li>
+        <li><b>My fonts</b>: font files you add, from any foundry. They stay in this browser.</li>
+      </ul>
+      <p>With a variable font, set <b>Weight, small</b> and <b>Weight, large</b> apart and the weight follows the cell: light when it's squeezed, heavy when it swells.</p>
+
+      <h2 id="colour">Colour</h2>
+      <p>Every swatch opens the picker: recent colours, swatch folders (primaries, process CMYK, greys, papers, inks and named palettes), a mixer with HSB, RGB and CMYK, an eyedropper for anything on screen, and a hex field. <b>Use as inks</b> applies a whole folder.</p>
+      <p><b>Brand palettes</b> load from an Adobe <code>.ase</code> file (export one from Illustrator, Photoshop or InDesign: <i>Swatches › Save Swatch Exchange</i>), a GIMP <code>.gpl</code>, a <code>.json</code>, or any <code>.css</code> or <code>.txt</code> with hex codes in it. <b>Ink by</b> decides which ink each cell gets; <b>Blocks</b> fills the cells with ink and cuts the type out of them. <b>Type blend</b> sets how type sits over a backdrop.</p>
+
+      <h2 id="motion">Grid and motion</h2>
+      <p>The frame is a grid of strips (columns when the direction is vertical, rows when it's horizontal), each cut into cells. Every cell has a place on a wave. As the wave passes, cells swell and their neighbours give way.</p>
+      <table>
+        <tr><th>Row lag, Column lag</th><td>How far behind its neighbour each row or column runs, as a fraction of a wave. Small offsets ripple; large ones scatter.</td></tr>
+        <tr><th>Stretch</th><td>How far cells can collapse. At 1 they almost vanish.</td></tr>
+        <tr><th>Swell</th><td>Above 1, most cells stay small and a few swell; below 1, most stay large.</td></tr>
+        <tr><th>Waveform</th><td>Sine, saw, seeded noise or steps.</td></tr>
+        <tr><th>Lungs</th><td>Lets the columns (or rows) swell too.</td></tr>
+        <tr><th>Seed</th><td>Every random choice comes from it. Same seed, same result.</td></tr>
+      </table>
+      <h3>Golden section</h3>
+      <p>Set <b>Layout</b> to <b>Golden section</b> and the frame is cut into a spiral of golden rectangles: each cut takes 1/φ (0.618) of the long side, leaving a smaller golden rectangle to cut again, turning a quarter each time. Choose the <b>First cut</b>, the <b>Spiral</b>'s direction and the number of <b>Golden cuts</b>; <b>Golden swing</b> lets the cuts breathe away from φ and back as the wave passes (0 holds them exactly golden). With <b>Fit</b> set to <b>Keep proportions (editorial)</b>, words sit in their blocks at their true proportions, aligned like a page; with <b>Ink by: Blocks</b> the blocks themselves take the inks.</p>
+
+      <h2 id="shape">Shape fill</h2>
+      <p>Pick any mark as the <b>Shape</b> and the type fills its silhouette, or flows around it. <b>Fill</b> cuts the type to the edge or keeps only whole cells; <b>Around</b> makes the shape negative space. <b>Shape size</b>, <b>across</b> and <b>down</b> can be keyframed, so a logo can grow, pulse or sweep through the type. Thin shapes like a signature want many small cells: try 30 or more columns.</p>
+
+      <h2 id="keyframes">Keyframes</h2>
+      <p>Every number and colour has a small diamond beside its name. Click it to set a key at the playhead; the name turns to the accent colour. Move the playhead and change the value to set another. Under the stage, each animated setting gets a lane: drag keys to move them, double-click a key to change its easing (smooth, linear, hold), select one and press Delete to remove it.</p>
+      <p><b>Keyframes play</b> decides how the timeline maps onto the loop:</p>
+      <ul>
+        <li><b>Boomerang</b> plays forwards over the first half of the loop and back over the second. It always ends where it began, so it's always seamless.</li>
+        <li><b>Loop, easing back</b> plays forwards, then eases from the last key round to the first.</li>
+        <li><b>Loop, jumping back</b> plays forwards and cuts back to the start.</li>
+      </ul>
+
+      <h2 id="effects-guide">Effects</h2>
+      <p>Applied in this order, each off at zero:</p>
+      <table>
+        <tr><th>Kaleidoscope</th><td>Folds the frame into mirrored wedges, turning a whole number of times per loop.</td></tr>
+        <tr><th>Liquid</th><td>The frame seen through moving water.</td></tr>
+        <tr><th>Melt</th><td>Columns drip from a held top edge.</td></tr>
+        <tr><th>Halftone</th><td>Dots, squares or lines at any screen angle, with dot gain. Drawn as vectors.</td></tr>
+        <tr><th>Photocopy</th><td>Generation loss: softening, uneven toner, drum streaks, speckle and drop-out.</td></tr>
+        <tr><th>Grain</th><td>Film grain. <b>Boil</b> changes it every frame.</td></tr>
+        <tr><th>Reflector</th><td>Mirrors the frame: left onto right, top onto bottom, four ways, or standing on a glossy floor with its reflection fading away.</td></tr>
+        <tr><th>Cube</th><td>Folds the frame onto an isometric cube, or tiles it into tumbling blocks. <b>Cube spin</b> slides the artwork round the faces.</td></tr>
+        <tr><th>Pin button</th><td>Prints the frame onto a campaign button on a table: domed shading, a rolled metal rim, gloss, paper fibre and wear. The artwork keeps moving; the button holds still.</td></tr>
+      </table>
+
+      <h2 id="backdrop">Gradients and backdrops</h2>
+      <p>The <b>Stage</b> group sits behind the type. <b>Gradient</b> makes a moving gradient from its own inks: <b>Mesh</b> (soft blobs of colour drifting on their own orbits), <b>Linear</b> (bands that turn) or <b>Radial</b> (rings that travel outwards). <b>Drift</b> is how many times it comes round per loop. Leave Content empty and it's a gradient maker on its own; add a little grain and export.</p>
+      <p>Drop an image or video anywhere on the page (not on the Marks row) and it sits behind the type. Set the format first: to reframe a 16:9 video as 9:16, pick Vertical and set <b>Fit</b> to fill the frame. <b>Video speed</b> sets the playback rate; the video restarts with each loop. In exports, every frame waits for the video to reach its exact time. Backdrops stay in your browser; the patch only names them.</p>
+
+      <h2 id="export">Exporting</h2>
+      <table>
+        <tr><th>Format</th><th>Use it for</th><th>Notes</th></tr>
+        <tr><td>MP4</td><td>Social, decks, Premiere, After Effects</td><td>H.264 via your graphics hardware. Chrome, Edge and Safari.</td></tr>
+        <tr><td>WebM</td><td>Websites</td><td>VP9. Slower to make; small and sharp.</td></tr>
+        <tr><td>GIF</td><td>Slack, email, Figma prototypes</td><td>Use half or quarter size; grain makes GIFs heavy.</td></tr>
+        <tr><td>PNG</td><td>Stills and print</td><td>Taken at <b>Freeze frame</b>, which pausing or scrubbing sets. Up to double size.</td></tr>
+        <tr><td>Embed</td><td>Your website, live</td><td>See <a href="#embed">On your website</a>.</td></tr>
+        <tr><td>Patch</td><td>Keeping and sharing the recipe</td><td><b>Download .json</b>, or <b>Copy link</b>.</td></tr>
+      </table>
+      <p>Everything is rendered offline, frame by frame, through the same code as the preview, so a slow computer makes a slower export, never a stuttering one. Exports carry on in a background tab.</p>
+
+      <h2 id="patches">Patches</h2>
+      <p>A patch is the complete recipe for a loop, as a small JSON file. Like a patch sheet for a synthesizer: hand it to someone and they get exactly the same thing.</p>
+<pre><code>{
+  "name": "Campaign button · Hire Nick",
+  "instrument": "elastic",
+  "version": "0.4.0",
+  "seed": 1984,                       <span class="c">// every random choice comes from this</span>
+  "params": {                         <span class="c">// the controls; anything left out takes its default</span>
+    "format": "square",
+    "content": "HIRE\nNICK",
+    "font": "Anton",
+    "palette": ["#F3EBD8", "#E4372B"],
+    "shape": "button"
+  },
+  "keys": {                           <span class="c">// keyframes, t from 0 to 1 along the timeline</span>
+    "shapeScale": [{ "t": 0, "v": 0.9, "ease": "smooth" }, { "t": 1, "v": 1 }]
+  },
+  "marks": { "button": "&lt;svg …&gt;" }   <span class="c">// SVG marks travel inside the patch</span>
+}</code></pre>
+      <p>Patches are forgiving: unknown settings are ignored, values are clamped into range, and missing ones take their defaults. So a patch you write by hand, or one an AI writes from a description, always opens. The full list of settings, with their ranges, is in <a href="https://github.com/thisisnickdecker/create-o-matic/blob/main/web/instruments/elastic/instrument.json">instrument.json</a>.</p>
+
+      <h2 id="presets">Presets</h2>
+      <p><b>Save</b> keeps a patch in your browser. To make it a preset everyone gets, run the machine locally (<a href="#run">below</a>), set it up, name it, and press <b>Add to presets</b>. It's written into <code>web/instruments/elastic/presets/</code> and listed in <code>index.json</code>, ready to commit. By hand: put the patch file in that folder, add its name to <code>index.json</code>, and run <code>npm run check</code>.</p>
+      <p>A studio can keep its own fork with its own presets, so a team gets a menu of on-brand starting points.</p>
+
+      <h2 id="embed">On your website</h2>
+      <p>Press <b>Copy embed code</b> in the machine, or write it yourself. It runs the real engine, so it's a few kilobytes rather than a video, sharp on any screen, and it rests while it's scrolled out of view. Visitors who ask their system for reduced motion get the still frame.</p>
+<pre><code>&lt;div id="hero" style="aspect-ratio: 16 / 9"&gt;&lt;/div&gt;
+&lt;script type="module"&gt;
+  import { mount } from "https://createomatic.xyz/instruments/elastic/embed.js"
+  mount(document.getElementById("hero"), "/patches/hero.json")
+&lt;/script&gt;</code></pre>
+      <p><code>mount</code> takes a patch object or the address of a <code>.json</code>, plus an optional backdrop: <code>mount(el, patch, { backdrop: "/clip.mp4" })</code>. It returns a function that stops it. For the most control, host the <code>web/</code> folder yourself. Fonts from the font library and SVG marks work anywhere; an Adobe kit needs your domain added to the kit.</p>
+      <p>Rather a file? Export WebM and use <code>&lt;video autoplay muted loop playsinline&gt;</code>.</p>
+
+      <h2 id="figma">In Figma</h2>
+      <ul>
+        <li><b>Stills:</b> export PNG and drag it onto the canvas.</li>
+        <li><b>Motion:</b> drag a GIF or MP4 onto a frame. GIFs play in prototypes; video is supported on paid Figma plans.</li>
+        <li><b>Colour:</b> export your Figma palette as hex codes and paste them into <b>Inks</b>, or load them as a brand palette.</li>
+        <li><b>Logos:</b> copy a vector from Figma as SVG (<i>Copy as › Copy as SVG</i>), save it as a <code>.svg</code> file, and drop it into the machine as a mark.</li>
+      </ul>
+
+      <h2 id="agents">With Claude and other agents</h2>
+      <p>The machine can be operated from code exactly as it's operated by hand. In the browser, <code>window.instrument</code> exposes it:</p>
+<pre><code>instrument.setPatch({ params: { content: "HELLO", format: "square", halftone: 8 } })
+instrument.set("ease", 3.2)
+instrument.key("copier", 0, 1); instrument.key("copier", 1, 0)
+const png = await instrument.render("png")   <span class="c">// a Blob, no download</span>
+await instrument.export("mp4")               <span class="c">// downloads</span></code></pre>
+      <p>Because every control is described in <code>instrument.json</code>, an agent such as Claude Code can turn a brief ("a slow, pink, photocopied loop of our tagline, 9:16") into a patch, open it, look at it and refine it. The repository includes a <code>CLAUDE.md</code> for exactly that.</p>
+
+      <h2 id="run">Running it yourself</h2>
+<pre><code>git clone https://github.com/thisisnickdecker/create-o-matic
+cd create-o-matic
+npm run dev        <span class="c"># http://localhost:4173</span>
+npm run check      <span class="c"># manifests, presets and tests</span></code></pre>
+      <p>That's all: Node 22 or later, no install, no build. The site is the <code>web/</code> folder, as static files. To publish your own copy, connect the repository to <a href="https://pages.cloudflare.com">Cloudflare Pages</a> (or any static host) with <code>web</code> as the output directory and no build command.</p>
+
+      <h2 id="effects">Writing an effect</h2>
+      <p>An effect is one file in <code>web/packages/core/effects/</code>. It declares its controls and draws onto the finished frame:</p>
+<pre><code>export default {
+  id: "invert",
+  label: "Invert",
+  params: [{ key: "invert", label: "Invert", type: "number", min: 0, max: 1, step: 0.01, default: 0 }],
+  active: (p) =&gt; p.invert &gt; 0,
+  apply(ctx, p, { t, frame, scale, seed, background }) {
+    ctx.globalCompositeOperation = "difference"
+    ctx.globalAlpha = p.invert
+    ctx.fillStyle = "#fff"
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.globalAlpha = 1
+    ctx.globalCompositeOperation = "source-over"
+  },
+}</code></pre>
+      <p>Add it to the list in <code>effects/index.js</code> and to the instrument's <code>"effects"</code>. Its controls, keyframes, presets and agent access come with no more code. Two rules keep loops perfect and exports faithful: anything that moves completes whole cycles as <code>t</code> goes from 0 to 1, and sizes are measured in output pixels times <code>scale</code>.</p>
+
+      <h2 id="limits">What it can't do yet</h2>
+      <ul>
+        <li>Bend or melt individual letter outlines. Melt and liquid move pixels, so true glyph distortion and SVG or PDF export are next.</li>
+        <li>Sync to audio.</li>
+        <li>Reorder effects, or use one twice.</li>
+        <li>Carry fonts, images or videos you've added from one computer to another: add the files again.</li>
+        <li>Run liquid, melt and photocopy in real time at full size. They're computed on the CPU, so the preview lightens while they play; exports are full quality.</li>
+      </ul>
+      <div class="callout">Something missing, broken or brilliant? <a href="https://github.com/thisisnickdecker/create-o-matic/issues">Open an issue</a>, or <a href="https://nickdecker.net/contact/">write to Nick</a>.</div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <a class="home" href="/" data-wordmark aria-label="Create-o-matic, home"></a>
+      <p>Free and open source under the MIT licence. Made by <a href="https://nickdecker.net">Nick Decker</a>, 2026.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="/make/">Motion</a>
+      <a href="/texture/">Texture lab</a>
+      <a href="/manual/">Manual</a>
+      <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      <a href="https://hirenick.xyz">Hire Nick</a>
+      <a href="https://thestudiolo.com">The Studiolo</a>
+    </nav>
+  </footer>
+
+  <script type="module" src="/assets/chrome.js"></script>
+</body>
+</html>

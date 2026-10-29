@@ -1,0 +1,43 @@
+{
+  "name": "Holographic foil",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 16,
+  "params": {
+    "layers": [
+      {
+        "id": "holographic-15",
+        "effect": "holographic",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "holo": 0.75,
+          "holoScale": 380,
+          "holoShimmer": 1
+        }
+      },
+      {
+        "id": "chroma-16",
+        "effect": "chroma",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "chroma": 3,
+          "chromaAngle": 30
+        }
+      },
+      {
+        "id": "grain-17",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.12
+        }
+      }
+    ]
+  }
+}

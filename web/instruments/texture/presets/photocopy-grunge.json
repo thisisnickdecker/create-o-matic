@@ -1,0 +1,45 @@
+{
+  "name": "Photocopy, third generation",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 13,
+  "params": {
+    "layers": [
+      {
+        "id": "adjust-5",
+        "effect": "adjust",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "adjContrast": 0.35,
+          "adjSaturation": -1
+        }
+      },
+      {
+        "id": "photocopy-6",
+        "effect": "photocopy",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "copier": 0.65,
+          "boil": true
+        }
+      },
+      {
+        "id": "grunge-7",
+        "effect": "grunge",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grunge": 0.7,
+          "grungeDust": 0.7,
+          "grungeScratches": 0.4,
+          "grungeStains": 0.5
+        }
+      }
+    ]
+  }
+}

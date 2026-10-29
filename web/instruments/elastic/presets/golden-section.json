@@ -1,0 +1,38 @@
+{
+  "name": "Golden section",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 1618,
+  "params": {
+    "format": "poster",
+    "duration": 10,
+    "fps": "30",
+    "content": "Divine\nproportion\nis\na\nhabit\nof\nmind",
+    "mode": "sequence",
+    "fontSource": "open",
+    "font": "Fraunces",
+    "weightMin": 300,
+    "weightMax": 800,
+    "fit": "contain",
+    "align": "end",
+    "padding": 0.06,
+    "layout": "golden",
+    "goldenDepth": 7,
+    "goldenStart": "top",
+    "goldenTurn": "cw",
+    "goldenSwing": 0.16,
+    "rowOffset": 0.07,
+    "cycles": 1,
+    "ease": 1.3,
+    "wave": "sine",
+    "gap": 6,
+    "margin": 28,
+    "background": "#F4F4F1",
+    "palette": [
+      "#121211",
+      "#E4372B",
+      "#2F2F2C"
+    ],
+    "colourMode": "blocks"
+  }
+}

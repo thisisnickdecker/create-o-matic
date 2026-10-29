@@ -1,0 +1,23 @@
+{
+  "name": "Gradient maker",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 77,
+  "params": {
+    "format": "story",
+    "duration": 12,
+    "fps": "30",
+    "content": "",
+    "gradient": "mesh",
+    "gradientInks": [
+      "#FF2E88",
+      "#7A00FF",
+      "#00B3FF",
+      "#FF7A00"
+    ],
+    "gradientDrift": 1,
+    "gradientSoftness": 0.55,
+    "grain": 0.1,
+    "background": "#121211"
+  }
+}

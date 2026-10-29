@@ -1,0 +1,35 @@
+{
+  "name": "Duotone, pink and black",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 19,
+  "params": {
+    "layers": [
+      {
+        "id": "gradmap-24",
+        "effect": "gradmap",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "gradmap": 1,
+          "gradmapInks": [
+            "#121211",
+            "#FF2E88",
+            "#FFF1F6"
+          ]
+        }
+      },
+      {
+        "id": "grain-25",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.15
+        }
+      }
+    ]
+  }
+}

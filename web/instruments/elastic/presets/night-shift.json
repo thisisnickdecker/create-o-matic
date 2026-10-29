@@ -1,0 +1,38 @@
+{
+  "name": "Night shift",
+  "instrument": "elastic",
+  "version": "0.1.0",
+  "seed": 777,
+  "params": {
+    "format": "square",
+    "duration": 6,
+    "fps": "30",
+    "content": "STUDIOLO",
+    "mode": "letters",
+    "fontSource": "google",
+    "font": "Big Shoulders Display",
+    "weightMin": 300,
+    "weightMax": 900,
+    "direction": "vertical",
+    "columns": 8,
+    "rows": 6,
+    "columnOffset": 0.125,
+    "rowOffset": 0.12,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.93,
+    "ease": 2.2,
+    "gap": 4,
+    "margin": 4,
+    "crossAmount": 0.45,
+    "background": "#1C1B19",
+    "palette": [
+      "#F4EAD5",
+      "#0000FF",
+      "#F4EAD5",
+      "#F4EAD5"
+    ],
+    "colourMode": "blocks",
+    "padding": 0.06
+  }
+}

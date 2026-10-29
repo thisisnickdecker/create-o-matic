@@ -1,0 +1,36 @@
+{
+  "name": "Kaleido",
+  "instrument": "elastic",
+  "version": "0.2.0",
+  "seed": 88,
+  "params": {
+    "format": "square",
+    "duration": 8,
+    "fps": "30",
+    "content": "NICK\nDECKER",
+    "mode": "sequence",
+    "fontSource": "open",
+    "font": "Big Shoulders Display",
+    "weightMin": 300,
+    "weightMax": 900,
+    "direction": "vertical",
+    "columns": 6,
+    "rows": 9,
+    "columnOffset": 0.15,
+    "rowOffset": 0.1,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.9,
+    "ease": 2,
+    "background": "#1C1B19",
+    "palette": [
+      "#F4EAD5",
+      "#FF4FA3",
+      "#0000FF"
+    ],
+    "colourMode": "slot",
+    "kaleido": 8,
+    "kaleidoSpin": 1,
+    "kaleidoZoom": 1.2
+  }
+}

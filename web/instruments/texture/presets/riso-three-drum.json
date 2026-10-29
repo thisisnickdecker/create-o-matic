@@ -1,0 +1,38 @@
+{
+  "name": "Riso, three drums",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 12,
+  "params": {
+    "layers": [
+      {
+        "id": "adjust-3",
+        "effect": "adjust",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "adjContrast": 0.15,
+          "adjSaturation": 0.2
+        }
+      },
+      {
+        "id": "riso-4",
+        "effect": "riso",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "riso": 1,
+          "risoInks": [
+            "#0078BF",
+            "#FF48B0",
+            "#FFE800"
+          ],
+          "risoGrain": 0.85,
+          "risoShift": 5
+        }
+      }
+    ]
+  }
+}

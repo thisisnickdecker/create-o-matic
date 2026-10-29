@@ -1,0 +1,44 @@
+{
+  "name": "Heat",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 3030,
+  "params": {
+    "format": "portrait",
+    "duration": 10,
+    "fps": "30",
+    "content": "HEAT\nWAVE",
+    "mode": "sequence",
+    "case": "upper",
+    "fontSource": "open",
+    "font": "Inter Tight",
+    "weightMin": 200,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 2,
+    "rows": 9,
+    "columnOffset": 0.3,
+    "rowOffset": 0.06,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.9,
+    "ease": 2,
+    "padding": 0.02,
+    "gradient": "mesh",
+    "gradientInks": [
+      "#FF4D00",
+      "#FF2E88",
+      "#FFB000",
+      "#7A00FF"
+    ],
+    "gradientDrift": 1,
+    "gradientSoftness": 0.5,
+    "palette": [
+      "#FFFFFF"
+    ],
+    "colourMode": "mono",
+    "blend": "overlay",
+    "grain": 0.12,
+    "background": "#121211"
+  }
+}

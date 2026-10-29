@@ -1,0 +1,38 @@
+{
+  "name": "\u03c6",
+  "instrument": "elastic",
+  "version": "0.5.0",
+  "seed": 161,
+  "params": {
+    "format": "square",
+    "duration": 8,
+    "fps": "30",
+    "content": "PHI",
+    "mode": "letters",
+    "fontSource": "open",
+    "font": "Archivo",
+    "weightMin": 900,
+    "weightMax": 900,
+    "fit": "ink",
+    "padding": 0.02,
+    "layout": "golden",
+    "goldenDepth": 11,
+    "goldenStart": "left",
+    "goldenTurn": "ccw",
+    "goldenSwing": 0.34,
+    "rowOffset": 0.09,
+    "cycles": 1,
+    "ease": 1.6,
+    "gap": 0,
+    "margin": 0,
+    "background": "#121211",
+    "palette": [
+      "#FF2E88",
+      "#7A00FF",
+      "#00B3FF",
+      "#FF7A00",
+      "#F4F4F1"
+    ],
+    "colourMode": "blocks"
+  }
+}

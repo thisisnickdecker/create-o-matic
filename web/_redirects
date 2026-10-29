@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects
+/instruments/elastic/ /make/ 301
+/instruments/elastic/index.html /make/ 301
+/make /make/ 301

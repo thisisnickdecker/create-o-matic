@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create-o-matic · a machine for making type move</title>
+<meta name="description" content="A free, open-source machine for motion typography. Stretch words, logos and marks through a breathing grid, keyframe anything, add liquid, melt, halftone or photocopy, and export MP4, WebM, GIF, PNG or a live embed. Made by Nick Decker.">
+<meta name="author" content="Nick Decker">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Create-o-matic">
+<meta property="og:title" content="Create-o-matic · a machine for making type move">
+<meta property="og:description" content="A free, open-source machine for making type move. Made by Nick Decker.">
+<meta property="og:url" content="https://createomatic.xyz/">
+<meta property="og:image" content="https://createomatic.xyz/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The create-o-matic wordmark beside a frame made with it.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://createomatic.xyz/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://use.typekit.net/gfn7ugl.css">
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body class="site">
+  <header class="masthead">
+    <a class="home" href="/" data-wordmark aria-label="Create-o-matic, home"></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Site">
+      <a href="/make/">Motion</a>
+      <a href="/texture/">Texture lab</a>
+      <a href="#examples">Examples</a>
+      <a href="/manual/">Manual</a>
+      <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      <a href="#nick">Work with Nick</a>
+    </nav>
+    <div class="knob" data-knob></div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <h1 class="display" id="title">A machine for making <span data-colourful>type move.</span></h1>
+      <p class="lead"><strong>Create-o-matic is a free, open-source tool for motion typography.</strong> Stretch words, logos and marks through a breathing grid or a golden spiral, keyframe anything, run it through liquid, halftone, a photocopier or onto a cube, and take the loop away as MP4, WebM, GIF, PNG or a live embed.</p>
+      <div class="actions">
+        <a class="btn solid big" href="/make/">Open the machine <span class="arrow"></span></a>
+        <a class="btn big" href="/manual/">Read the manual</a>
+        <a class="btn big" href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      </div>
+      <div class="stage-card" data-hero aria-label="A loop made with Create-o-matic, playing live"></div>
+      <p class="caption" data-hero-caption><span>Now playing: <span data-name></span></span><a href="/make/">Open this patch <span class="arrow"></span></a></p>
+    </section>
+
+    <section class="section" id="examples" aria-labelledby="examples-title">
+      <p class="label"><b>Examples</b>Running live</p>
+      <div class="body">
+        <h2 class="h2" id="examples-title">Every one of these is a few kilobytes of settings.</h2>
+        <p class="lead">Nothing on this page is a video. Each loop is the engine itself, drawing a patch file in your browser. Open any of them in the machine and take it apart.</p>
+        <div class="grid" data-examples></div>
+      </div>
+    </section>
+
+    <section class="section" id="texture" aria-labelledby="texture-title">
+      <p class="label"><b>Texture lab</b>Any image or video</p>
+      <div class="body">
+        <h2 class="h2" id="texture-title">A darkroom for <span data-colourful>anything.</span></h2>
+        <p class="lead">Drop in a photo or a video at any size. Stack risograph, halftone, photocopy, paper, grunge, film, chroma split, holographic foil, gradient maps and your own scanned textures, in any order, each with its own blend mode and opacity. Export at the source's full size, or reframe it for any format.</p>
+        <div class="grid looks" data-looks></div>
+        <div class="actions"><a class="btn solid big" href="/texture/">Open the Texture lab <span class="arrow"></span></a></div>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <p class="label"><b>How it works</b>Four stages</p>
+      <div class="body">
+        <h2 class="h2" id="how-title">Type in, loop out.</h2>
+        <ol class="steps">
+          <li><h3 class="h3">Type and marks</h3><p>Write a word per line, or drop in an SVG logo. Choose from 2,000+ open fonts, your own Adobe Fonts kit or font files of your own.</p></li>
+          <li><h3 class="h3">Grid and motion</h3><p>Cells breathe in waves that travel down the rows and across the columns, so letters swell, squash and swap. Or cut the frame by the golden section, or fill the shape of a logo.</p></li>
+          <li><h3 class="h3">Keyframes and effects</h3><p>Animate any number or colour across the loop, as in After Effects. Add liquid, melt, halftone, photocopy, a moving gradient; fold it onto a cube, mirror it, or press it into a pin button.</p></li>
+          <li><h3 class="h3">Export</h3><p>Rendered offline, frame by frame, at any size: every social format, 2.39:1 title cards, A3 posters at 300 dpi. Every loop closes perfectly.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" id="formats" aria-labelledby="formats-title">
+      <p class="label"><b>Formats</b>What comes out</p>
+      <div class="body">
+        <h2 class="h2" id="formats-title">One patch, every format.</h2>
+        <dl class="rows">
+          <div><dt>MP4</dt><dd>Social, decks, and editing in Premiere or After Effects.</dd><dd>H.264, encoded by your graphics hardware. Fast.</dd></div>
+          <div><dt>WebM</dt><dd>The web: small files, sharp edges.</dd><dd>VP9. Plays in every modern browser.</dd></div>
+          <div><dt>GIF</dt><dd>Slack, email, Figma prototypes.</dd><dd>Best at half size; grain makes GIFs heavy.</dd></div>
+          <div><dt>PNG</dt><dd>Posters, print, and stills for anything.</dd><dd>Any frame, up to A3 at 300 dpi, or double size.</dd></div>
+          <div><dt>Live embed</dt><dd>Your website: one tag runs the real engine.</dd><dd>Kilobytes, not megabytes, and sharp at any size.</dd></div>
+          <div><dt>Patch</dt><dd>The recipe, as a small .json file.</dd><dd>Same patch, same frames, every time. Share it as a link.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section" id="studios" aria-labelledby="studios-title">
+      <p class="label"><b>For studios</b>And brands</p>
+      <div class="body">
+        <h2 class="h2" id="studios-title">A motion system you can hand to a team.</h2>
+        <ul class="uses">
+          <li><b>Lock a brand into presets</b><span>Type, colour and marks saved as patches, so anyone can make loops that are on-brand by construction.</span></li>
+          <li><b>Every size at once</b><span>The same patch at 9:16, 4:5, 1:1, 16:9 and print. Change the format, keep the work.</span></li>
+          <li><b>Logos that move</b><span>Drop in an SVG mark and it stretches like type, or the type fills its silhouette.</span></li>
+          <li><b>Type over footage</b><span>Bring in a video, set the frame to 9:16, and put moving type over it, blended however you like.</span></li>
+          <li><b>Website heroes</b><span>Embed the live engine instead of shipping a heavy video. It even rests when it's off screen.</span></li>
+          <li><b>Title cards and posters</b><span>2.39:1 scope frames for film titles; A4 and A3 at 300 dpi for print.</span></li>
+          <li><b>Campaigns and merch</b><span>Put a loop on a pin button for a mock-up, or set a slogan into a golden-section poster.</span></li>
+          <li><b>Gradients on their own</b><span>Leave the words out and it's a gradient maker: mesh, linear or radial, looping, with grain.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="open" aria-labelledby="open-title">
+      <p class="label"><b>Open source</b>MIT licence</p>
+      <div class="body">
+        <h2 class="h2" id="open-title">Free, and yours to bend.</h2>
+        <p class="lead">No build step and nothing to install: plain JavaScript modules and three small encoders. Run it on your own machine, put it on your own site, write your own effects and presets.</p>
+<pre><code><span class="c"># run it locally (Node 22+)</span>
+git clone https://github.com/thisisnickdecker/create-o-matic
+cd create-o-matic
+npm run dev</code></pre>
+        <div class="actions">
+          <a class="btn" href="/manual/#patches">How patches work</a>
+          <a class="btn" href="/manual/#presets">Add a preset</a>
+          <a class="btn" href="/manual/#effects">Write an effect</a>
+          <a class="btn" href="/manual/#embed">Put it on your site</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section nick" id="nick" aria-labelledby="nick-title">
+      <p class="label"><b>Made by</b>Nick Decker</p>
+      <div class="body panel">
+        <h2 class="h2" id="nick-title">Built by Nick Decker. <span data-colourful>Available for work.</span></h2>
+        <p class="lead"><strong>I'm a designer, writer and builder in Cincinnati, and I run The Studiolo, a strategy and design practice for makers and small businesses.</strong> Before that: Funny or Die, United Talent Agency and The Tryon Theatre. Create-o-matic is one of the instruments I build so the work gets faster without getting generic. If your studio or company makes things like this, or wants to, I'd like to hear from you.</p>
+        <div class="links">
+          <a class="btn solid big" href="https://hirenick.xyz">Hire Nick <span class="arrow"></span></a>
+          <a class="btn big" href="https://nickdecker.net">nickdecker.net</a>
+          <a class="btn big" href="https://thestudiolo.com">The Studiolo</a>
+          <a class="btn big" href="https://nickdecker.net/contact/">Get in touch</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <a class="home" href="/" data-wordmark aria-label="Create-o-matic, home"></a>
+      <p>Free and open source under the MIT licence. Made by <a href="https://nickdecker.net">Nick Decker</a>, 2026.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="/make/">Motion</a>
+      <a href="/texture/">Texture lab</a>
+      <a href="/manual/">Manual</a>
+      <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      <a href="https://hirenick.xyz">Hire Nick</a>
+      <a href="https://thestudiolo.com">The Studiolo</a>
+    </nav>
+  </footer>
+
+  <script type="module" src="/assets/chrome.js"></script>
+  <script type="module" src="/assets/home.js"></script>
+</body>
+</html>

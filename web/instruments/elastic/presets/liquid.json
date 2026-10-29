@@ -1,0 +1,36 @@
+{
+  "name": "Blue hour",
+  "instrument": "elastic",
+  "version": "0.2.0",
+  "seed": 1717,
+  "params": {
+    "format": "landscape",
+    "duration": 10,
+    "fps": "30",
+    "content": "liquid",
+    "mode": "letters",
+    "case": "lower",
+    "fontSource": "open",
+    "font": "Fraunces",
+    "weightMin": 200,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 6,
+    "rows": 4,
+    "columnOffset": 0.17,
+    "rowOffset": 0.23,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.85,
+    "ease": 1.7,
+    "background": "#BFD7EA",
+    "palette": [
+      "#0000FF",
+      "#1E2A4A"
+    ],
+    "colourMode": "cell",
+    "liquid": 0.55,
+    "liquidScale": 520,
+    "liquidFlow": 1
+  }
+}

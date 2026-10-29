@@ -18,7 +18,7 @@ const GROUPS = [
   { name: "Basics", colours: ["#FFFFFF", "#000000", "#FF0000", "#00FF00", "#0000FF", "#00FFFF", "#FF00FF", "#FFFF00"] },
   { name: "Process (CMYK on screen)", colours: ["#00AEEF", "#EC008C", "#FFF200", "#231F20", "#ED1C24", "#00A651", "#2E3192"] },
   { name: "Greys", colours: ["#FFFFFF", "#E6E6E6", "#CCCCCC", "#B3B3B3", "#999999", "#808080", "#666666", "#4D4D4D", "#333333", "#1A1A1A", "#000000"] },
-  { name: "Nick", colours: ["#F4F4F1", "#1A1714", "#C43A3E", "#E93D4C", "#7A746C", "#F7684F", "#E2566B", "#D07045", "#FBA83B", "#7585A6"] },
+  { name: "Create-o-matic", colours: ["#F4F4F1", "#1A1714", "#C43A3E", "#E93D4C", "#7A746C", "#F7684F", "#E2566B", "#D07045", "#FBA83B", "#7585A6"] },
   { name: "Papers", colours: ["#F3EBD8", "#EFE9DE", "#E6E1D3", "#F4D35E", "#C19A6B", "#8C6A4A", "#C5D3B5", "#C9B6E4", "#F2C9C0", "#BFD7EA", "#4B2A7B", "#1C1B19"] },
   { name: "Inks", colours: ["#1D1D1B", "#0000FF", "#E4372B", "#FF4FA3", "#F26B1D", "#D9A21B", "#1F5A3A", "#4B2A7B", "#5B3A24", "#1E2A4A", "#0E6E6E", "#F4EAD5"] },
   { name: "Job printer", colours: ["#F3EBD8", "#1D1D1B", "#E4372B"] },

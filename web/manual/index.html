@@ -123,7 +123,7 @@
         <tr><th>Random</th><td>A pick for each cell, decided by the seed.</td></tr>
       </table>
       <h3>Marks: logos and graphics</h3>
-      <p>Drop an SVG on the page, or use <b>Add mark…</b> under Content. It becomes a line such as <code>@studiolo</code>, and from then on it behaves exactly like a word: it stretches, takes the inks, blends and goes through the effects. <b>Marks fit</b> can keep a logo's proportions; <b>Marks colour</b> can keep its own colours.</p>
+      <p>Drop an SVG on the page, or use <b>Add mark…</b> under Content. It becomes a line such as <code>@logo</code>, and from then on it behaves exactly like a word: it stretches, takes the inks, blends and goes through the effects. <b>Marks fit</b> can keep a logo's proportions; <b>Marks colour</b> can keep its own colours.</p>
       <p>SVG gives the best result: it's drawn as vectors, sharp at any export size, and travels inside the patch. Only filled shapes come through, so outline strokes and text first (in Illustrator: <i>Object › Expand</i> and <i>Type › Create Outlines</i>). PNG and JPEG work too: transparent images use their alpha as the shape, opaque ones use their darkness. Those stay in your browser rather than in the patch.</p>
 
       <h2 id="fonts">Fonts</h2>
@@ -199,13 +199,13 @@
       <h2 id="patches">Patches</h2>
       <p>A patch is the complete recipe for a loop, as a small JSON file. Like a patch sheet for a synthesizer: hand it to someone and they get exactly the same thing.</p>
 <pre><code>{
-  "name": "Campaign button · Hire Nick",
+  "name": "Campaign button",
   "instrument": "elastic",
   "version": "0.4.0",
   "seed": 1984,                       <span class="c">// every random choice comes from this</span>
   "params": {                         <span class="c">// the controls; anything left out takes its default</span>
     "format": "square",
-    "content": "HIRE\nNICK",
+    "content": "PLAY\nMORE",
     "font": "Anton",
     "palette": ["#F3EBD8", "#E4372B"],
     "shape": "button"

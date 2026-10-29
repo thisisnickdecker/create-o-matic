@@ -7,7 +7,7 @@
     "format": "square",
     "duration": 8,
     "fps": "30",
-    "content": "NICK\nDECKER",
+    "content": "CREATE\nO\nMATIC",
     "mode": "sequence",
     "fontSource": "open",
     "font": "Big Shoulders Display",

@@ -1,5 +1,5 @@
-// Marks: logos, brand marks and graphics that ride in the grid like words. A line "@studiolo" in
-// Content puts the mark called studiolo in that slot; it stretches, swaps by size, takes the inks
+// Marks: logos, brand marks and graphics that ride in the grid like words. A line "@logo" in
+// Content puts the mark called logo in that slot; it stretches, swaps by size, takes the inks
 // and goes through the effects exactly as a word does.
 //   SVG   parsed into vector paths (never put into the page), so it stays crisp at any export size
 //         and can be filled with any ink. The SVG text travels inside the patch, so a patch with

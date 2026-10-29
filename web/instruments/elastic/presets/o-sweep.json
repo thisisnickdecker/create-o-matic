@@ -1,0 +1,54 @@
+{
+  "name": "Inside the O",
+  "instrument": "elastic",
+  "version": "0.4.0",
+  "seed": 404,
+  "params": {
+    "format": "landscape",
+    "duration": 10,
+    "fps": "30",
+    "content": "CREATE\nO\nMATIC",
+    "mode": "sequence",
+    "fontSource": "open",
+    "font": "Archivo",
+    "weightMin": 900,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 6,
+    "rows": 16,
+    "columnOffset": 0.13,
+    "rowOffset": 0.06,
+    "wave": "sine",
+    "cycles": 2,
+    "amount": 0.85,
+    "ease": 1.6,
+    "padding": 0.03,
+    "background": "#1C1B19",
+    "palette": [
+      "#F4EAD5",
+      "#FF4FA3"
+    ],
+    "colourMode": "strip",
+    "shape": "o",
+    "shapeMode": "around",
+    "shapeFit": "contain",
+    "shapeScale": 0.8,
+    "keyMode": "cycle"
+  },
+  "marks": {
+    "o": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"1042.28 62.6 178.48 180.48\"><path d=\"M1042.28,152.84c0-50.95,36.3-90.24,89.24-90.24s89.24,39.29,89.24,90.24-36.3,90.24-89.24,90.24-89.24-39.29-89.24-90.24ZM1174.81,152.84c0-33.3-15.65-55.94-43.29-55.94s-43.29,22.64-43.29,55.94,15.32,55.61,43.29,55.61,43.29-22.31,43.29-55.61Z\"/></svg>"
+  },
+  "keys": {
+    "shapeX": [
+      {
+        "t": 0,
+        "v": -1.9,
+        "ease": "linear"
+      },
+      {
+        "t": 1,
+        "v": 1.9
+      }
+    ]
+  }
+}

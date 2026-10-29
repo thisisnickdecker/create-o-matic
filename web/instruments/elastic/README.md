@@ -33,7 +33,7 @@ the font browser:
 With a variable font, *Weight, small* and *Weight, large* make the weight follow the cell.
 
 **Marks: logos and graphics that move like type.** Drop an SVG anywhere on the page (or use
-*Add mark…* in the Marks row under Content). It becomes a line like `@thestudiolo` in Content, and
+*Add mark…* in the Marks row under Content). It becomes a line like `@logo` in Content, and
 from then on it's a slot like any word: it stretches, swaps by size, takes the inks, blends and goes
 through the effects. Click a thumbnail to add another line for it; × removes it.
 
@@ -58,7 +58,7 @@ silhouette.
 - Use plenty of small cells (30+ columns) for thin shapes like a signature.
 
 The edge is drawn from the vector each frame at full export resolution, so SVG shapes stay sharp.
-Presets: *Signature fill*, *Studiolo sweep · around*, *Campaign button · Hire Nick*.
+Presets: *Big C*, *Inside the O*, *Campaign pin*.
 
 **Grid.** Direction, columns, rows, the two offsets (how far behind its neighbour each runs, as a
 fraction of a wave), *Lungs* (the strips breathe too), gap. *Layout: Golden section* cuts the frame
@@ -70,7 +70,7 @@ into a spiral of golden rectangles instead (see the manual).
 **Colour.** Every swatch opens the picker:
 
 - **Swatches**: recent colours, then folders. *Basics* has RGB and CMY primaries, white and
-  black. *Process* has CMYK on-screen stand-ins, then come *Greys*, *Nick* (the site's paper, inks
+  black. *Process* has CMYK on-screen stand-ins, then come *Greys*, *Create-o-matic* (the site's paper, inks
   and gradient stops), *Papers* and *Inks* from the Type & Colour page, and the named palettes (Job
   printer, Toxic, Night shift…). *Use as inks* drops a whole folder into the inks.
 - **Brand palettes**: *Load palette…* takes an Adobe `.ase` file (Illustrator, Photoshop or
@@ -107,8 +107,8 @@ in this browser; the patch stores only its name.
 | Cube | the frame on an isometric cube, or tumbling blocks | whole spins per loop |
 | Pin button | the frame pressed into a campaign button on a table | n/a |
 
-Presets *Studiolo × ND · stack*, *Signature · halftone*, *Signature fill* and *Studiolo sweep* use your own marks, embedded in their
-`.json`. They're your brand assets: leave those two out of anything you publish or sell.
+Presets *Wordmark stack*, *Wordmark in halftone*, *Big C* and *Inside the O* use the Create-o-matic wordmark and its letters, embedded in their
+`.json`. The wordmark belongs to Create-o-matic: make your own versions with your own marks.
 
 ## Keyframes
 
@@ -160,7 +160,7 @@ All rendered offline, frame by frame, through the same function as the preview.
 <div id="poster" style="aspect-ratio:1080/1440"></div>
 <script type="module">
   import { mount } from "https://your-host/instruments/elastic/embed.js"
-  mount(document.getElementById("poster"), "https://your-host/patches/hire-nick.json",
+  mount(document.getElementById("poster"), "https://your-host/patches/my-loop.json",
     { backdrop: "https://your-host/clip.mp4" })   // optional
 </script>
 ```
@@ -168,7 +168,7 @@ All rendered offline, frame by frame, through the same function as the preview.
 ## For agents
 
 ```js
-instrument.setPatch({ seed: 7, params: { content: "HIRE\nNICK", mode: "sequence", format: "square", halftone: 8 } })
+instrument.setPatch({ seed: 7, params: { content: "PLAY\nMORE", mode: "sequence", format: "square", halftone: 8 } })
 instrument.set("ease", 3.2)
 instrument.key("copier", 0, 1); instrument.key("copier", 1, 0)   // keyframe: timeline position, value
 instrument.seek(0.25)

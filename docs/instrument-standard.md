@@ -69,11 +69,11 @@ Numbers and colours can be keyframed; `"animate": false` opts one out (sizes, lo
 { "name": "optional", "instrument": "elastic", "version": "0.2.0", "seed": 1984,
   "params": { "...": "..." },
   "keys": { "copier": [{ "t": 0, "v": 1, "ease": "smooth" }, { "t": 1, "v": 0 }] },
-  "marks": { "studiolo": "<svg …>" } }
+  "marks": { "logo": "<svg …>" } }
 ```
 
-`marks` is optional: SVG artwork by name (`"studiolo": "<svg …>"`), referenced in content as
-`@studiolo`. See `packages/core/marks.js`.
+`marks` is optional: SVG artwork by name (`"logo": "<svg …>"`), referenced in content as
+`@logo`. See `packages/core/marks.js`.
 
 `keys` is optional: keyframes per setting, `t` from 0 to 1 along the timeline, `ease` one of
 `smooth`, `linear`, `hold`. The engine resolves them with `resolve()` from `packages/core/keys.js`

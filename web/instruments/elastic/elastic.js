@@ -7,7 +7,7 @@
 //      that phase, shaped by Ease, is the cell's value v (0 to 1).
 //   3. Cells share their strip in proportion to their v, so as one swells its neighbours give way.
 //   4. A word is chosen for the cell (by size, sequence, letter or seed) and stretched to fill it.
-//      A line like "@studiolo" is a mark (a logo or graphic, see marks.js) and stretches the same way.
+//      A line like "@logo" is a mark (a logo or graphic, see marks.js) and stretches the same way.
 //   5. With Shape fill, the type is drawn on its own layer and cut to a mark's silhouette (or the
 //      cells outside or inside it are dropped), then laid on the frame.
 //   6. Effects (kaleidoscope, liquid, melt, halftone, photocopy, grain) are laid over the frame.

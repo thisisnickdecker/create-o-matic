@@ -90,8 +90,8 @@ Video and GIF encoding use [mp4-muxer](https://github.com/Vanilagy/mp4-muxer),
 (all MIT), vendored in `web/packages/core/vendor/`. The stretch-grid idea owes a debt to the
 type tools of [DIA](https://dia.studio); the code and presets here are original.
 
-The Create-o-matic wordmark, and the Studiolo and Nick Decker marks used in some presets, belong to
-Nick Decker and aren't covered by the code licence.
+The Create-o-matic wordmark, used as a mark in some presets, belongs to
+Nick Decker and isn't covered by the code licence.
 
 ## Licence
 

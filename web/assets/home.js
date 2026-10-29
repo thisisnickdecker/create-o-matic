@@ -8,10 +8,10 @@ import { EFFECTS, effectById } from "/packages/core/effects/index.js"
 
 const PRESETS = "/instruments/elastic/presets/"
 const SHOWCASE = [
-  "campaign-pin", "golden-section", "phi", "heat", "kaleido", "signal", "tumbling-blocks", "signature-fill", "black-glass", "liquid",
-  "monolith", "gradient-maker", "studiolo-sweep", "night-shift", "coming-clear", "meltdown", "bloom", "sizes",
+  "kaleido", "signal", "golden-section", "c-fill", "heat", "black-glass", "phi", "night-shift", "bloom",
+  "liquid", "meltdown", "gradient-maker", "coming-clear", "sizes", "o-sweep",
 ]
-const HERO = ["phi", "heat", "campaign-pin", "black-glass", "monolith", "golden-section"]
+const HERO = ["kaleido", "signal", "golden-section", "heat", "black-glass", "c-fill"]
 const HERO_SECONDS = 9
 
 const load = (name) => fetch(`${PRESETS}${name}.json`).then((r) => r.json())
@@ -25,7 +25,6 @@ function specs(patch) {
   if (patch.keys && Object.keys(patch.keys).length) fx.push("keyframes")
   if (p.shape) fx.push("shape fill")
   if (p.layout === "golden") fx.unshift("golden section")
-  if (p.gradient !== "off") fx.unshift("gradient")
   return [`${w}×${h}`, `${p.duration}s`, ...fx].join(" · ")
 }
 

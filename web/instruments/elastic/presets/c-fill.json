@@ -1,0 +1,55 @@
+{
+  "name": "Big C",
+  "instrument": "elastic",
+  "version": "0.4.0",
+  "seed": 1987,
+  "params": {
+    "format": "landscape",
+    "duration": 8,
+    "fps": "30",
+    "content": "CREATE\nO\nMATIC",
+    "mode": "sequence",
+    "case": "upper",
+    "fontSource": "open",
+    "font": "Inter Tight",
+    "weightMin": 500,
+    "weightMax": 900,
+    "direction": "vertical",
+    "columns": 34,
+    "rows": 22,
+    "columnOffset": 0.07,
+    "rowOffset": 0.045,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.9,
+    "ease": 2,
+    "padding": 0.02,
+    "background": "#F4F4F1",
+    "palette": [
+      "#1A1714",
+      "#C43A3E"
+    ],
+    "colourMode": "slot",
+    "shape": "c",
+    "shapeMode": "clip",
+    "shapeFit": "contain",
+    "shapeGhost": 0.07,
+    "keyMode": "boomerang"
+  },
+  "marks": {
+    "c": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 62.6 164.5 180.47\"><path d=\"M0,152.84C0,101.9,33.3,62.6,85.25,62.6c44.29,0,71.59,25.64,77.59,62.6h-44.29c-3-14.98-14.65-26.31-31.3-26.31-27.31,0-41.29,20.98-41.29,53.94s12.99,53.94,40.62,53.94c18.31,0,31.3-9.66,34.3-28.97h43.62c-3,36.3-31.3,65.27-76.92,65.27C33.63,243.08,0,203.79,0,152.84Z\"/></svg>"
+  },
+  "keys": {
+    "shapeScale": [
+      {
+        "t": 0,
+        "v": 0.92,
+        "ease": "smooth"
+      },
+      {
+        "t": 1,
+        "v": 1.08
+      }
+    ]
+  }
+}

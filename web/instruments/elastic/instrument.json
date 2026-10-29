@@ -218,7 +218,7 @@
       "label": "Content",
       "type": "text",
       "default": "S\nM\nL\nXL",
-      "help": "One slot per line. A line like @studiolo puts that mark (a logo or graphic you've added) in the slot. In Size mode the first line goes in the smallest cells, the last in the largest."
+      "help": "One slot per line. A line like @logo puts that mark (a logo or graphic you've added) in the slot. In Size mode the first line goes in the smallest cells, the last in the largest."
     },
     {
       "key": "mode",

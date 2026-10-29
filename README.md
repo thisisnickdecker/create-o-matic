@@ -70,8 +70,8 @@ Three ideas hold it together:
 
 ## Deploying
 
-Cloudflare Pages: connect the repository, set the output directory to `web`, leave the build
-command empty. Any static host works the same way.
+It's a Cloudflare Pages project called `createomatic`, serving `web/` as static files
+(`wrangler.toml`). `npm run deploy` runs the checks and publishes. Any static host works the same way.
 
 ## Credits
 

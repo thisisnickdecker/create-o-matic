@@ -1,0 +1,4 @@
+# Cloudflare Pages: the site is the web/ folder, as static files. Deploy with `npm run deploy`.
+name = "createomatic"
+pages_build_output_dir = "./web"
+compatibility_date = "2026-10-01"

@@ -106,7 +106,7 @@
       <p>Press <b>Browse</b> beside Family to search everything the machine can reach, each name set in its own face:</p>
       <ul>
         <li><b>Font library</b>: every Google family and about 120 more open-source faces, around 2,100 in all, served by <a href="https://fontsource.org">Fontsource</a>. Free to use and ship.</li>
-        <li><b>Adobe kit</b>: the families in your own Adobe Fonts web project. Choose the source, enter the project ID, and add this site's domain to the project in Adobe Fonts.</li>
+        <li><b>Adobe kit</b>: the families in your own Adobe Fonts web project. Choose the source and enter the project ID from fonts.adobe.com › Web Projects. Its families appear in the browser; use each family's CSS name.</li>
         <li><b>Installed</b>: fonts on your computer (Chrome and Edge ask permission first). Fine for exports; an embed on your website can't use them.</li>
         <li><b>My fonts</b>: font files you add, from any foundry. They stay in this browser.</li>
       </ul>
@@ -203,7 +203,7 @@
   import { mount } from "https://createomatic.xyz/instruments/elastic/embed.js"
   mount(document.getElementById("hero"), "/patches/hero.json")
 &lt;/script&gt;</code></pre>
-      <p><code>mount</code> takes a patch object or the address of a <code>.json</code>, plus an optional backdrop: <code>mount(el, patch, { backdrop: "/clip.mp4" })</code>. It returns a function that stops it. For the most control, host the <code>web/</code> folder yourself. Fonts from the font library and SVG marks work anywhere; an Adobe kit needs your domain added to the kit.</p>
+      <p><code>mount</code> takes a patch object or the address of a <code>.json</code>, plus an optional backdrop: <code>mount(el, patch, { backdrop: "/clip.mp4" })</code>. It returns a function that stops it. For the most control, host the <code>web/</code> folder yourself. Fonts from the font library, Adobe web projects and SVG marks all work on any site.</p>
       <p>Rather a file? Export WebM and use <code>&lt;video autoplay muted loop playsinline&gt;</code>.</p>
 
       <h2 id="figma">In Figma</h2>

@@ -2,7 +2,7 @@
 //   open    the open catalogue: every Google family plus ~120 more open-source faces, served by
 //           Fontsource (fontsource.org) from jsDelivr. Free to use, embed and ship (mostly OFL).
 //   google  a Google Fonts family by name, through Google's own CSS (kept for older patches)
-//   adobe   a family from an Adobe Fonts web project (kit); the kit must list this domain
+//   adobe   a family from an Adobe Fonts web project (kit), by the project's ID
 //   system  a family installed on this computer (fine for previews, not portable)
 //   file    a font file you added; kept in this browser (store.js) under its family name
 // Canvas only draws fonts the document has already loaded, so instruments await ensureFont()
@@ -141,7 +141,7 @@ export async function ensureFont({ source, family, kit, weights = [400], sample 
   try { await Promise.all([...new Set(weights)].map((w) => document.fonts.load(`${w} 100px ${quote(family)}`, text))) } catch {}
   const ok = document.fonts.check(`${lo} 100px ${quote(family)}`, text)
   if (ok) return { ok, note: "" }
-  if (source === "adobe") return { ok, note: `“${family}” isn't in kit ${kit}, or the kit doesn't allow this domain.` }
+  if (source === "adobe") return { ok, note: `“${family}” isn't in web project ${kit}. Check the family's CSS name in Adobe Fonts.` }
   if (source === "system") return { ok, note: `“${family}” isn't installed here; showing a fallback.` }
   return { ok, note: `“${family}” loaded without the characters used.` }
 }

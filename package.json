@@ -7,11 +7,17 @@
   "author": "Nick Decker (https://nickdecker.net)",
   "license": "MIT",
   "homepage": "https://createomatic.xyz",
-  "repository": { "type": "git", "url": "https://github.com/thisisnickdecker/create-o-matic.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thisisnickdecker/create-o-matic.git"
+  },
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "registry": "node scripts/registry.mjs",
-    "check": "node scripts/registry.mjs --check && node --test \"tests/*.test.mjs\""
+    "check": "node scripts/registry.mjs --check && node --test \"tests/*.test.mjs\"",
+    "deploy": "npm run check && npx --yes wrangler@3 pages deploy web --project-name createomatic --branch main"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }

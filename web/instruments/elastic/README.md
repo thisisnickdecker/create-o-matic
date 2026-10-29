@@ -24,8 +24,8 @@ the font browser:
 
 - **Font library**: every Google family plus about 120 more open-source faces (2,100+ in all),
   served by Fontsource. Free to use, embed and ship.
-- **Adobe kit**: the families in your Adobe Fonts web project. Enter its ID; they load on the
-  domains the project allows.
+- **Adobe kit**: the families in your Adobe Fonts web project. Enter its ID (fonts.adobe.com ›
+  Web Projects) and use each family's CSS name, such as `neue-haas-grotesk-display`.
 - **Installed**: fonts on this computer (Chrome and Edge, after a permission prompt).
 - **My fonts**: font files you add, from Open Foundry or anywhere else. Kept in this browser between
   sessions. Add them with *Add font files…* or drop them on the page.

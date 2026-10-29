@@ -239,7 +239,7 @@ export async function createMachine(host, engine, hooks = {}) {
     note(`Saved “${name}” in this browser. Download the .json to keep it anywhere.`)
   }
   // With the dev server running, a patch can go straight into the instrument's presets folder.
-  fetch("/api/ping").then((r) => { if (r.ok && hooks.presets) ref.addPreset.hidden = false }).catch(() => {})
+  if (["localhost", "127.0.0.1"].includes(location.hostname)) fetch("/api/ping").then((r) => { if (r.ok && hooks.presets) ref.addPreset.hidden = false }).catch(() => {})
   ref.addPreset.onclick = async () => {
     const name = patchName()
     const res = await fetch("/api/presets", { method: "POST", headers: { "Content-Type": "application/json" },

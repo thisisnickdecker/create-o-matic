@@ -312,7 +312,7 @@
       "when": {
         "fontSource": "adobe"
       },
-      "help": "Your Adobe Fonts web project ID (fonts.adobe.com › Web Projects). Add this site's domain to the project, or Adobe won't serve the fonts here."
+      "help": "Your Adobe Fonts web project ID, from fonts.adobe.com › Web Projects (for example gfn7ugl)."
     },
     {
       "key": "weightMin",

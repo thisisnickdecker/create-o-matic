@@ -336,8 +336,9 @@ export async function createMachine(host, engine, hooks = {}) {
     }
     hooks.playing?.(on && !exporting)
     resize()
-    playBtn.querySelector(".i-play").hidden = on
-    playBtn.querySelector(".i-pause").hidden = !on
+    // SVG elements have no hidden property, so the attribute is set directly.
+    playBtn.querySelector(".i-play").toggleAttribute("hidden", on)
+    playBtn.querySelector(".i-pause").toggleAttribute("hidden", !on)
     playBtn.setAttribute("aria-label", on ? "Pause" : "Play")
     dirty = true
   }

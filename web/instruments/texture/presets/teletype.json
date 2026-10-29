@@ -1,0 +1,25 @@
+{
+  "name": "Teletype",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 115,
+  "params": {
+    "layers": [
+      {
+        "id": "ascii-1",
+        "effect": "ascii",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "ascii": 12,
+          "asciiSet": "classic",
+          "asciiTiles": 0.3,
+          "asciiFlicker": 0.06,
+          "asciiSteps": 30,
+          "asciiScan": 0.5
+        }
+      }
+    ]
+  }
+}

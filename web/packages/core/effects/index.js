@@ -28,6 +28,7 @@ import cube from "./cube.js"
 import pin from "./pin.js"
 import gradient from "./gradient.js"
 import overlay from "./overlay.js"
+import ascii from "./ascii.js"
 import { adjust, invert, posterize, gradmap, acid, holographic } from "./pixels.js"
 import { riso, chroma, film } from "./print.js"
 import { paper, grunge } from "./surface.js"
@@ -35,7 +36,7 @@ import { paper, grunge } from "./surface.js"
 export const EFFECTS = [
   kaleidoscope, liquid, melt,
   adjust, gradmap, acid, holographic, invert, posterize,
-  halftone, riso, photocopy, paper,
+  ascii, halftone, riso, photocopy, paper,
   chroma, film, grunge, grain,
   gradient, overlay,
   reflector, cube, pin,
@@ -52,7 +53,7 @@ for (const e of EFFECTS) {
   e.group ??= LEGACY[e.id][0]
   e.layerDefaults ??= LEGACY[e.id][1]
 }
-export const GROUPS = ["Colour", "Print", "Texture", "Paint", "Distort", "Mount"]
+export const GROUPS = ["Colour", "Code", "Print", "Texture", "Paint", "Distort", "Mount"]
 export const effectById = (id) => EFFECTS.find((e) => e.id === id)
 
 export const BLENDS = [

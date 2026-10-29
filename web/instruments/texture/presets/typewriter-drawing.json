@@ -1,0 +1,37 @@
+{
+  "name": "Typewriter drawing",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 117,
+  "params": {
+    "layers": [
+      {
+        "id": "ascii-1",
+        "effect": "ascii",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "ascii": 12,
+          "asciiSet": "slashes",
+          "asciiInk": "ink",
+          "asciiColour": "#121211",
+          "asciiGround": "#F4F4F1",
+          "asciiTiles": 0,
+          "asciiFlicker": 0.03,
+          "asciiSteps": 12
+        }
+      },
+      {
+        "id": "paper-2",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.45
+        }
+      }
+    ]
+  }
+}

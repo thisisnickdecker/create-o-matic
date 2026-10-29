@@ -1,0 +1,37 @@
+{
+  "name": "Green screen",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 116,
+  "params": {
+    "layers": [
+      {
+        "id": "ascii-1",
+        "effect": "ascii",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "ascii": 11,
+          "asciiSet": "binary",
+          "asciiInk": "ink",
+          "asciiColour": "#39FF7A",
+          "asciiTiles": 0,
+          "asciiFlicker": 0.1,
+          "asciiSteps": 24,
+          "asciiScan": 0.35
+        }
+      },
+      {
+        "id": "chroma-2",
+        "effect": "chroma",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "chroma": 3
+        }
+      }
+    ]
+  }
+}

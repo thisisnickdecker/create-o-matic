@@ -8,7 +8,7 @@ import { EFFECTS, effectById } from "/packages/core/effects/index.js"
 
 const PRESETS = "/instruments/elastic/presets/"
 const SHOWCASE = [
-  "campaign-pin", "golden-section", "phi", "heat", "kaleido", "tumbling-blocks", "signature-fill", "black-glass", "liquid",
+  "campaign-pin", "golden-section", "phi", "heat", "kaleido", "signal", "tumbling-blocks", "signature-fill", "black-glass", "liquid",
   "monolith", "gradient-maker", "studiolo-sweep", "night-shift", "coming-clear", "meltdown", "bloom", "sizes",
 ]
 const HERO = ["phi", "heat", "campaign-pin", "black-glass", "monolith", "golden-section"]

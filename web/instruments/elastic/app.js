@@ -9,7 +9,7 @@ import { prepareMarks, addMarkFile, listImageMarks, removeImageMark, thumbnail, 
 
 const { fontRequest, clearMetrics, videoTime } = engine
 const FONT_KEYS = new Set(["font", "fontSource", "adobeKit", "weightMin", "weightMax", "content", "mode", "case"])
-const HEAVY = ["kaleido", "liquid", "melt", "halftone", "copier", "grain", "cube", "pin"]
+const HEAVY = ["kaleido", "liquid", "melt", "ascii", "halftone", "copier", "grain", "cube", "pin"]
 
 let m // the machine, once it's built
 let media = null // the loaded backdrop: { kind, el, duration }

@@ -9,9 +9,9 @@
 # with new modules importing from stale ones.
 /instruments/*
   Access-Control-Allow-Origin: *
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache
 /packages/*
   Access-Control-Allow-Origin: *
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache
 /assets/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache

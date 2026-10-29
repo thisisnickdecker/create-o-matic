@@ -115,11 +115,27 @@ for (const el of document.querySelectorAll("[data-knob]")) knob(el)
 for (const el of document.querySelectorAll("pre")) copyable(el)
 select(store.get())
 
+// After a deploy, a browser can hold some new files and some old ones, and an old module can't
+// give a new one what it imports. When that's what went wrong, fetch every file this page loaded
+// straight from the server and reload, once per visit; everything then matches.
+const STALE = /does not provide an export|binding name .* (is )?not found|doesn't provide an export|ambiguous indirect export/i
+let healing = false
+function heal(message) {
+  if (healing || !STALE.test(message ?? "")) return healing
+  try { if (sessionStorage.getItem("createomatic.healed")) return false; sessionStorage.setItem("createomatic.healed", "1") } catch { return false }
+  healing = true
+  const ours = performance.getEntriesByType("resource").map((e) => e.name).filter((u) => { const url = new URL(u); return url.origin === location.origin && /\.(js|css|json)$/.test(url.pathname) })
+  Promise.all(ours.map((u) => fetch(u, { cache: "reload" }).catch(() => {}))).then(() => location.reload())
+  return true
+}
+addEventListener("error", (e) => heal(e.message))
+addEventListener("unhandledrejection", (e) => heal(String(e.reason?.message ?? e.reason)))
+
 // If a machine hasn't built its rack a few seconds after load, say so, rather than leave a blank page.
 const machine = document.querySelector("[data-machine]")
 if (machine) {
   const fail = (why) => {
-    if (machine.children.length) return
+    if (machine.children.length || healing) return
     machine.innerHTML = `<div class="fail"><p><b>This browser couldn't start the machine.</b></p>
       <p>It needs a recent browser: Safari 16.4 or later (iOS 16.4 on iPhone), Chrome, Edge or Firefox. If you're on one of those, reload; if it still won't start, <a href="https://github.com/thisisnickdecker/create-o-matic/issues">tell Nick</a>.</p>
       <p class="why"></p></div>`
@@ -131,6 +147,21 @@ if (machine) {
 }
 
 const masthead = document.querySelector(".masthead")
+
+// Fold the nav into the menu whenever its links can't sit on one line at full size: measured,
+// not guessed, so it folds before anything wraps, whatever the width or the font.
+function fitNav() {
+  const nav = masthead?.querySelector(".nav")
+  if (!nav) return
+  const open = masthead.classList.contains("open")
+  masthead.classList.remove("folded")
+  const fits = nav.scrollWidth <= nav.clientWidth + 1 && masthead.scrollWidth <= masthead.clientWidth + 1
+  masthead.classList.toggle("folded", !fits)
+  if (fits && open) masthead.classList.remove("open")
+}
+fitNav()
+addEventListener("resize", fitNav)
+document.fonts?.ready.then(fitNav)
 masthead?.querySelector(".menu-toggle")?.addEventListener("click", (e) => {
   const open = masthead.classList.toggle("open")
   e.currentTarget.setAttribute("aria-expanded", String(open))

@@ -29,7 +29,7 @@ import { defaults, sanitize, coerce, toHash, fromHash, library } from "./patch.j
 import { createPanel, fillRange } from "./panel.js"
 import { createTimeline } from "./timeline.js"
 import { resolve, timelinePos, setKey } from "./keys.js"
-import { exportPng, exportVideo, exportGif, videoSupport, download } from "./export.js"
+import { exportPng, exportVideo, exportGif, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
 import { mulberry32, newSeed } from "./rng.js"
 
 const TEMPLATE = `
@@ -78,7 +78,11 @@ const TEMPLATE = `
           <button class="btn" data-export="mp4" type="button">MP4</button>
           <button class="btn" data-export="webm" type="button">WebM</button>
           <button class="btn" data-export="gif" type="button">GIF</button>
+          <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a full-size PNG on the clipboard, to paste into Figma, Slack or a message">Copy PNG</button>
           <button class="btn" data-ref="cancel" type="button" hidden>Cancel</button>
+        </div>
+        <div class="strip">
+          <button class="btn solid" data-ref="share" type="button" hidden>Save or share</button>
         </div>
         <div class="strip">
           <select data-ref="exportScale" aria-label="Export size">
@@ -414,8 +418,19 @@ export async function createMachine(host, engine, hooks = {}) {
         blob = kind === "gif" ? await exportGif(job) : await exportVideo({ kind, ...job })
       }
       const name = `${slug()}-${snap.seed}-${w}x${h}.${kind}`
-      if (save) download(blob, name)
-      note(`${name} · ${(blob.size / 1048576).toFixed(2)} MB`, false, where)
+      const size = `${(blob.size / 1048576).toFixed(2)} MB`
+      if (save) {
+        // On a phone the share sheet saves to Photos (and it needs its own tap); elsewhere the file
+        // downloads, and Share stays on offer for AirDrop and Messages.
+        const sharable = canShare(blob, name)
+        ref.share.hidden = !sharable
+        if (sharable) {
+          ref.share.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}`
+          ref.share.onclick = () => share(blob, name).catch((e) => { if (e.name !== "AbortError") download(blob, name) })
+        }
+        if (sharable && touchFirst()) note(`${name} is ready · ${size}. Tap Save or share to put it in Photos, or send it.`, false, where)
+        else { download(blob, name); note(`${name} · ${size}`, false, where) }
+      } else note(`${name} · ${size}`, false, where)
       return blob
     } catch (e) {
       note(e.name === "AbortError" ? "Cancelled." : e.message || String(e), e.name !== "AbortError", where)
@@ -435,6 +450,16 @@ export async function createMachine(host, engine, hooks = {}) {
     ref.cancel.hidden = !on
   }
   host.querySelectorAll("[data-export]").forEach((b) => { b.onclick = () => doExport(b.dataset.export) })
+  // Copy PNG: the clipboard is handed the render while it's still going, so the copy stays inside
+  // the click (browsers allow it only then).
+  if (canCopyImage()) {
+    ref.copy.hidden = false
+    ref.copy.onclick = () => {
+      const png = doExport("png", { save: false }).then((blob) => blob ?? Promise.reject(new Error("an export is already running")))
+      copyPng(png).then(() => note("Copied the frame as a full-size PNG. Paste it into Figma, Slack or a message.", false, ref.exportNote))
+        .catch((e) => note(`Couldn't copy: ${e.message}`, true, ref.exportNote))
+    }
+  }
   ref.cancel.onclick = () => abort?.abort()
 
   // Grey out the video buttons this browser can't encode, and say why on hover.

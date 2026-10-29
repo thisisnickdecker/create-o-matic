@@ -139,6 +139,23 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal })
   return new Blob([gif.bytes()], { type: "image/gif" })
 }
 
+// Saving on a phone: the share sheet takes the file itself (Save Video or Save Image to Photos,
+// AirDrop, Messages…), at full size. A page may open it only from a tap, and rendering uses that
+// tap up, so an export offers it as a second tap once the file is ready.
+const asFile = (blob, name) => new File([blob], name, { type: blob.type })
+export function canShare(blob, name) {
+  try { return Boolean(navigator.canShare?.({ files: [asFile(blob, name)] })) } catch { return false }
+}
+export const share = (blob, name) => navigator.share({ files: [asFile(blob, name)] })
+// A phone or tablet, where the share sheet is the way to save; on a computer, files download.
+export const touchFirst = () => matchMedia("(pointer: coarse)").matches
+
+// Copying a frame to the clipboard as a full-size PNG, to paste into Figma, Slack or a message.
+// Browsers take only PNG this way. The clipboard waits for the PNG to finish rendering, so the copy
+// still counts as part of the click.
+export const canCopyImage = () => typeof ClipboardItem !== "undefined" && Boolean(navigator.clipboard?.write)
+export const copyPng = (pngPromise) => navigator.clipboard.write([new ClipboardItem({ "image/png": pngPromise })])
+
 export function download(blob, name) {
   const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name })
   document.body.appendChild(a)

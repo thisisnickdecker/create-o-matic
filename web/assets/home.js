@@ -198,35 +198,60 @@ async function play(root) {
     useLogo(f)
   })
 
-  // Download here: rendered frame by frame at full size (GIF at half), the same as Motion does.
+  // Download, save or copy, right here: rendered frame by frame at full size (GIF at half), the
+  // same as Motion does. On a phone the file goes to the share sheet (Save to Photos, AirDrop,
+  // Messages); on a computer it downloads, and a PNG can go straight to the clipboard.
   const engine = await import("/instruments/elastic/elastic.js")
   const exporters = await import("/packages/core/export.js")
   const { ensureFont } = await import("/packages/core/fonts.js")
   const { prepareMarks } = await import("/packages/core/marks.js")
-  let busy = false
+  const shareButton = $("[data-share]"), copyButton = $("[data-copy]")
+  let busy = false, ready = null
+
+  async function make(kind, onProgress) {
+    const patch = sanitize(engine.manifest, current())
+    const marks = await prepareMarks(patch)
+    await ensureFont(engine.fontRequest(patch))
+    engine.clearMetrics()
+    const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : 1
+    const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
+    const n = engine.frameCount(patch), fps = Number(patch.params.fps)
+    const draw = (c, i) => engine.render(c, patch, kind === "png" ? 0.25 : i / n, { scale: s, frame: i, marks })
+    const blob = kind === "png" ? await exporters.exportPng({ w, h, draw })
+      : kind === "gif" ? await exporters.exportGif({ w, h, fps, frames: n, draw, onProgress })
+      : await exporters.exportVideo({ kind, w, h, fps, frames: n, draw, onProgress })
+    return { blob, name: `${fileSlug(input.value || logo?.name || "create-o-matic")}-${w}x${h}.${kind}`, w, h, kind }
+  }
+  const mb = (blob) => `${(blob.size / 1048576).toFixed(1)} MB`
+
   for (const b of root.querySelectorAll("[data-export]")) {
     b.onclick = async () => {
       if (busy) return
       busy = true
-      const kind = b.dataset.export, label = b.textContent
+      shareButton.hidden = true
+      const label = b.textContent
       try {
-        const patch = sanitize(engine.manifest, current())
-        const marks = await prepareMarks(patch)
-        await ensureFont(engine.fontRequest(patch))
-        engine.clearMetrics()
-        const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : 1
-        const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
-        const n = engine.frameCount(patch), fps = Number(patch.params.fps)
-        const draw = (c, i) => engine.render(c, patch, kind === "png" ? 0.25 : i / n, { scale: s, frame: i, marks })
-        const onProgress = (f) => { b.textContent = `${Math.round(f * 100)}%` }
-        const blob = kind === "png" ? await exporters.exportPng({ w, h, draw })
-          : kind === "gif" ? await exporters.exportGif({ w, h, fps, frames: n, draw, onProgress })
-          : await exporters.exportVideo({ kind, w, h, fps, frames: n, draw, onProgress })
-        exporters.download(blob, `${fileSlug(input.value || logo?.name || "create-o-matic")}-${w}x${h}.${kind}`)
-        hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${(blob.size / 1048576).toFixed(1)} MB).`
+        ready = await make(b.dataset.export, (f) => { b.textContent = `${Math.round(f * 100)}%` })
+        const { blob, name, w, h, kind } = ready, sharable = exporters.canShare(blob, name)
+        if (sharable) { shareButton.hidden = false; shareButton.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}` }
+        if (sharable && exporters.touchFirst()) hint.textContent = `Your ${w}×${h} ${kind.toUpperCase()} is ready (${mb(blob)}). Tap Save or share to put it in Photos, or send it.`
+        else { exporters.download(blob, name); hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${mb(blob)}).${sharable ? " Share sends it by AirDrop or Messages." : ""}` }
       } catch (e) { hint.textContent = e.message }
       b.textContent = label
       busy = false
+    }
+  }
+  shareButton.onclick = () => {
+    if (!ready) return
+    exporters.share(ready.blob, ready.name).catch((e) => { if (e.name !== "AbortError") { exporters.download(ready.blob, ready.name); hint.textContent = "Sharing didn't work here, so it's downloaded instead." } })
+  }
+  if (exporters.canCopyImage()) {
+    copyButton.hidden = false
+    copyButton.onclick = () => {
+      const png = make("png").then((r) => r.blob)
+      exporters.copyPng(png)
+        .then(() => png.then((blob) => { hint.textContent = `Copied a full-size PNG (${mb(blob)}). Paste it into Figma, Slack or a message.` }))
+        .catch((e) => { hint.textContent = `Couldn't copy: ${e.message}` })
     }
   }
 

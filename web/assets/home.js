@@ -55,12 +55,13 @@ async function examples(host) {
 const PLAY = [
   ["clean-type", "Type"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"], ["black-glass", "Black glass"],
   ["signal", "ASCII"], ["led-sign", "LED"], ["sorted", "Pixel sort"], ["decode", "Decode"], ["scatter", "Scatter"],
-  ["heat", "Heat"], ["kaleido", "Kaleido"],
+  ["heat", "Heat"], ["monolith", "Cube"], ["tumbling-blocks", "Blocks"], ["kaleido", "Kaleido"],
 ]
 // Each look's own effect, on one 0 to 1 slider: the setting, and its value at each end.
 const EFFECT = {
   signal: ["Character size", "ascii", 22, 5], "led-sign": ["Dot size", "dots", 18, 5], sorted: ["Pixel sort", "pixelSort", 0.15, 0.9],
   decode: ["Scramble", "scramble", 0.1, 0.95], scatter: ["Scatter", "dotScatter", 0, 1], kaleido: ["Mirrors", "kaleido", 3, 14],
+  monolith: ["Cube size", "cube", 0.35, 1], "tumbling-blocks": ["Block size", "cube", 0.06, 0.45],
 }
 const PLACEHOLDER = "TYPE\nSOMETHING"
 
@@ -86,7 +87,9 @@ async function play(root) {
   const $ = (q) => root.querySelector(q)
   const card = $("[data-hero]"), input = $(".play-word"), chips = $(".chips"), hint = $("[data-hint]")
   const ui = { size: $("[data-size]"), font: $("[data-font]"), colours: $("[data-colours]"), motion: $("[data-motion]"), effect: $("[data-effect]"),
-    effectRow: $("[data-effect-row]"), effectName: $("[data-effect-name]"), speed: $("[data-speed]"), speedOut: $("[data-speed-out]") }
+    effectRow: $("[data-effect-row]"), effectName: $("[data-effect-name]"), speed: $("[data-speed]"), speedOut: $("[data-speed-out]"),
+    rows: $("[data-rows]"), columns: $("[data-columns]"), gap: $("[data-gap]"), ripple: $("[data-ripple]"),
+    rowsOut: $("[data-rows-out]"), columnsOut: $("[data-columns-out]"), gridRows: root.querySelectorAll("[data-grid-row]") }
   const presets = await Promise.all(PLAY.map(([id]) => load(id)))
   const { PALETTES } = await import("/assets/brand.js")
   let look = 0, logo = null, colour = -1, stop = null
@@ -117,6 +120,11 @@ async function play(root) {
     const p = presets[look].params, e = EFFECT[PLAY[look][0]]
     ui.motion.value = p.amount ?? 0.6
     ui.speed.value = p.duration
+    ui.rows.value = p.rows ?? 12
+    ui.columns.value = p.columns ?? 6
+    ui.gap.value = p.gap ?? 0
+    ui.ripple.value = p.rowOffset ?? 0.09
+    for (const r of ui.gridRows) r.hidden = (p.layout ?? "grid") !== "grid"
     ui.effectRow.hidden = !e
     if (e) { const [name, key, a, b] = e; ui.effectName.textContent = name; ui.effect.value = Math.min(1, Math.max(0, ((p[key] ?? a) - a) / (b - a))) }
   }
@@ -129,6 +137,9 @@ async function play(root) {
     if (colour >= 0) { p.palette = PALETTES[colour].colours; if (p.gradient && p.gradient !== "off") p.gradientInks = PALETTES[colour].colours }
     p.amount = +ui.motion.value
     p.duration = +ui.speed.value
+    p.gap = +ui.gap.value
+    p.rowOffset = +ui.ripple.value
+    if ((p.layout ?? "grid") === "grid") { p.rows = +ui.rows.value; p.columns = +ui.columns.value }
     if (e) { const [, key, a, b] = e, v = a + (b - a) * +ui.effect.value; p[key] = key === "kaleido" ? Math.round(v) : v }
     return patch
   }
@@ -151,6 +162,8 @@ async function play(root) {
     buttons.forEach((b, i) => { b.classList.toggle("on", i === look); b.setAttribute("aria-checked", String(i === look)) })
     swatches.forEach((b, i) => b.classList.toggle("on", i - 1 === colour))
     ui.speedOut.textContent = `${(+ui.speed.value).toFixed(1)} s`
+    ui.rowsOut.textContent = ui.rows.value
+    ui.columnsOut.textContent = ui.columns.value
     $("[data-open]").href = openLink(patch)
     $("[data-brand]").href = `/brand/#${toHash({ instrument: "brand", params: { brandName: titleCase(input.value.trim()) || "Your brand", tagline: "", logo: logo?.name ?? "", logoColour: "original", ...(colour >= 0 ? { inks: PALETTES[colour].colours } : {}) }, marks: logo?.svg ? { [logo.name]: logo.svg } : {} })}`
   }
@@ -159,7 +172,7 @@ async function play(root) {
   const soon = (ms = 160) => { clearTimeout(wait); wait = setTimeout(() => show(), ms) }
   input.addEventListener("input", () => soon(280))
   for (const el of [ui.size, ui.font]) el.addEventListener("change", () => show())
-  for (const el of [ui.motion, ui.effect, ui.speed]) el.addEventListener("input", () => soon())
+  for (const el of [ui.motion, ui.effect, ui.speed, ui.rows, ui.columns, ui.gap, ui.ripple]) el.addEventListener("input", () => soon())
 
   // A logo: chosen, or dropped anywhere on the page.
   const { addMarkFile } = await import("/packages/core/marks.js")

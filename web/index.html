@@ -59,7 +59,11 @@
             <option value="">The look's own</option><option>Inter Tight</option><option>Archivo</option><option>Big Shoulders Display</option><option>Anton</option><option>Space Grotesk</option><option>Fraunces</option><option>DM Serif Display</option>
           </select></label>
           <div class="play-colour"><span>Colour</span><div class="swatch-row" data-colours role="radiogroup" aria-label="Colour"></div></div>
-          <label><span>Motion</span><input type="range" min="0" max="1" step="0.01" data-motion></label>
+          <label data-grid-row><span>Rows</span><input type="range" min="1" max="24" step="1" data-rows><output data-rows-out></output></label>
+          <label data-grid-row><span>Columns</span><input type="range" min="1" max="16" step="1" data-columns><output data-columns-out></output></label>
+          <label><span>Spacing</span><input type="range" min="0" max="60" step="1" data-gap></label>
+          <label><span>Ripple</span><input type="range" min="0" max="1" step="0.01" data-ripple></label>
+          <label><span>Stretch</span><input type="range" min="0" max="1" step="0.01" data-motion></label>
           <label data-effect-row><span data-effect-name>Effect</span><input type="range" min="0" max="1" step="0.01" data-effect></label>
           <label><span>Loop</span><input type="range" min="2" max="16" step="0.5" data-speed><output data-speed-out></output></label>
         </div>

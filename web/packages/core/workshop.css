@@ -279,3 +279,7 @@ body.dragging .drop { display: grid; }
   font-kerning: normal; outline: 1px dashed color-mix(in srgb, currentColor 35%, transparent); outline-offset: 4px; caret-color: currentColor; }
 .stage-edit:focus, .stage-edit:focus-visible { box-shadow: none; border-radius: 0; outline: 1px dashed color-mix(in srgb, currentColor 35%, transparent); outline-offset: 4px; }
 
+/* The Texture lab's before-and-after wipe toggle, top right of the stage. */
+.frame .wipe-toggle { position: absolute; right: 16px; top: 10px; z-index: 1; min-height: 0; padding: 5px 12px; font-size: 12px; }
+.frame .wipe-toggle.on { background: var(--ink); color: var(--white); }
+

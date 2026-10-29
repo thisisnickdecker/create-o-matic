@@ -8,7 +8,7 @@
     "texture",
     "print"
   ],
-  "description": "A darkroom for any image or video. Stack print and texture effects (risograph, halftone, photocopy, paper, grunge, film, chroma, holographic foil, gradient maps, your own overlays) in any order, each with its own blend mode and opacity, and export at the source's full size or any format.",
+  "description": "A darkroom for any image or video, or for a loop from the other instruments. Stack print and texture effects (risograph, halftone, photocopy, paper, grunge, film, chroma, holographic foil, gradient maps, your own overlays) in any order, each with its own blend mode and opacity, and export at the source's full size or any format.",
   "author": "Nick Decker",
   "license": "MIT",
   "runtime": {
@@ -72,6 +72,43 @@
       "type": "media",
       "default": "",
       "help": "Drop any image or video on the page, at any size. It's kept in this browser; the patch stores its name."
+    },
+    {
+      "key": "sample",
+      "group": "source",
+      "label": "Until then",
+      "type": "select",
+      "default": "glass",
+      "options": [
+        [
+          "glass",
+          "Motion · Black glass"
+        ],
+        [
+          "heat",
+          "Motion · Heat"
+        ],
+        [
+          "sweep",
+          "Type tester · Weight sweep"
+        ],
+        [
+          "blend",
+          "Colour lab · Sunset strip"
+        ],
+        [
+          "logo",
+          "Brand bench · Logo loop"
+        ],
+        [
+          "card",
+          "A test card"
+        ]
+      ],
+      "when": {
+        "source": ""
+      },
+      "help": "What's on the light table until you drop in your own image or video: a loop from another instrument, playing live, or a still test card. It plays in step with this loop, so exports close."
     },
     {
       "key": "sourceWidth",

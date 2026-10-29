@@ -81,17 +81,34 @@ async function hero(card, caption) {
 
 // The Texture lab's looks, each drawn once onto its test card when it comes near the screen.
 const LOOKS = ["riso-duo", "photocopy-grunge", "newsprint", "film-still", "holographic-foil", "kraft-print"]
+// One frame of Motion's Black glass, the Texture lab's own default source, for the looks to treat.
+async function glassFrame() {
+  const { ensureFont } = await import("/packages/core/fonts.js")
+  const patch = sanitize(manifest, await load("black-glass"))
+  const elastic = await import("/instruments/elastic/elastic.js")
+  await ensureFont(elastic.fontRequest(patch))
+  elastic.clearMetrics()
+  const c = Object.assign(document.createElement("canvas"), { width: 1080, height: 608 })
+  elastic.render(c.getContext("2d", { willReadFrequently: true }), patch, 0.25, { scale: 1080 / size(patch).w, frame: 60 })
+  return c
+}
+
 async function looks(host) {
   const texture = await import("/instruments/texture/texture.js")
   const patches = await Promise.all(LOOKS.map((n) => fetch(`/instruments/texture/presets/${n}.json`).then((r) => r.json())))
+  let source = null
   const near = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting) continue
       near.unobserve(e.target)
-      const patch = sanitize(texture.manifest, e.target._patch)
+      // A 4:3 frame, as the tiles are, with the whole source fitted inside it on its own black.
+      const patch = sanitize(texture.manifest, { ...e.target._patch, params: { background: "#0B0B0A", ...e.target._patch.params, format: "custom", width: 1200, height: 900, fit: "contain", sourceWidth: 1080, sourceHeight: 608 } })
       const c = e.target.querySelector("canvas"), w = c.clientWidth * Math.min(devicePixelRatio || 1, 2)
-      c.width = Math.round(w); c.height = Math.round((w * 3) / 4)
-      texture.render(c.getContext("2d", { willReadFrequently: true }), patch, 0.25, { scale: c.width / 1600, frame: 7, caption: false })
+      source ??= glassFrame()
+      source.then((frame) => {
+        c.width = Math.round(w); c.height = Math.round((w * 3) / 4)
+        texture.render(c.getContext("2d", { willReadFrequently: true }), patch, 0.25, { scale: c.width / 1200, frame: 7, source: frame })
+      })
     }
   }, { rootMargin: "300px 0px" })
   host.replaceChildren(...patches.map((patch) => {

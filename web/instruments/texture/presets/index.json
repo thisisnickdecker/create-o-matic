@@ -1,16 +1,17 @@
 [
   "riso-duo.json",
-  "riso-three-drum.json",
-  "photocopy-grunge.json",
   "newsprint.json",
-  "film-still.json",
+  "teletype.json",
+  "screen-print.json",
+  "photocopy-grunge.json",
   "holographic-foil.json",
+  "film-still.json",
+  "riso-three-drum.json",
+  "chalk-on-slate.json",
+  "green-screen.json",
+  "duotone.json",
   "acid-house.json",
   "kraft-print.json",
-  "duotone.json",
   "gradient-wash.json",
-  "untouched.json",
-  "teletype.json",
-  "green-screen.json",
-  "typewriter-drawing.json"
+  "untouched.json"
 ]

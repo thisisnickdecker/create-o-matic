@@ -1,5 +1,5 @@
 {
-  "name": "Typewriter drawing",
+  "name": "Chalk on slate",
   "instrument": "texture",
   "version": "0.1.0",
   "seed": 117,
@@ -12,24 +12,25 @@
         "opacity": 1,
         "blend": "source-over",
         "params": {
-          "ascii": 12,
+          "ascii": 11,
           "asciiSet": "slashes",
           "asciiInk": "ink",
-          "asciiColour": "#121211",
-          "asciiGround": "#F4F4F1",
+          "asciiColour": "#F4EAD5",
+          "asciiGround": "#1C1B19",
           "asciiTiles": 0,
+          "asciiCurve": 0.8,
           "asciiFlicker": 0.03,
           "asciiSteps": 12
         }
       },
       {
-        "id": "paper-2",
-        "effect": "paper",
+        "id": "grain-2",
+        "effect": "grain",
         "on": true,
         "opacity": 1,
         "blend": "source-over",
         "params": {
-          "paper": 0.45
+          "grain": 0.12
         }
       }
     ]

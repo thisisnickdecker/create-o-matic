@@ -23,20 +23,37 @@ export const frameCount = (patch) => Math.max(1, Math.round(patch.params.duratio
 export const videoTime = (patch, t, videoDuration) => ((frac(t) * patch.params.duration * patch.params.videoSpeed) % videoDuration) || 0
 
 // caption: false leaves the test card's "Drop an image" off, for showing the looks.
-export function render(ctx, patch, t, { scale = 1, frame = 0, source = null, assets = null, caption = true } = {}) {
+// compare (0 to 1, for the preview only): the untreated frame shown left of that point, for a
+// before-and-after wipe.
+export function render(ctx, patch, t, { scale = 1, frame = 0, source = null, assets = null, caption = true, compare = 0 } = {}) {
   const { w: W, h: H } = size(patch)
   t = frac(t)
   const p = resolve(manifest, patch, t)
+  const untreated = () => {
+    ctx.fillStyle = p.background
+    ctx.fillRect(0, 0, W, H)
+    if (source) drawSource(ctx, source, p, W, H)
+    else testCard(ctx, W, H, caption)
+  }
   ctx.save()
   ctx.setTransform(scale, 0, 0, scale, 0, 0)
   ctx.globalAlpha = 1
   ctx.globalCompositeOperation = "source-over"
-  ctx.fillStyle = p.background
-  ctx.fillRect(0, 0, W, H)
-  if (source) drawSource(ctx, source, p, W, H)
-  else testCard(ctx, W, H, caption)
+  untreated()
   ctx.restore()
   applyStack(ctx, p.layers, { t, frame, scale, seed: patch.seed, background: p.background, assets })
+  if (compare <= 0) return
+  ctx.save()
+  ctx.setTransform(scale, 0, 0, scale, 0, 0)
+  ctx.beginPath(); ctx.rect(0, 0, W * compare, H); ctx.clip()
+  untreated()
+  ctx.restore()
+  ctx.save()
+  ctx.setTransform(scale, 0, 0, scale, 0, 0)
+  ctx.fillStyle = "#FFFFFF"
+  ctx.shadowColor = "rgba(18, 18, 17, 0.35)"; ctx.shadowBlur = 6 / scale
+  ctx.fillRect(W * compare - 1 / scale, 0, 2 / scale, H)
+  ctx.restore()
 }
 
 // Fit the source to the frame, zoom about the centre, and pan across whatever overflows.

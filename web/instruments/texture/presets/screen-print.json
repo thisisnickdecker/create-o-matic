@@ -1,0 +1,43 @@
+{
+  "name": "Screen print",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 118,
+  "params": {
+    "layers": [
+      {
+        "id": "posterize-1",
+        "effect": "posterize",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "posterize": 3
+        }
+      },
+      {
+        "id": "halftone-2",
+        "effect": "halftone",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "halftone": 9,
+          "halftoneAngle": 15,
+          "halftoneShape": "round",
+          "halftoneGain": 1.15
+        }
+      },
+      {
+        "id": "paper-3",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.4
+        }
+      }
+    ]
+  }
+}

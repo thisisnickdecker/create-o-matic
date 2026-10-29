@@ -43,7 +43,16 @@
   <main>
     <section class="hero" aria-labelledby="title">
       <h1 class="display" id="title">A playground for <span data-colourful>designers.</span></h1>
-      <p class="lead"><strong>Create-o-matic is a free, open-source lab for type, colour, motion and texture.</strong> Set specimens, study palettes, stretch words and logos into loops, run anything through print and code effects, and pull it all together into a brand kit. It all exports: video, images or code. We hope it's useful.</p>
+      <p class="lead"><strong>Create-o-matic is a free, open-source lab for type, colour, motion and texture.</strong><span class="more"> Set specimens, study palettes, stretch words and logos into loops, run anything through print and code effects, and pull it all together into a brand kit. It all exports: video, images or code. We hope it's useful.</span></p>
+      <div class="play" data-play>
+        <div class="play-bar">
+          <input class="play-word" type="text" value="PLAY" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Your word" placeholder="Type a word">
+          <button class="btn" type="button" data-logo>Add a logo</button>
+          <div class="chips" role="radiogroup" aria-label="Looks"></div>
+        </div>
+        <div class="stage-card" data-hero aria-label="Your word, playing live in Create-o-matic"></div>
+        <p class="caption"><span data-hint>Type anything, or drop a logo anywhere on the page.</span><span class="caption-actions"><a data-open href="/make/">Open in Motion <span class="arrow"></span></a><a data-brand href="/brand/">Make it a brand <span class="arrow"></span></a></span></p>
+      </div>
       <nav class="doors" aria-label="The tools">
         <a href="/make/"><b>Motion</b><span>Words and logos that stretch, fold and loop</span></a>
         <a href="/type/"><b>Type tester</b><span>Every font, side by side, on your own words</span></a>
@@ -55,8 +64,7 @@
         <a class="btn" href="/manual/">Read the manual</a>
         <a class="btn" href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
       </div>
-      <div class="stage-card" data-hero aria-label="A loop made with Create-o-matic, playing live"></div>
-      <p class="caption" data-hero-caption><span>Now playing: <span data-name></span></span><a href="/make/">Open this patch <span class="arrow"></span></a></p>
+
     </section>
 
     <section class="section" id="examples" aria-labelledby="examples-title">

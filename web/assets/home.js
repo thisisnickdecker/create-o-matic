@@ -1,4 +1,4 @@
-// The home page: the hero loop and the live examples. Every loop is the real engine running a patch
+// The home page: the playground at the top and the live examples. Every loop is the real engine running a patch
 // file; nothing here is a video. Tiles start their engine only when they come near the screen, and
 // the engine rests when they leave it (see embed.js).
 import { mount } from "/instruments/elastic/embed.js"
@@ -11,7 +11,6 @@ const SHOWCASE = [
   "kaleido", "signal", "golden-section", "c-fill", "heat", "black-glass", "phi", "night-shift", "bloom",
   "liquid", "meltdown", "gradient-maker", "coming-clear", "sizes", "o-sweep",
 ]
-const HERO = ["kaleido", "signal", "golden-section", "heat", "black-glass", "c-fill"]
 const HERO_SECONDS = 9
 
 const load = (name) => fetch(`${PRESETS}${name}.json`).then((r) => r.json())
@@ -50,33 +49,99 @@ async function examples(host) {
   }))
 }
 
-async function hero(card, caption) {
-  const patches = await Promise.all(HERO.map(load))
-  const slots = [0, 1].map(() => {
-    const s = Object.assign(document.createElement("div"), { className: "slot" })
-    s.append(document.createElement("div"))
-    card.append(s)
-    return s
+// ---- the playground ----
+// The hero is a toy: your word (and your logo, if you add one) set in a run of looks, each a real
+// Motion preset with your words swapped in. The looks take turns until you touch something.
+const PLAY = [
+  ["kaleido", "Kaleido"], ["signal", "ASCII"], ["golden-section", "Golden section"], ["heat", "Heat"],
+  ["black-glass", "Black glass"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"], ["meltdown", "Meltdown"],
+]
+
+// A preset with the word in place of its words. A logo joins as a mark; a shape fill fills the logo.
+function playPatch(preset, words, logo) {
+  const p = structuredClone(preset)
+  const lines = words.trim().split(/\s+/).filter(Boolean)
+  const content = lines.length ? lines : ["PLAY"]
+  if (logo) {
+    if (logo.svg) p.marks = { ...(p.marks ?? {}), [logo.name]: logo.svg }
+    // Your logo fills the frame whole: the preset's zoom keyframes were cut for its own shape.
+    if (p.params.shape) { p.params.shape = logo.name; p.params.shapeScale = 0.92; p.params.shapeX = 0; p.params.shapeY = 0; p.keys = {} }
+    else content.push(`@${logo.name}`)
+  }
+  p.params.content = content.join("\n")
+  delete p.name
+  return p
+}
+
+const titleCase = (s) => s.toLowerCase().replace(/(^|\s)(\p{L})/gu, (_, a, b) => a + b.toUpperCase())
+
+async function play(root) {
+  const card = root.querySelector("[data-hero]"), input = root.querySelector(".play-word"), chips = root.querySelector(".chips")
+  const open = root.querySelector("[data-open]"), brand = root.querySelector("[data-brand]"), hint = root.querySelector("[data-hint]")
+  const presets = await Promise.all(PLAY.map(([id]) => load(id)))
+  let look = 0, logo = null, auto = !matchMedia("(prefers-reduced-motion: reduce)").matches, stop = null, timer = 0
+
+  const slots = [0, 1].map(() => { const s = Object.assign(document.createElement("div"), { className: "slot" }); s.append(document.createElement("div")); card.append(s); return s })
+  let turn = 0
+  const buttons = PLAY.map(([, label], i) => {
+    const b = Object.assign(document.createElement("button"), { type: "button", textContent: label })
+    b.setAttribute("role", "radio")
+    b.onclick = () => { auto = false; look = i; show() }
+    chips.append(b)
+    return b
   })
-  let i = 0, stop = null
-  const show = () => {
-    const patch = patches[i % patches.length]
-    const slot = slots[i % 2], other = slots[(i + 1) % 2]
+
+  function show() {
+    const patch = playPatch(presets[look], input.value, logo)
+    const slot = slots[turn % 2], other = slots[(turn + 1) % 2]
     const host = document.createElement("div")
     slot.firstChild.replaceWith(host)
-    const stopNext = mount(host, patch)
-    slot.classList.add("on")
-    other.classList.remove("on")
-    // Stop the outgoing loop once it has faded.
-    const stopPrev = stop
-    setTimeout(() => stopPrev?.(), 1000)
-    stop = stopNext
-    caption.querySelector("[data-name]").textContent = patch.name
-    caption.querySelector("a").href = openLink(patch)
-    i++
+    const next = mount(host, patch)
+    slot.classList.add("on"); other.classList.remove("on")
+    const prev = stop
+    setTimeout(() => prev?.(), 1000) // the outgoing loop stops once it has faded
+    stop = next
+    turn++
+    buttons.forEach((b, i) => { b.classList.toggle("on", i === look); b.setAttribute("aria-checked", String(i === look)) })
+    open.href = openLink(patch)
+    const name = titleCase(input.value.trim()) || "Your brand"
+    brand.href = `/brand/#${toHash({ instrument: "brand", params: { brandName: name, tagline: "", logo: logo?.name ?? "", logoColour: "original" }, marks: logo?.svg ? { [logo.name]: logo.svg } : {} })}`
+    clearTimeout(timer)
+    if (auto) timer = setTimeout(() => { look = (look + 1) % PLAY.length; show() }, HERO_SECONDS * 1000)
   }
+
+  // Typing redraws once the typing pauses.
+  let typing = 0
+  input.addEventListener("input", () => { auto = false; clearTimeout(typing); typing = setTimeout(show, 280) })
+  input.addEventListener("focus", () => input.select(), { once: true })
+
+  // A logo: chosen, or dropped anywhere on the page. SVG travels in the links; an image is kept
+  // in this browser, which is where Motion and the Brand bench will look for it.
+  const { addMarkFile } = await import("/packages/core/marks.js")
+  const useLogo = async (f) => {
+    try {
+      const { name, svg } = await addMarkFile(f)
+      logo = { name, svg }
+      auto = false
+      hint.textContent = `${f.name} is in. Try Shape fill.`
+      show()
+    } catch (e) { hint.textContent = e.message }
+  }
+  const file = Object.assign(document.createElement("input"), { type: "file", accept: ".svg,image/svg+xml,image/png,image/jpeg,image/webp", hidden: true })
+  file.onchange = () => { if (file.files[0]) useLogo(file.files[0]); file.value = "" }
+  root.append(file)
+  root.querySelector("[data-logo]").onclick = () => file.click()
+  addEventListener("dragover", (e) => { if ([...e.dataTransfer.items].some((i) => i.kind === "file")) { e.preventDefault(); root.classList.add("dropping") } })
+  addEventListener("dragleave", (e) => { if (!e.relatedTarget) root.classList.remove("dropping") })
+  addEventListener("drop", (e) => {
+    const f = [...e.dataTransfer.files].find((x) => /^image\//.test(x.type) || /\.svg$/i.test(x.name))
+    root.classList.remove("dropping")
+    if (!f) return
+    e.preventDefault()
+    useLogo(f)
+  })
+
   show()
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(show, HERO_SECONDS * 1000)
 }
 
 // The Texture lab's looks, each drawn once onto its test card when it comes near the screen.
@@ -209,8 +274,8 @@ async function boards(host) {
   }))
 }
 
-const card = document.querySelector("[data-hero]")
-if (card) hero(card, document.querySelector("[data-hero-caption]"))
+const playground = document.querySelector("[data-play]")
+if (playground) play(playground)
 const grid = document.querySelector("[data-examples]")
 if (grid) examples(grid)
 const lookGrid = document.querySelector("[data-looks]")

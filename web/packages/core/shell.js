@@ -267,6 +267,7 @@ export async function createMachine(host, engine, hooks = {}) {
     ref.vary.onclick = () => {
       hooks.vary(patch, mulberry32(newSeed()))
       patch = sanitize(manifest, { ...patch, seed: newSeed() })
+      hooks.load?.(patch) // Vary can deal new fonts or media: fetch them, as for a new patch
       changed()
     }
   }

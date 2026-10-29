@@ -49,8 +49,9 @@ function wrap(ctx, text, w) {
   return out
 }
 
-// One row: measured, and drawn if draw is true. Returns its height in output pixels.
-function row(ctx, r, i, p, t, x, y, w, labelPx, draw) {
+// One row: measured, and drawn if draw is true. Returns its height and how it's set, in output
+// pixels. With hide, the label is drawn but the text isn't (it's being edited on the stage).
+function row(ctx, r, i, p, t, x, y, w, labelPx, draw, hide = false) {
   const phase = frac(p.beats * t - i * p.stagger), s = Math.sin(TAU * phase), k = p.motion === "none" ? 0 : p.motionAmount
   let weight = r.weight, tracking = r.tracking, grow = 1
   if (p.motion === "weight") weight = Math.min(1000, Math.max(100, Math.round((r.weight + s * k * 400) / 10) * 10))
@@ -74,7 +75,8 @@ function row(ctx, r, i, p, t, x, y, w, labelPx, draw) {
   const lineH = px * r.leading
   const label = p.labels ? labelPx * 1.9 : 0
   const height = label + lines.length * lineH
-  if (!draw) return height
+  const set = { h: height, px, weight, tracking, label }
+  if (!draw) return set
 
   if (p.labels) {
     ctx.font = `400 ${labelPx}px ${LABEL_FONT}`
@@ -88,6 +90,7 @@ function row(ctx, r, i, p, t, x, y, w, labelPx, draw) {
     ctx.letterSpacing = `${tracking * px}px`
   }
 
+  if (hide) return set
   const m = ctx.measureText("Hg")
   const asc = m.fontBoundingBoxAscent || px * 0.8, desc = m.fontBoundingBoxDescent || px * 0.2
   ctx.fillStyle = r.ink
@@ -128,13 +131,45 @@ function row(ctx, r, i, p, t, x, y, w, labelPx, draw) {
     }
     ctx.fillText(line, lx, base)
   })
-  return height
+  return set
 }
 
-export function render(ctx, patch, t, { scale = 1 } = {}) {
+// Where every row goes: measured first, so the block can sit at the top, middle or bottom of
+// the page. Each row gets its box and how it's set at time t.
+function place(ctx, patch, t) {
   const { w: W, h: H } = size(patch)
+  const p = resolve(manifest, patch, frac(t))
+  const m = Math.min(p.margin, W / 2 - 1, H / 2 - 1)
+  const inner = W - 2 * m
+  const labelPx = Math.max(11, Math.round(Math.min(W, H) * 0.015))
+  const cols = p.layout === "grid" ? Math.max(1, p.columns) : 1
+  const cw = (inner - p.gap * (cols - 1)) / cols
+  ctx.save()
+  ctx.fontKerning = "normal"
+  const bands = []
+  for (let i = 0; i < p.rows.length; i += cols) {
+    const sets = p.rows.slice(i, i + cols).map((r, c) => row(ctx, r, i + c, p, frac(t), 0, 0, cw, labelPx, false))
+    bands.push({ start: i, sets, h: Math.max(...sets.map((s) => s.h)) })
+  }
+  ctx.restore()
+  const total = bands.reduce((a, b) => a + b.h, 0) + p.gap * Math.max(0, bands.length - 1)
+  let y = p.valign === "center" ? (H - total) / 2 : p.valign === "bottom" ? H - m - total : m
+  const boxes = []
+  for (const band of bands) {
+    band.y = y
+    band.sets.forEach((s, c) => boxes.push({ i: band.start + c, x: m + c * (cw + p.gap), y, w: cw, ...s }))
+    y += band.h + p.gap
+  }
+  return { p, W, H, m, inner, cw, labelPx, bands, boxes }
+}
+
+// Each row's box on the page, in output pixels, with its size, weight and tracking at time t:
+// what the stage needs to put an editor over a row.
+export const rowBoxes = (ctx, patch, t) => place(ctx, patch, t).boxes
+
+export function render(ctx, patch, t, { scale = 1, editing = -1 } = {}) {
   t = frac(t)
-  const p = resolve(manifest, patch, t)
+  const { p, W, H, m, inner, cw, labelPx, bands } = place(ctx, patch, t)
   ctx.save()
   ctx.setTransform(scale, 0, 0, scale, 0, 0)
   ctx.fillStyle = p.background
@@ -142,31 +177,17 @@ export function render(ctx, patch, t, { scale = 1 } = {}) {
   ctx.textBaseline = "alphabetic"
   ctx.textAlign = "left"
   ctx.fontKerning = "normal"
-
-  const m = Math.min(p.margin, W / 2 - 1, H / 2 - 1)
-  const inner = W - 2 * m
-  const labelPx = Math.max(11, Math.round(Math.min(W, H) * 0.015))
-  const cols = p.layout === "grid" ? Math.max(1, p.columns) : 1
-  const cw = (inner - p.gap * (cols - 1)) / cols
-
-  // Measure first, so the block can sit at the top, middle or bottom of the page.
-  const bands = []
-  for (let i = 0; i < p.rows.length; i += cols) {
-    const cells = p.rows.slice(i, i + cols)
-    bands.push({ start: i, cells, h: Math.max(...cells.map((r, c) => row(ctx, r, i + c, p, t, 0, 0, cw, labelPx, false))) })
-  }
-  const total = bands.reduce((a, b) => a + b.h, 0) + p.gap * Math.max(0, bands.length - 1)
-  let y = p.valign === "center" ? (H - total) / 2 : p.valign === "bottom" ? H - m - total : m
-
   bands.forEach((band, b) => {
     if (b > 0 && p.rules) {
       ctx.fillStyle = p.labelInk
       ctx.globalAlpha = 0.45
-      ctx.fillRect(m, y - p.gap / 2, inner, Math.max(1 / scale, 1))
+      ctx.fillRect(m, band.y - p.gap / 2, inner, Math.max(1 / scale, 1))
       ctx.globalAlpha = 1
     }
-    band.cells.forEach((r, c) => row(ctx, r, band.start + c, p, t, m + c * (cw + p.gap), y, cw, labelPx, true))
-    y += band.h + p.gap
+    band.sets.forEach((_, c) => {
+      const i = band.start + c
+      row(ctx, p.rows[i], i, p, t, m + c * (cw + p.gap), band.y, cw, labelPx, true, i === editing)
+    })
   })
   ctx.restore()
 }

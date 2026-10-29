@@ -1,6 +1,6 @@
 // The Type tester: the type engine in the shared shell, plus what only it needs: a font for every
-// row, the font browser per row, dropped font files as new rows, and Vary as a way to discover
-// faces (it deals every row a different open font).
+// row, the font browser per row, dropped font files as new rows, Vary as a way to discover faces
+// (it deals every row a different open font), and typing straight onto the stage.
 import * as engine from "./type.js"
 import { createMachine } from "../../packages/core/shell.js"
 import { ensureFont, addFontFile, openCatalogue } from "../../packages/core/fonts.js"
@@ -22,6 +22,57 @@ async function loadFonts(patch) {
   m?.redraw()
 }
 
+// ---- typing on the stage ----
+// Double-click a row and a text box opens over it, set in the row's own font, size, weight,
+// tracking and case, while the canvas leaves that row's text out. Every keystroke goes into the
+// patch, so a row set to fill the width resizes as you type. Escape or clicking away finishes.
+let editing = -1
+const measure = typeof document !== "undefined" ? document.createElement("canvas").getContext("2d") : null
+const CASES = { upper: "uppercase", lower: "lowercase", title: "capitalize", "as-is": "none" }
+
+function rowAt(machine, e) {
+  const canvas = machine.host.querySelector(".frame canvas"), rect = canvas.getBoundingClientRect()
+  const k = rect.width / engine.size(machine.patch).w
+  const x = (e.clientX - rect.left) / k, y = (e.clientY - rect.top) / k
+  const boxes = engine.rowBoxes(measure, machine.patch, machine.t)
+  const inside = boxes.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h)
+  return inside ?? boxes.reduce((best, b) => (Math.abs(b.y + b.h / 2 - y) < Math.abs(best.y + best.h / 2 - y) ? b : best), boxes[0])
+}
+
+function editRow(machine, e) {
+  const hit = rowAt(machine, e)
+  if (!hit) return
+  window.instrument.pause()
+  editing = hit.i
+  const frame = machine.host.querySelector(".frame"), canvas = frame.querySelector("canvas")
+  const box = Object.assign(document.createElement("textarea"), { className: "stage-edit", spellcheck: false, value: machine.patch.params.rows[editing].text })
+  box.setAttribute("aria-label", "Row text")
+  const place = () => {
+    const p = machine.patch.params, r = p.rows[editing], b = engine.rowBoxes(measure, machine.patch, machine.t)[editing]
+    const k = canvas.clientWidth / engine.size(machine.patch).w
+    const left = canvas.offsetLeft + b.x * k, top = canvas.offsetTop + (b.y + b.label) * k
+    Object.assign(box.style, {
+      left: `${left}px`, top: `${top}px`, width: `${b.w * k}px`, height: `${(b.h - b.label) * k}px`,
+      font: `${r.italic ? "italic " : ""}${b.weight} ${b.px * k}px "${r.font.replace(/"/g, "")}", sans-serif`,
+      letterSpacing: `${b.tracking * b.px * k}px`, lineHeight: `${r.leading * b.px * k}px`,
+      textTransform: CASES[r.case] ?? "none", textAlign: p.align, color: r.ink, background: p.background,
+      whiteSpace: r.fit === "width" ? "pre" : "pre-wrap",
+    })
+  }
+  const done = () => { if (editing < 0) return; editing = -1; box.remove(); machine.redraw() }
+  box.addEventListener("input", () => {
+    machine.set("rows", machine.patch.params.rows.map((r, i) => (i === editing ? { ...r, text: box.value } : r)))
+    place()
+  })
+  box.addEventListener("keydown", (k) => { if (k.key === "Escape" || (k.key === "Enter" && (k.metaKey || k.ctrlKey))) { k.preventDefault(); box.blur() } })
+  box.addEventListener("blur", done)
+  frame.append(box)
+  place()
+  machine.redraw()
+  box.focus()
+  box.select()
+}
+
 const slug = (p) => (p.params.rows[0]?.text || "type").split("\n")[0].toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24) || "type"
 
 m = await createMachine(document.querySelector("[data-machine]"), engine, {
@@ -29,6 +80,7 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
   dropHint: "Drop font files to compare them, or a patch",
 
   load(patch, key) { if (!key || FONT_KEYS.has(key)) loadFonts(patch) },
+  options: () => ({ editing: m?.exporting ? -1 : editing }),
   ready: (patch) => Promise.all(engine.fontRequests(patch).map((req) => ensureFont(req))),
 
   // A dropped font joins as a new row, copying the last row's text and setting.
@@ -65,6 +117,9 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
   setup(machine) {
     m = machine
     openCatalogue().then((list) => { catalogue = list })
+    const canvas = machine.host.querySelector(".frame canvas")
+    canvas.title = "Double-click a row to type in it"
+    canvas.addEventListener("dblclick", (e) => editRow(machine, e))
   },
   api: { fontsReady: () => Promise.all(engine.fontRequests(m.patch).map((req) => ensureFont(req))) },
 })

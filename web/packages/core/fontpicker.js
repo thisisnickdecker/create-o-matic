@@ -21,14 +21,14 @@ let lastFilter = "all"
 
 export function openFontPicker({ anchor, current, kit, onPick }) {
   close()
-  let filter = lastFilter, query = "", shown = PAGE
+  let filter = lastFilter, query = "", shown = PAGE, active = -1
   let lists = { open: [], adobe: [], system: null, file: [] }
 
-  const search = el("input", { type: "search", className: "fp-search", placeholder: "Search 2,000+ families", spellcheck: false, "aria-label": "Search fonts" })
+  const search = el("input", { type: "search", className: "fp-search", placeholder: "Search 2,000+ families · ↑↓ to try them", spellcheck: false, "aria-label": "Search fonts" })
   const chips = el("div", { className: "fp-chips" }, ...FILTERS.map(([id, label]) => {
     const b = el("button", { type: "button", textContent: label })
     b.dataset.id = id
-    b.onclick = () => { filter = lastFilter = id; shown = PAGE; if (id === "system" && !lists.system) loadInstalled(); draw() }
+    b.onclick = () => { filter = lastFilter = id; shown = PAGE; active = -1; if (id === "system" && !lists.system) loadInstalled(); draw() }
     return b
   }))
   const list = el("div", { className: "fp-list", role: "listbox" })
@@ -48,7 +48,26 @@ export function openFontPicker({ anchor, current, kit, onPick }) {
   const pop = el("div", { className: "fp-pop", role: "dialog", "aria-label": "Fonts" }, search, chips, list, status, foot)
   document.body.append(pop)
   search.focus()
-  search.addEventListener("input", () => { query = search.value.trim().toLowerCase(); shown = PAGE; draw() })
+  search.addEventListener("input", () => { query = search.value.trim().toLowerCase(); shown = PAGE; active = -1; draw() })
+
+  // Arrow keys step through the list, trying each font as they go (the stage follows); Enter or
+  // Escape keeps the one you're on. Typing still goes to the search.
+  pop.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && active >= 0) { e.preventDefault(); close(); return }
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return
+    e.preventDefault()
+    let rows = [...list.querySelectorAll(".fp-row")]
+    if (!rows.length) return
+    if (active < 0) active = reveal()
+    rows = [...list.querySelectorAll(".fp-row")]
+    active = Math.max(0, Math.min(rows.length - 1, active + (e.key === "ArrowDown" ? 1 : -1)))
+    if (active >= rows.length - 2 && entries().length > shown) { shown += PAGE; draw(); rows = [...list.querySelectorAll(".fp-row")] }
+    const entry = rows[active]._entry
+    current = { family: entry.family, source: entry.source }
+    rows.forEach((r, i) => r.classList.toggle("on", i === active))
+    rows[active].scrollIntoView({ block: "nearest" })
+    onPick(entry)
+  })
 
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
@@ -97,6 +116,13 @@ export function openFontPicker({ anchor, current, kit, onPick }) {
     if (!(filter === "system" && lists.system === null)) status.textContent = all.length ? `${all.length.toLocaleString()} families` : lists.open.length ? "Nothing matches." : "Loading the catalogue…"
   }
 
+  // The current font's place in the list, drawing far enough down to include it. -1 if it isn't there.
+  function reveal() {
+    const at = entries().findIndex((e) => e.family === current?.family && e.source === current?.source)
+    if (at >= shown) { shown = at + PAGE; draw() }
+    return at
+  }
+
   const r = anchor.getBoundingClientRect(), pw = pop.offsetWidth
   pop.style.left = `${Math.max(8, Math.min(innerWidth - pw - 8, r.left - pw - 10 > 8 ? r.left - pw - 10 : r.left))}px`
   pop.style.top = `${Math.max(8, Math.min(innerHeight - pop.offsetHeight - 8, r.top - 40))}px`
@@ -111,6 +137,8 @@ export function openFontPicker({ anchor, current, kit, onPick }) {
     if (!open || open.pop !== pop) return
     lists = { ...lists, open: o, adobe: a, file: f }
     draw()
+    // Open at the font in use, so the arrows carry on from it.
+    if (reveal() >= 0) list.querySelector(".fp-row.on")?.scrollIntoView({ block: "center" })
   })
 }
 

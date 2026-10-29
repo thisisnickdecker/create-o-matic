@@ -81,6 +81,15 @@ Three ideas hold it together:
 - **On your own site:** `mount(element, patch)` from `embed.js`. See the
   [manual](https://createomatic.xyz/manual/#embed).
 
+## How exports are checked
+
+Each instrument's MP4, WebM and GIF were exported through its own exporter
+(`window.instrument.render(kind)` in Chrome) and decoded with ffprobe and ffmpeg: frame size, frame
+rate, frame count and duration must be exact; sampled frames must match the engine's own PNG of the
+same moment; and the step from the last frame back to the first must be no bigger than an ordinary
+frame step, so the loop closes. GIFs share one palette across the loop, keep the commonest colours
+exact, and alternate delays (3, 3, 4 hundredths at 30 fps) so their length is exact.
+
 ## Deploying
 
 It's a Cloudflare Pages project called `createomatic`, serving `web/` as static files

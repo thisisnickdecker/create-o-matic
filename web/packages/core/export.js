@@ -71,17 +71,67 @@ export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onPr
   return new Blob([muxer.target.buffer], { type: spec.type })
 }
 
+// GIF delays are in hundredths of a second, which 1/30 s isn't: each frame takes its share of the
+// running total, so 30 fps comes out as 3, 3, 4… and the loop lasts exactly as long as it should.
+export const gifDelays = (frames, fps) => Array.from({ length: frames }, (_, i) => Math.round(((i + 1) * 100) / fps) - Math.round((i * 100) / fps))
+
+// GIF: one palette for the whole loop, so a flat colour can't shift shade from frame to frame (a
+// palette per frame made backgrounds flicker). It's built from eight frames across the loop, and
+// the commonest colours in them (backgrounds, main inks) are kept exactly.
 export async function exportGif({ w, h, fps, frames, draw, onProgress, signal }) {
-  const { GIFEncoder, quantize, applyPalette } = await import("./vendor/gifenc.esm.js")
+  const { GIFEncoder, quantize } = await import("./vendor/gifenc.esm.js")
   const gif = GIFEncoder()
   const { ctx } = surface(w, h)
-  const delay = Math.round(1000 / fps)
+  const samples = [...new Set(Array.from({ length: Math.min(8, frames) }, (_, k) => Math.floor((k * frames) / Math.min(8, frames))))]
+  const stride = Math.max(1, Math.round((w * h * samples.length) / 400000)) // about 400,000 pixels to learn from
+  const pool = [], counts = new Map()
+  for (const i of samples) {
+    await draw(ctx, i)
+    const { data } = ctx.getImageData(0, 0, w, h)
+    for (let q = 0; q < data.length; q += 4 * stride) {
+      pool.push(data[q], data[q + 1], data[q + 2], 255)
+      const key = (data[q] << 16) | (data[q + 1] << 8) | data[q + 2]
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    }
+    await breathe()
+  }
+  const palette = quantize(new Uint8ClampedArray(pool), 256)
+  // Snap the nearest palette entry to each of the commonest exact colours.
+  const taken = new Set()
+  for (const [key] of [...counts].sort((a, b) => b[1] - a[1]).slice(0, 8)) {
+    const c = [key >> 16, (key >> 8) & 255, key & 255]
+    let best = -1, bestD = Infinity
+    palette.forEach((p, k) => { if (taken.has(k)) return; const d = (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 + (p[2] - c[2]) ** 2; if (d < bestD) { bestD = d; best = k } })
+    if (best >= 0) { palette[best] = c; taken.add(best) }
+  }
+  // Each exact colour goes to its nearest palette entry, remembered across frames. (gifenc's own
+  // mapping buckets colours coarsely and lets the first one in a bucket decide for all of them,
+  // which could move a whole background to a neighbouring shade.)
+  const nearest = new Map()
+  const indexed = (data) => {
+    const out = new Uint8Array(data.length / 4)
+    for (let q = 0, o = 0; q < data.length; q += 4, o++) {
+      const key = (data[q] << 16) | (data[q + 1] << 8) | data[q + 2]
+      let k = nearest.get(key)
+      if (k === undefined) {
+        let best = Infinity
+        for (let j = 0; j < palette.length; j++) {
+          const p = palette[j], d = (p[0] - data[q]) ** 2 + (p[1] - data[q + 1]) ** 2 + (p[2] - data[q + 2]) ** 2
+          if (d < best) { best = d; k = j }
+        }
+        if (nearest.size > 1 << 21) nearest.clear()
+        nearest.set(key, k)
+      }
+      out[o] = k
+    }
+    return out
+  }
+  const delays = gifDelays(frames, fps)
   for (let i = 0; i < frames; i++) {
     if (signal?.aborted) throw new DOMException("Export cancelled", "AbortError")
     await draw(ctx, i)
     const { data } = ctx.getImageData(0, 0, w, h)
-    const palette = quantize(data, 256)
-    gif.writeFrame(applyPalette(data, palette), w, h, { palette, delay, repeat: 0 })
+    gif.writeFrame(indexed(data), w, h, { palette: i === 0 ? palette : undefined, delay: delays[i] * 10, repeat: 0 })
     onProgress?.((i + 1) / frames)
     await breathe()
   }

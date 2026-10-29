@@ -30,9 +30,9 @@
   },
   "outputs": {
     "png": "verified",
-    "mp4": "untested",
-    "webm": "untested",
-    "gif": "untested",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
     "patch-json": "verified",
     "kit-zip": "verified"
   },

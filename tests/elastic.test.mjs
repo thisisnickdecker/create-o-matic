@@ -77,3 +77,12 @@ test("scramble: decoded once the beat passes its share, the same every time, and
   assert.equal(scrambled("DECODE", p, 7, c, 0.01), scrambled("DECODE", p, 7, c, 0.01))
   assert.equal(scrambled("DE CODE", p, 7, c, 0.01)[2], " ")
 })
+
+test("GIF delays add up to the loop's exact length, however the frame rate divides", async () => {
+  const { gifDelays } = await import("../web/packages/core/export.js")
+  for (const [frames, fps] of [[240, 30], [180, 24], [150, 25], [360, 60]]) {
+    const d = gifDelays(frames, fps)
+    assert.equal(d.reduce((a, b) => a + b, 0), Math.round((frames * 100) / fps))
+    assert.ok(Math.max(...d) - Math.min(...d) <= 1)
+  }
+})

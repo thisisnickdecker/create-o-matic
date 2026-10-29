@@ -118,4 +118,40 @@ pre .c { color: #8E8E88; }
 .doc .lead { margin-top: 20px; }
 .callout { margin-top: 20px; padding: 16px 18px; border-radius: var(--r-m); background: var(--g100); }
 .doc { min-width: 0; }
-@media (max-width: 900px) { .manual { grid-template-columns: minmax(0, 1fr); } .toc { position: static; display: flex; flex-wrap: wrap; } }
+/* Narrow screens: the contents become one row that swipes sideways and stays at the top. */
+@media (max-width: 900px) {
+  .manual { grid-template-columns: minmax(0, 1fr); }
+  .toc { position: sticky; top: 0; z-index: 2; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+    margin: 0 calc(-1 * var(--gutter)); padding: 10px var(--gutter); background: var(--white); white-space: nowrap; }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc a { flex: none; }
+}
+
+/* Phones: more air, larger reading text, and tile captions on two lines. */
+@media (max-width: 600px) {
+  .hero { padding-top: 28px; }
+  .hero .lead { margin-top: 20px; }
+  .lead { font-size: 18px; line-height: 1.5; }
+  .actions { gap: 10px; margin-top: 28px; }
+  .section { padding-top: 88px; gap: 14px; }
+  .section .body > * + * { margin-top: 20px; }
+  .h2 { font-size: 34px; line-height: 1.05; }
+  .grid { gap: 32px; margin-top: 28px; }
+  .tile .meta { flex-direction: column; gap: 3px; padding-top: 14px; }
+  .tile .meta span:last-child { text-align: left; }
+  .tile .open { margin-top: 6px; }
+  .steps li::before { margin-bottom: 14px; }
+  .steps p { line-height: 1.6; }
+  .rows > div { padding: 20px 0; gap: 6px; }
+  .uses li { padding: 20px 0; }
+  .uses li span { line-height: 1.6; }
+  .panel { padding: 28px 22px; border-radius: var(--r-l); }
+  .footer { padding-bottom: 48px; gap: 20px; }
+  .footer nav { gap: 10px 20px; }
+  .doc p, .doc li { font-size: 16px; line-height: 1.65; }
+  .doc table { font-size: 15px; }
+  .doc th, .doc td { padding: 12px 10px 12px 0; }
+  .toc a { padding: 9px 14px; background: var(--g100); border-radius: 999px; }
+  pre { padding: 18px 16px; font-size: 13px; }
+}
+

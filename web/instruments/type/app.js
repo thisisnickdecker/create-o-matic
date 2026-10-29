@@ -47,7 +47,8 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     if (!catalogue.length) return
     const western = (sub) => /^(latin|greek|cyrillic)(-ext)?$|^vietnamese$|^math$/.test(sub)
     const pool = catalogue.filter((e) => e.latin && e.subsets?.includes("latin-ext") && e.subsets.every(western) && (e.variable || e.weights.length >= 3) && !/pixel|barcode|icons?|symbols?|emoji/i.test(e.family))
-    const kinds = Object.groupBy(pool, (e) => e.category)
+    const kinds = {}
+    for (const e of pool) (kinds[e.category] ??= []).push(e)
     p.params.rows = p.params.rows.map((row) => {
       const same = kinds[catalogue.find((e) => e.family === row.font)?.category] ?? pool
       const pick = same[Math.floor(r() * same.length)]

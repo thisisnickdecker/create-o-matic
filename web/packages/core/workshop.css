@@ -188,10 +188,16 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px 
 .drop { position: fixed; inset: 12px; z-index: 60; display: none; place-items: center; border-radius: var(--r-xl); background: rgba(255, 255, 255, .9); box-shadow: inset 0 0 0 2px var(--ink); font: 500 32px/1 var(--display); backdrop-filter: blur(6px); }
 body.dragging .drop { display: grid; }
 
+/* when a machine can't start */
+.fail { grid-column: 1 / -1; max-width: 34em; margin: 48px auto; padding: 24px; border-radius: var(--r-l); background: var(--g100); line-height: 1.5; }
+.fail p + p { margin-top: 10px; }
+.fail .why { color: var(--g500); font-size: 12px; }
+.fail a { text-decoration: underline; }
+
 /* tablet: the rack narrows, and in a narrow rack each label sits above its control, so nothing is
    ever cut short */
 @media (max-width: 1080px) { .bench { grid-template-columns: minmax(0, 1fr) 340px; } }
-@container (max-width: 340px) {
+@container (max-width: 420px) {
   .row { grid-template-columns: 1fr; gap: 4px; }
   .row .label, .row.t-text .label, .row.t-palette .label, .row.t-media .label, .row.t-marks .label { padding-top: 0; }
 }
@@ -226,3 +232,43 @@ body.dragging .drop { display: grid; }
 .layer.open .layer-body { display: grid; }
 .layer-body input[type="text"], .layer-body input[type="number"], .layer-body select { background: var(--white); }
 .layer-add { font-weight: 500; }
+
+/* Phones: fields at 16px (smaller makes iPhone Safari zoom in on every tap), controls at least
+   44px tall, and room to breathe between them. */
+@media (max-width: 760px) {
+  body.machine { font-size: 15px; }
+  .rack { padding: 16px 20px 64px; }
+  .group { padding: 18px 0 8px; }
+  .group > summary { font-size: 17px; padding-bottom: 14px; }
+  .group-body { gap: 14px; }
+  .row { min-height: 44px; }
+  .row .label { font-size: 14px; }
+  input[type="text"], input[type="number"], input[type="search"], select, textarea { height: 44px; font-size: 16px; padding: 0 12px; }
+  textarea { height: auto; min-height: 96px; padding: 10px 12px; }
+  .fader-wrap { grid-template-columns: minmax(0, 1fr) 76px; gap: 14px; }
+  input[type="range"] { height: 36px; }
+  input[type="range"]::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -10px; }
+  input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; }
+  .swatch, .mini { width: 44px; height: 44px; }
+  .colour { grid-template-columns: 44px 1fr; }
+  .switch { width: 46px; height: 28px; border-radius: 14px; }
+  .switch::after { width: 22px; height: 22px; }
+  .switch:checked::after { transform: translateX(18px); }
+  .rack .btn, .font-field .btn, .rack .strip .btn { min-height: 44px; }
+  .strip { gap: 8px; }
+  .strip + .strip { margin-top: 10px; }
+  .watch, .watch-gap { width: 20px; height: 20px; }
+  .layer-head { padding: 6px 6px 6px 10px; }
+  .layer-btn, .layer-eye { width: 40px; height: 40px; }
+  .layer-body { gap: 12px; padding: 6px 14px 16px; }
+  .transport { gap: 16px; padding: 6px 16px 16px; }
+  .transport .play { width: 46px; height: 46px; }
+  .transport .clock { font-size: 13px; }
+  .tl-track { height: 32px; }
+  .tl-key { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
+  .fp-row { padding: 12px 10px; }
+  .fp-chips button { padding: 8px 12px; font-size: 14px; }
+  .sw-tile { min-width: 26px; }
+  .note { font-size: 14px; }
+}
+

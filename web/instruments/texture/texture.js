@@ -2,12 +2,12 @@
 // render(ctx, patch, t) draws the source (an image or a video already at the right moment, passed
 // in by the caller), framed by fit, zoom and pan, then runs the effect stack over it.
 // With no source, it draws a test card (a small printed sunset) so every effect has something to bite.
-import manifest from "./instrument.json" with { type: "json" }
+import { readJson } from "../../packages/core/read-json.js"
 import { formatSize } from "../../packages/core/formats.js"
 import { resolve } from "../../packages/core/keys.js"
 import { applyStack } from "../../packages/core/effects/index.js"
 
-export { manifest }
+export const manifest = await readJson(new URL("./instrument.json", import.meta.url))
 
 const frac = (x) => x - Math.floor(x)
 const even = (n) => Math.max(2, Math.round(n / 2) * 2)

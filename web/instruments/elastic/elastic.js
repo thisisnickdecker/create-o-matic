@@ -13,7 +13,7 @@
 //   6. Effects (kaleidoscope, liquid, melt, halftone, photocopy, grain) are laid over the frame.
 // Before any of that, keyframes are resolved: the patch's settings as they stand at time t.
 // Waves always complete a whole number of cycles per loop, so frame 0 follows the last frame cleanly.
-import raw from "./instrument.json" with { type: "json" }
+import { readJson } from "../../packages/core/read-json.js"
 import { formatSize } from "../../packages/core/formats.js"
 import { hash } from "../../packages/core/rng.js"
 import { fontString } from "../../packages/core/fonts.js"
@@ -25,6 +25,7 @@ import { drawMark, shapeMask, shapeRect, coverage } from "../../packages/core/ma
 // The type layer for shape fill, pinned to the CPU like every surface the engine reads back.
 const layerCtx = typeof document !== "undefined" ? document.createElement("canvas").getContext("2d", { willReadFrequently: true }) : null
 
+const raw = await readJson(new URL("./instrument.json", import.meta.url))
 // The manifest with its effects' parameters merged in: the full list of controls.
 export const manifest = withEffects(raw)
 export const size = (patch) => formatSize(patch.params)

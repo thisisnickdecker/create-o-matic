@@ -115,6 +115,21 @@ for (const el of document.querySelectorAll("[data-knob]")) knob(el)
 for (const el of document.querySelectorAll("pre")) copyable(el)
 select(store.get())
 
+// If a machine hasn't built its rack a few seconds after load, say so, rather than leave a blank page.
+const machine = document.querySelector("[data-machine]")
+if (machine) {
+  const fail = (why) => {
+    if (machine.children.length) return
+    machine.innerHTML = `<div class="fail"><p><b>This browser couldn't start the machine.</b></p>
+      <p>It needs a recent browser: Safari 16.4 or later (iOS 16.4 on iPhone), Chrome, Edge or Firefox. If you're on one of those, reload; if it still won't start, <a href="https://github.com/thisisnickdecker/create-o-matic/issues">tell Nick</a>.</p>
+      <p class="why"></p></div>`
+    machine.querySelector(".why").textContent = why || ""
+  }
+  addEventListener("error", (e) => setTimeout(() => fail(e.message), 1500))
+  addEventListener("unhandledrejection", (e) => setTimeout(() => fail(String(e.reason?.message ?? e.reason)), 1500))
+  addEventListener("load", () => setTimeout(() => fail(), 8000))
+}
+
 const masthead = document.querySelector(".masthead")
 masthead?.querySelector(".menu-toggle")?.addEventListener("click", (e) => {
   const open = masthead.classList.toggle("open")

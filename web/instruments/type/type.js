@@ -2,11 +2,11 @@
 // size (or as wide as its column), weight, tracking, leading, case and ink, stacked or in a grid,
 // with a small label and a hairline rule. Motion moves every row on the same beat, each a little
 // behind the one before (the stagger); everything is periodic, so the loop closes.
-import manifest from "./instrument.json" with { type: "json" }
+import { readJson } from "../../packages/core/read-json.js"
 import { formatSize } from "../../packages/core/formats.js"
 import { resolve } from "../../packages/core/keys.js"
 
-export { manifest }
+export const manifest = await readJson(new URL("./instrument.json", import.meta.url))
 
 const TAU = Math.PI * 2
 const frac = (x) => x - Math.floor(x)

@@ -5,12 +5,13 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-Frame-Options: SAMEORIGIN
 
-# The engine is meant to be embedded on other sites.
+# Code is checked on every load (a quick 304 when unchanged), so a deploy never leaves a browser
+# with new modules importing from stale ones.
 /instruments/*
   Access-Control-Allow-Origin: *
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate
 /packages/*
   Access-Control-Allow-Origin: *
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate
 /assets/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate

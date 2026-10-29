@@ -162,6 +162,36 @@ async function studies(host) {
   }))
 }
 
+// The Brand bench's boards, drawn once their logo and faces are ready.
+const BOARDS = ["create-o-matic", "night-shift", "logo-loop"]
+async function boards(host) {
+  const brand = await import("/instruments/brand/brand.js")
+  const { ensureFont } = await import("/packages/core/fonts.js")
+  const { prepareMarks } = await import("/packages/core/marks.js")
+  const patches = await Promise.all(BOARDS.map((n) => fetch(`/instruments/brand/presets/${n}.json`).then((r) => r.json())))
+  const near = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue
+      near.unobserve(e.target)
+      const patch = sanitize(brand.manifest, e.target._patch), c = e.target.querySelector("canvas")
+      Promise.all([prepareMarks({ params: { content: `@${patch.params.logo}` }, marks: patch.marks }), ...brand.fontRequests(patch).map((r) => ensureFont(r))]).then(([marks]) => {
+        const { w, h } = brand.size(patch), k = Math.min(c.clientWidth / w, c.clientHeight / h) * Math.min(devicePixelRatio || 1, 2)
+        c.width = Math.round(w * k); c.height = Math.round(h * k)
+        brand.render(c.getContext("2d", { willReadFrequently: true }), patch, 0, { scale: k, frame: 0, marks })
+      })
+    }
+  }, { rootMargin: "300px 0px" })
+  host.replaceChildren(...patches.map((patch) => {
+    const tile = Object.assign(document.createElement("a"), { className: "tile", href: `/brand/#${toHash(sanitize(brand.manifest, patch))}` })
+    tile.innerHTML = `<div class="art"><canvas></canvas></div><div class="meta"><span></span><span></span></div>`
+    tile.querySelector(".meta span").textContent = patch.name
+    tile.querySelector(".meta span:last-child").textContent = { overview: "Brand board", logo: "Logo in ASCII" }[patch.params.board] ?? ""
+    tile.querySelector(".art")._patch = patch
+    near.observe(tile.querySelector(".art"))
+    return tile
+  }))
+}
+
 const card = document.querySelector("[data-hero]")
 if (card) hero(card, document.querySelector("[data-hero-caption]"))
 const grid = document.querySelector("[data-examples]")
@@ -172,3 +202,5 @@ const specimenGrid = document.querySelector("[data-specimens]")
 if (specimenGrid) specimens(specimenGrid)
 const studyGrid = document.querySelector("[data-studies]")
 if (studyGrid) studies(studyGrid)
+const boardGrid = document.querySelector("[data-boards]")
+if (boardGrid) boards(boardGrid)

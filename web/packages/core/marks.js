@@ -129,15 +129,27 @@ async function parseRaster(blob) {
   const d = art.getImageData(0, 0, W, H)
   let transparent = false
   for (let i = 3; i < d.data.length; i += 4 * 37) if (d.data[i] < 250) { transparent = true; break }
-  // The shape: alpha if the image has any, otherwise darkness.
+  // The shape: alpha if the image has any. Otherwise the background is taken out: its colour is
+  // read from the corners, and each pixel is as solid as it is different from it.
   const mask = cpuCanvas(W, H)
   const m = mask.createImageData(W, H)
+  const bg = [0, 1, 2].map((c) => [0, W - 1, (H - 1) * W, H * W - 1].reduce((a, q) => a + d.data[q * 4 + c], 0) / 4)
   for (let i = 0; i < d.data.length; i += 4) {
-    const lum = 0.2126 * d.data[i] + 0.7152 * d.data[i + 1] + 0.0722 * d.data[i + 2]
+    const away = Math.max(Math.abs(d.data[i] - bg[0]), Math.abs(d.data[i + 1] - bg[1]), Math.abs(d.data[i + 2] - bg[2]))
     m.data[i] = m.data[i + 1] = m.data[i + 2] = 0
-    m.data[i + 3] = transparent ? d.data[i + 3] : Math.max(0, Math.min(255, (235 - lum) * 1.25))
+    m.data[i + 3] = transparent ? d.data[i + 3] : Math.max(0, Math.min(255, (away - 12) * 4))
   }
   mask.putImageData(m, 0, 0)
+  // In colour too: each pixel takes the shape's alpha, with the background it was blended into
+  // taken back out, so edges don't keep a fringe of the old background.
+  if (!transparent) {
+    for (let i = 0; i < d.data.length; i += 4) {
+      const a = m.data[i + 3] / 255
+      for (let c = 0; c < 3; c++) d.data[i + c] = a > 0.02 ? Math.max(0, Math.min(255, (d.data[i + c] - bg[c] * (1 - a)) / a)) : 0
+      d.data[i + 3] = m.data[i + 3]
+    }
+    art.putImageData(d, 0, 0)
+  }
   const box = { x: 0, y: 0, w: W, h: H }
   return { kind: "image", art: art.canvas, mask: mask.canvas, tints: new Map(), box, bounds: inkBounds(box, (c, s) => { c.scale(s, s); c.drawImage(mask.canvas, 0, 0) }, Math.min(640, Math.max(W, H))) || box }
 }

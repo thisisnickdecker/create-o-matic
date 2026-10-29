@@ -97,3 +97,49 @@ export function oklchText(hex) {
   const [L, C, h] = hexToOklch(hex)
   return `${(L * 100).toFixed(1)}% ${C.toFixed(3)} ${Math.round(h)}`
 }
+
+// ---- palettes ----
+
+// Screen stand-ins for common printing inks, for "Print inks".
+const PRINT_INKS = ["#0078BF", "#FF48B0", "#FFE800", "#00A95C", "#FF665E", "#765BA7", "#3D5588", "#F15060", "#FF6C2F", "#00838A", "#1D1D1B", "#AC936E"]
+
+// A palette of n inks in the given harmony. Lightness is spread from dark to light so the inks
+// always read against one another, then shuffled so the dominant ink isn't always the darkest.
+export function deal(harmony, n, r) {
+  const h0 = r() * 360, jitter = (d) => (r() - 0.5) * d
+  if (harmony === "print") {
+    const pool = PRINT_INKS.slice()
+    return Array.from({ length: n }, () => pool.splice(Math.floor(r() * pool.length), 1)[0] ?? PRINT_INKS[0])
+  }
+  const lights = Array.from({ length: n }, (_, i) => 0.24 + (0.7 * (i + 0.2 + r() * 0.6)) / n)
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [lights[i], lights[j]] = [lights[j], lights[i]] }
+  return lights.map((L, i) => {
+    let h = h0, C = 0.07 + r() * 0.11
+    if (harmony === "analogous") h = h0 + (i - (n - 1) / 2) * 26 + jitter(8)
+    else if (harmony === "complementary") h = h0 + (i % 2) * 180 + jitter(16)
+    else if (harmony === "split") h = h0 + [0, 150, 210][i % 3] + jitter(10)
+    else if (harmony === "triad") h = h0 + [0, 120, 240][i % 3] + jitter(10)
+    else if (harmony === "mono") { h = h0 + jitter(6); C = 0.03 + r() * 0.14 }
+    else if (harmony === "muted") { h = 30 + r() * 80 + (r() < 0.25 ? 150 : 0); C = 0.015 + r() * 0.06 }
+    else h = h0 + i * 137.5 + jitter(10) // golden angle: as far from every other hue as it can get
+    return oklchToHex([L, C, (h + 360) % 360])
+  })
+}
+
+// A plain name for a colour, from its lightness, chroma and hue: "deep blue", "light warm grey".
+export function colourName(hex) {
+  const [L, C, h] = hexToOklch(hex)
+  if (C < 0.03) {
+    if (L > 0.95) return L > 0.99 && C < 0.005 ? "white" : "off-white"
+    if (L < 0.2) return "black"
+    const tone = C > 0.008 ? (h > 40 && h < 120 ? "warm " : h > 200 && h < 300 ? "cool " : "") : ""
+    return `${L > 0.75 ? "light " : L < 0.4 ? "dark " : ""}${tone}grey`
+  }
+  // Hue bands where OKLCH puts them: red sits near 25°, yellow near 100°, blue near 265°.
+  const band = [[15, "pink"], [28, "red"], [38, "coral"], [68, "orange"], [90, "amber"], [112, "yellow"], [135, "lime"], [170, "green"],
+    [205, "teal"], [245, "sky blue"], [280, "blue"], [315, "violet"], [340, "magenta"], [360, "pink"]].find(([edge]) => h < edge)[1]
+  const name = band === "pink" && L < 0.5 ? "crimson" : band
+  const shade = L > 0.85 ? (C < 0.12 ? "pale " : "bright ") : L > 0.72 && C < 0.14 ? "light " : L < 0.35 ? "deep " : ""
+  return shade + name
+}
+

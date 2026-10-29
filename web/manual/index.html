@@ -30,6 +30,7 @@
       <a href="/texture/">Texture lab</a>
       <a href="/type/">Type tester</a>
       <a href="/colour/">Colour lab</a>
+      <a href="/brand/">Brand bench</a>
       <a href="/#examples">Examples</a>
       <a href="/manual/" aria-current="page">Manual</a>
       <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
@@ -44,6 +45,7 @@
       <a href="#texture">The Texture lab</a>
       <a href="#tester">The Type tester</a>
       <a href="#colourlab">The Colour lab</a>
+      <a href="#brandbench">The Brand bench</a>
       <a href="#type">Type and marks</a>
       <a href="#fonts">Fonts</a>
       <a href="#colour">Colour</a>
@@ -68,7 +70,7 @@
       <p class="lead">Everything the machine does, and how to take what it makes into the rest of your work.</p>
 
       <h2 id="start">Start here</h2>
-      <p>Create-o-matic has four instruments so far: <a href="/make/">Motion</a>, for type and marks that move; <a href="/texture/">the Texture lab</a>, for treating images and video; <a href="/type/">the Type tester</a>, for comparing type; and <a href="/colour/">the Colour lab</a>, for studying palettes. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
+      <p>Create-o-matic has five instruments so far: <a href="/make/">Motion</a>, for type and marks that move; <a href="/texture/">the Texture lab</a>, for treating images and video; <a href="/type/">the Type tester</a>, for comparing type; <a href="/colour/">the Colour lab</a>, for studying palettes; and <a href="/brand/">the Brand bench</a>, for putting a brand together. They share the same controls, patches, keyframes and exports. Open <a href="/make/">Motion</a>. On the left is the stage: the loop, a play button, and the playhead. On the right is the rack of controls, in groups. Everything you change is kept in the page's address as you go, so a reload never loses work and the address bar is always a link to exactly what's on screen.</p>
       <ol>
         <li>Pick a preset from <b>Presets</b>, or start from what's there.</li>
         <li>Change the words in <b>Content</b>, one per line.</li>
@@ -113,6 +115,14 @@
       </table>
       <p>The maths happens in OKLab and OKLCH, colour spaces where equal steps look equal. Blends don't sag into grey halfway, tints keep their hue, and colours a screen can't show are brought into range by giving up chroma, not hue or lightness. <b>Vary</b> deals a new palette in the harmony set under <b>Vary deals</b>: neighbours, opposites, split complementary, triad, one hue in many lights, print inks, or Albers' greys and earths. It keeps the number of inks, and spreads them from dark to light so they read against one another.</p>
       <p><b>Clockwork</b> sets the palette moving. <b>Hue swing</b> turns every ink round the colour wheel and back. <b>Lights up</b> lifts each ink's lightness in turn. <b>Carousel</b> passes the inks along, going round the hue wheel between them so nothing turns muddy on the way. <b>Breathe</b> swells and shrinks the shapes. The <b>Print shop</b> exports the study as PNG, MP4, WebM or GIF, and the palette as CSS custom properties (<b>Copy CSS</b>), JSON, or an Adobe swatch file for Illustrator, Photoshop and InDesign.</p>
+
+      <h2 id="brandbench">The Brand bench</h2>
+      <p><a href="/brand/">The Brand bench</a> puts a brand on one board: the logo on paper, the logo reversed out of each ink, the palette with its codes, and the faces set in their roles. Drop a logo anywhere on the page. An SVG keeps its own colours; a PNG or JPEG has its background taken out (its colour is read from the corners). <b>Take its colours</b> makes the logo's colours the inks. Under <b>Type case</b>, give each role (headline, subhead, body, caption, accent) a face from the library, your Adobe Fonts project or your own files; the arrow keys step through fonts in the browser.</p>
+      <p><b>Board</b> shows the whole board or one part of it. <b>The logo alone</b> is for animating a logo: choose how it moves under <b>Clockwork</b> (breathe, float, coin flip, through the inks), turn on an effect such as ASCII or halftone, which applies to the logo wherever it's drawn, and export it as MP4, GIF or PNG (<b>No paper</b> gives a transparent PNG).</p>
+      <table>
+        <tr><th>Download the kit</th><td>A .zip: <code>BRAND.md</code> (the brand in words and tables, with colour names, contrast pairings that pass WCAG AA, and rules an agent can follow), <code>tokens.json</code> (W3C design tokens, which Tokens Studio for Figma and Style Dictionary read), <code>brand.css</code> (custom properties with the font imports), the logo, the board and the patch.</td></tr>
+        <tr><th>Send it on</th><td><b>Animate in Motion</b>, <b>Study in the Colour lab</b> and <b>Set in the Type tester</b> open those instruments with this brand's logo, inks and faces.</td></tr>
+      </table>
 
       <h2 id="type">Type and marks</h2>
       <p>Each line of <b>Content</b> is a slot. <b>Content mode</b> decides which slot goes in which cell:</p>
@@ -295,6 +305,7 @@ npm run check      <span class="c"># manifests, presets and tests</span></code><
       <a href="/texture/">Texture lab</a>
       <a href="/type/">Type tester</a>
       <a href="/colour/">Colour lab</a>
+      <a href="/brand/">Brand bench</a>
       <a href="/manual/">Manual</a>
       <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
       <a href="https://hirenick.xyz">Hire Nick</a>

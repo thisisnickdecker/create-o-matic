@@ -2,7 +2,7 @@
 
 Instruments for making type, images and motion. Free and open source.
 
-Four instruments so far:
+Five instruments so far:
 
 - **Motion**: stretch words, logos and marks through a breathing grid or a golden spiral, keyframe
   anything, run it through liquid, halftone, a photocopier or onto a cube, and export the loop as
@@ -15,10 +15,13 @@ Four instruments so far:
 - **Colour lab**: palettes, studied. Swatch cards with HEX, RGB and OKLCH, Albers' nested squares,
   proportion, tints and shades, WCAG contrast checks and OKLab blends; palettes dealt by harmony,
   and exported as CSS, JSON or an Adobe swatch file.
+- **Brand bench**: a brand on one board. Drop in a logo (backgrounds taken out), take its colours,
+  set faces by role, animate the logo, and download a kit: W3C design tokens, CSS, the logo and a
+  BRAND.md that agents can design from.
 
 Everything is a small JSON patch: the same patch makes the same frames, every time.
 
-**[createomatic.xyz](https://createomatic.xyz)** · [Motion](https://createomatic.xyz/make/) · [Texture lab](https://createomatic.xyz/texture/) · [Type tester](https://createomatic.xyz/type/) · [Colour lab](https://createomatic.xyz/colour/) · [Manual](https://createomatic.xyz/manual/)
+**[createomatic.xyz](https://createomatic.xyz)** · [Motion](https://createomatic.xyz/make/) · [Texture lab](https://createomatic.xyz/texture/) · [Type tester](https://createomatic.xyz/type/) · [Colour lab](https://createomatic.xyz/colour/) · [Brand bench](https://createomatic.xyz/brand/) · [Manual](https://createomatic.xyz/manual/)
 
 Made by [Nick Decker](https://nickdecker.net).
 
@@ -39,14 +42,15 @@ plain ES modules served as files.
 ```
 web/                          the site, exactly as it's published
   index.html, manual/         home and manual
-  make/, texture/, type/,     the instruments' pages (each just mounts its app)
-  colour/
+  make/ texture/ type/        the instruments' pages (each just mounts its app)
+  colour/ brand/
   assets/                     site styles, the wordmark and colour knob, the home page's loops
   instruments/elastic/        Motion: instrument.json (every control), elastic.js (pure renderer),
                               app.js (its extras on the shell), embed.js (for other sites), presets/
   instruments/texture/        Texture lab: the same shape
   instruments/type/           Type tester: the same shape
   instruments/colour/         Colour lab: the same shape
+  instruments/brand/          Brand bench: the same shape, plus kit.js (tokens, CSS, BRAND.md)
   packages/core/              shared: shell.js (the machine every instrument runs in), patches,
                               keyframes, effects and the effect stack, fonts, marks, colour picker
                               and colour maths (OKLab, contrast),

@@ -105,9 +105,9 @@ img, svg, canvas, video { display: block; max-width: 100%; }
 }
 .code .copy:hover { background: rgba(255, 255, 255, .22); }
 
-/* Below 1120px the nav folds into a menu; on phones the knob loses its label. Last in the file, so
+/* Below 1240px the nav folds into a menu; on phones the knob loses its label. Last in the file, so
    these win over the rules above. */
-@media (max-width: 1120px) {
+@media (max-width: 1240px) {
   .masthead { height: 56px; gap: 12px; }
   .masthead .home { height: 28px; }
   .menu-toggle { display: block; }

@@ -1,0 +1,566 @@
+{
+  "id": "brand",
+  "name": "Brand bench",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "brand",
+    "identity",
+    "guidelines"
+  ],
+  "description": "A brand, put together. Drop in a logo (SVG keeps its colours; PNG and JPEG lose their background), set the palette, the faces and how the logo moves, and see it all as a brand board. Take the kit away as design tokens, CSS, a BRAND.md for agents and the logo, or send the brand to Motion, the Colour lab and the Type tester.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "brand.js",
+    "app": "app.js"
+  },
+  "page": "/brand/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "untested",
+    "webm": "untested",
+    "gif": "untested",
+    "patch-json": "verified",
+    "kit-zip": "verified"
+  },
+  "reproducibility": "Same patch, logo and fonts give the same frames in the same browser.",
+  "effects": [
+    "kaleidoscope",
+    "liquid",
+    "ascii",
+    "halftone",
+    "photocopy",
+    "grain"
+  ],
+  "groups": [
+    {
+      "id": "brand",
+      "label": "Name tag",
+      "hint": "name and logo"
+    },
+    {
+      "id": "inks",
+      "label": "Swatch book",
+      "hint": "the palette"
+    },
+    {
+      "id": "type",
+      "label": "Type case",
+      "hint": "the faces"
+    },
+    {
+      "id": "board",
+      "label": "Board",
+      "hint": "layout, size and time"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "how the logo moves"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "brandName",
+      "group": "brand",
+      "label": "Name",
+      "type": "string",
+      "default": "Create-o-matic"
+    },
+    {
+      "key": "tagline",
+      "group": "brand",
+      "label": "Line",
+      "type": "string",
+      "default": "A playground for designers.",
+      "help": "A tagline or a sentence about the brand. It's set in the faces below."
+    },
+    {
+      "key": "logo",
+      "group": "brand",
+      "label": "Logo",
+      "type": "mark",
+      "default": "createomatic",
+      "help": "Drop an SVG, PNG or JPEG anywhere on the page. SVG keeps its own colours; a PNG or JPEG on a light background loses the background."
+    },
+    {
+      "key": "logoColour",
+      "group": "brand",
+      "label": "Logo colour",
+      "type": "select",
+      "default": "original",
+      "options": [
+        [
+          "original",
+          "As drawn"
+        ],
+        [
+          "ink",
+          "In the first ink"
+        ],
+        [
+          "auto",
+          "Black or white, whichever reads"
+        ]
+      ]
+    },
+    {
+      "key": "inks",
+      "group": "inks",
+      "label": "Inks",
+      "type": "palette",
+      "default": [
+        "#E93D4C",
+        "#F7684F",
+        "#E9A21B",
+        "#121211"
+      ],
+      "help": "The brand's colours, most important first. Drop an .ase, .gpl or .json palette, or take them from the logo."
+    },
+    {
+      "key": "background",
+      "group": "inks",
+      "label": "Paper",
+      "type": "color",
+      "default": "#F4F4F1"
+    },
+    {
+      "key": "labels",
+      "group": "inks",
+      "label": "Colour codes",
+      "type": "select",
+      "default": "full",
+      "options": [
+        [
+          "off",
+          "Hidden"
+        ],
+        [
+          "hex",
+          "Hex"
+        ],
+        [
+          "full",
+          "Hex, RGB and OKLCH"
+        ]
+      ]
+    },
+    {
+      "key": "faces",
+      "group": "type",
+      "label": "Faces",
+      "type": "list",
+      "itemName": "a face",
+      "title": "{font} · {weight}",
+      "max": 6,
+      "item": [
+        {
+          "key": "role",
+          "label": "Role",
+          "type": "select",
+          "default": "headline",
+          "options": [
+            [
+              "headline",
+              "Headline"
+            ],
+            [
+              "subhead",
+              "Subhead"
+            ],
+            [
+              "body",
+              "Body"
+            ],
+            [
+              "caption",
+              "Caption"
+            ],
+            [
+              "accent",
+              "Accent"
+            ]
+          ]
+        },
+        {
+          "key": "font",
+          "label": "Font",
+          "type": "font",
+          "default": "Inter Tight"
+        },
+        {
+          "key": "fontSource",
+          "label": "Source",
+          "type": "select",
+          "default": "open",
+          "options": [
+            [
+              "open",
+              "Font library"
+            ],
+            [
+              "google",
+              "Google Fonts"
+            ],
+            [
+              "adobe",
+              "Adobe Fonts"
+            ],
+            [
+              "system",
+              "Installed"
+            ],
+            [
+              "file",
+              "My fonts"
+            ]
+          ],
+          "hidden": true
+        },
+        {
+          "key": "weight",
+          "label": "Weight",
+          "type": "int",
+          "min": 100,
+          "max": 1000,
+          "step": 10,
+          "default": 500
+        },
+        {
+          "key": "tracking",
+          "label": "Tracking",
+          "type": "number",
+          "min": -0.1,
+          "max": 0.3,
+          "step": 0.005,
+          "default": 0,
+          "unit": "em"
+        }
+      ],
+      "default": [
+        {
+          "role": "headline",
+          "font": "Inter Tight",
+          "fontSource": "open",
+          "weight": 700,
+          "tracking": -0.02
+        },
+        {
+          "role": "body",
+          "font": "Inter",
+          "fontSource": "open",
+          "weight": 400
+        }
+      ]
+    },
+    {
+      "key": "adobeKit",
+      "group": "type",
+      "label": "Adobe project",
+      "type": "string",
+      "default": "",
+      "help": "Your Adobe Fonts web project ID, from fonts.adobe.com › Web Projects. Its families appear in the font browser."
+    },
+    {
+      "key": "board",
+      "group": "board",
+      "label": "Show",
+      "type": "select",
+      "default": "overview",
+      "options": [
+        [
+          "overview",
+          "The whole board"
+        ],
+        [
+          "logo",
+          "The logo alone"
+        ],
+        [
+          "palette",
+          "The palette"
+        ],
+        [
+          "type",
+          "The type"
+        ]
+      ],
+      "help": "The logo alone is for animating it: the effects below apply to the logo wherever it's shown."
+    },
+    {
+      "key": "logoSize",
+      "group": "board",
+      "label": "Logo size",
+      "type": "number",
+      "min": 0.1,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.56,
+      "help": "Of the panel it sits in."
+    },
+    {
+      "key": "transparent",
+      "group": "board",
+      "label": "No paper",
+      "type": "bool",
+      "default": false,
+      "when": {
+        "board": "logo"
+      },
+      "help": "Leave the paper out, for a logo PNG with a transparent background."
+    },
+    {
+      "key": "format",
+      "group": "board",
+      "label": "Format",
+      "type": "select",
+      "default": "landscape",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "board",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "board",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "board",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 4,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "board",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "margin",
+      "group": "board",
+      "label": "Margin",
+      "type": "int",
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "key": "gap",
+      "group": "board",
+      "label": "Gap",
+      "type": "int",
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "key": "corner",
+      "group": "board",
+      "label": "Corners",
+      "type": "int",
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "key": "motion",
+      "group": "motion",
+      "label": "Logo motion",
+      "type": "select",
+      "default": "breathe",
+      "options": [
+        [
+          "still",
+          "Still"
+        ],
+        [
+          "breathe",
+          "Breathe"
+        ],
+        [
+          "float",
+          "Float"
+        ],
+        [
+          "flip",
+          "Coin flip"
+        ],
+        [
+          "inks",
+          "Through the inks"
+        ]
+      ],
+      "help": "Breathe swells and settles. Float bobs. Coin flip turns it over. Through the inks colours it with each ink in turn."
+    },
+    {
+      "key": "amount",
+      "group": "motion",
+      "label": "Amount",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.4,
+      "when": {
+        "motion": {
+          "not": "still"
+        }
+      }
+    },
+    {
+      "key": "beats",
+      "group": "motion",
+      "label": "Beats per loop",
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "when": {
+        "motion": {
+          "not": "still"
+        }
+      }
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Scatter",
+  "instrument": "elastic",
+  "version": "0.1.0",
+  "seed": 124,
+  "params": {
+    "format": "landscape",
+    "duration": 7,
+    "fps": "30",
+    "content": "scatter",
+    "mode": "letters",
+    "case": "lower",
+    "fontSource": "google",
+    "font": "Fraunces",
+    "weightMin": 300,
+    "weightMax": 900,
+    "direction": "horizontal",
+    "columns": 5,
+    "rows": 5,
+    "columnOffset": 0.2,
+    "rowOffset": 0.2,
+    "wave": "sine",
+    "cycles": 1,
+    "amount": 0.85,
+    "ease": 1.8,
+    "crossAmount": 0.5,
+    "background": "#F2C9C0",
+    "palette": [
+      "#4B2A7B",
+      "#F26B1D"
+    ],
+    "colourMode": "cell",
+    "fit": "ink",
+    "dots": 12,
+    "dotStyle": "size",
+    "dotShape": "round",
+    "dotGain": 1.05,
+    "dotInk": "source",
+    "dotGround": "#F2C9C0",
+    "dotScatter": 0.5
+  }
+}

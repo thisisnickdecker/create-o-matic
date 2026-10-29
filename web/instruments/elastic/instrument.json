@@ -794,6 +794,95 @@
       "help": "Above 1, a few cells swell and most stay small; below 1, most stay large."
     },
     {
+      "key": "scramble",
+      "group": "motion",
+      "label": "Scramble",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0,
+      "help": "Each word decodes from random characters, a letter at a time, over this share of every beat. 0 is off."
+    },
+    {
+      "key": "scrambleSet",
+      "group": "motion",
+      "label": "Scramble with",
+      "type": "select",
+      "default": "letters",
+      "when": {
+        "scramble": {
+          "not": 0
+        }
+      },
+      "options": [
+        [
+          "letters",
+          "Letters and numbers"
+        ],
+        [
+          "symbols",
+          "Symbols #%&*"
+        ],
+        [
+          "binary",
+          "Binary 01"
+        ],
+        [
+          "blocks",
+          "Blocks ░▒▓█"
+        ]
+      ]
+    },
+    {
+      "key": "scrambleSpread",
+      "group": "motion",
+      "label": "Spread",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.5,
+      "when": {
+        "scramble": {
+          "not": 0
+        }
+      },
+      "help": "How far apart the cells start decoding, as a share of the beat."
+    },
+    {
+      "key": "scrambleBeats",
+      "group": "motion",
+      "label": "Decodes per loop",
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "when": {
+        "scramble": {
+          "not": 0
+        }
+      }
+    },
+    {
+      "key": "scrambleRate",
+      "group": "motion",
+      "label": "Flicker",
+      "type": "int",
+      "min": 4,
+      "max": 120,
+      "step": 1,
+      "default": 48,
+      "animate": false,
+      "when": {
+        "scramble": {
+          "not": 0
+        }
+      },
+      "help": "How many times per loop the undecoded characters change."
+    },
+    {
       "key": "keyMode",
       "group": "motion",
       "label": "Keyframes play",
@@ -1053,7 +1142,10 @@
     "kaleidoscope",
     "liquid",
     "melt",
+    "pixelsort",
+    "mosaic",
     "ascii",
+    "dotmatrix",
     "halftone",
     "photocopy",
     "grain",

@@ -36,6 +36,19 @@ const frac = (x) => x - Math.floor(x)
 
 const isMark = (s) => /^@[a-z0-9-]+$/.test(s)
 
+// Scramble: a word decodes from random characters, a letter at a time, over the first part of each
+// beat. Each cell starts at its own moment (Spread); the characters change Flicker times a loop.
+const SCRAMBLE = { letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", symbols: "#%&*+=?!/<>[]{}@$", binary: "01", blocks: "░▒▓█" }
+export function scrambled(word, p, seed, c, t) {
+  const phase = frac(p.scrambleBeats * t - hash(seed, c.s, c.k, 61) * p.scrambleSpread)
+  const done = Math.floor(Math.min(1, phase / p.scramble) * (word.length + 1))
+  if (done >= word.length) return word
+  const set = SCRAMBLE[p.scrambleSet] ?? SCRAMBLE.letters, step = Math.floor(t * p.scrambleRate)
+  let out = word.slice(0, done)
+  for (let i = done; i < word.length; i++) out += word[i] === " " ? " " : set[Math.floor(hash(seed, c.i * 131 + i, step, 62) * set.length)]
+  return out
+}
+
 export function slots(p) {
   const tx = p.case === "upper" ? (s) => s.toUpperCase() : p.case === "lower" ? (s) => s.toLowerCase() : (s) => s
   const lines = p.content.split("\n").map((l) => l.trim()).filter(Boolean)
@@ -49,7 +62,8 @@ export function slots(p) {
 // What the font loader needs to know: family, where from, which weights, which characters.
 export function fontRequest(patch) {
   const p = patch.params
-  return { source: p.fontSource, family: p.font, kit: p.adobeKit, weights: [p.weightMin, p.weightMax], sample: [...new Set(slots(p).filter((w) => !isMark(w)).join(""))].join("") }
+  const scramble = p.scramble > 0 ? SCRAMBLE[p.scrambleSet] ?? "" : ""
+  return { source: p.fontSource, family: p.font, kit: p.adobeKit, weights: [p.weightMin, p.weightMax], sample: [...new Set(slots(p).filter((w) => !isMark(w)).join("") + scramble)].join("") }
 }
 
 function wave(p, phase, seed, s, k) {
@@ -197,7 +211,7 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
       if (p.mode === "size") slot = Math.min(N - 1, Math.floor(c.v * N))
       else if (p.mode === "random") slot = Math.floor(hash(seed, c.s, c.k, 9) * N)
       else slot = c.i % N
-      const word = words[slot]
+      let word = words[slot]
 
       let ink
       switch (p.colourMode) {
@@ -220,6 +234,7 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
         continue
       }
 
+      if (p.scramble > 0) word = scrambled(word, p, seed, c, t)
       const weight = Math.round((p.weightMin + (p.weightMax - p.weightMin) * c.v) / 10) * 10
       const font = fontString(weight, 100, p.font)
       const m = measure(ctx, font, word, p.fit)

@@ -8,7 +8,7 @@ import { EFFECTS, effectById } from "/packages/core/effects/index.js"
 
 const PRESETS = "/instruments/elastic/presets/"
 const SHOWCASE = [
-  "kaleido", "signal", "golden-section", "c-fill", "heat", "black-glass", "phi", "night-shift", "bloom",
+  "kaleido", "signal", "sorted", "scatter", "golden-section", "c-fill", "led-sign", "decode", "heat", "black-glass", "phi", "night-shift", "bloom", "tiles",
   "liquid", "meltdown", "gradient-maker", "coming-clear", "sizes", "o-sweep",
 ]
 const HERO_SECONDS = 9
@@ -53,8 +53,8 @@ async function examples(host) {
 // The hero is a toy: your word (and your logo, if you add one) set in a run of looks, each a real
 // Motion preset with your words swapped in. The looks take turns until you touch something.
 const PLAY = [
-  ["kaleido", "Kaleido"], ["signal", "ASCII"], ["golden-section", "Golden section"], ["heat", "Heat"],
-  ["black-glass", "Black glass"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"], ["meltdown", "Meltdown"],
+  ["kaleido", "Kaleido"], ["signal", "ASCII"], ["decode", "Decode"], ["led-sign", "LED"], ["sorted", "Pixel sort"],
+  ["scatter", "Scatter"], ["heat", "Heat"], ["black-glass", "Black glass"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"],
 ]
 
 // A preset with the word in place of its words. A logo joins as a mark; a shape fill fills the logo.

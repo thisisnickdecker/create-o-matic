@@ -67,3 +67,13 @@ test("golden section: cuts tile the frame, and the first cut is 1/φ of the long
   // From a golden rectangle, every cut is a square and every remainder stays golden.
   for (const c of cells.slice(0, -1)) assert.ok(Math.abs(c.w - c.h) < 1e-6, `${c.w} × ${c.h}`)
 })
+
+test("scramble: decoded once the beat passes its share, the same every time, and closed at the loop", async () => {
+  const { scrambled } = await import("../web/instruments/elastic/elastic.js")
+  const p = { scramble: 0.5, scrambleSet: "letters", scrambleSpread: 0, scrambleBeats: 1, scrambleRate: 24 }
+  const c = { s: 1, k: 2, i: 3 }
+  assert.equal(scrambled("DECODE", p, 7, c, 0.75), "DECODE")
+  assert.notEqual(scrambled("DECODE", p, 7, c, 0.01), "DECODE")
+  assert.equal(scrambled("DECODE", p, 7, c, 0.01), scrambled("DECODE", p, 7, c, 0.01))
+  assert.equal(scrambled("DE CODE", p, 7, c, 0.01)[2], " ")
+})

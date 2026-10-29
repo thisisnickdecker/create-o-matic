@@ -29,6 +29,7 @@ import pin from "./pin.js"
 import gradient from "./gradient.js"
 import overlay from "./overlay.js"
 import ascii from "./ascii.js"
+import { dotmatrix, pixelsort, mosaic } from "./code.js"
 import { adjust, invert, posterize, gradmap, acid, holographic } from "./pixels.js"
 import { riso, chroma, film } from "./print.js"
 import { paper, grunge } from "./surface.js"
@@ -36,7 +37,7 @@ import { paper, grunge } from "./surface.js"
 export const EFFECTS = [
   kaleidoscope, liquid, melt,
   adjust, gradmap, acid, holographic, invert, posterize,
-  ascii, halftone, riso, photocopy, paper,
+  pixelsort, mosaic, ascii, dotmatrix, halftone, riso, photocopy, paper,
   chroma, film, grunge, grain,
   gradient, overlay,
   reflector, cube, pin,

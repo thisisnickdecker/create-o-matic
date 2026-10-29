@@ -87,7 +87,7 @@
       <p>The <b>Darkroom</b> is a stack of layers, applied from the top down. <b>Add an effect…</b> puts a new layer at the bottom. On each layer: the dot switches it on and off, the arrows move it, × removes it, and its name opens its settings, including a <b>Blend</b> mode and <b>Opacity</b>. The same effect can be used as many times as you like.</p>
       <table>
         <tr><th>Colour</th><td>Adjust (brightness, contrast, saturation, hue, warmth), Gradient map (duotones and tritones), Acid, Holographic foil, Invert, Posterize.</td></tr>
-        <tr><th>Code</th><td>ASCII: the picture re-set in characters, flickering and scanned.</td></tr>
+        <tr><th>Code</th><td>ASCII (the picture re-set in characters, flickering and scanned), Dot matrix, Pixel sort and Mosaic.</td></tr>
         <tr><th>Print</th><td>Risograph (two to four drums, misregistration, dot grain), Halftone, Photocopy, Paper (uncoated, kraft, newsprint, card, blotting).</td></tr>
         <tr><th>Texture</th><td>Chroma split, Film (halation, fade, vignette), Grunge (dust, scratches, stains), Grain.</td></tr>
         <tr><th>Paint</th><td>Gradient (mesh, linear or radial) and Texture overlay: your own scan, photograph or light leak, blended in.</td></tr>
@@ -175,6 +175,7 @@
         <li><b>Loop, easing back</b> plays forwards, then eases from the last key round to the first.</li>
         <li><b>Loop, jumping back</b> plays forwards and cuts back to the start.</li>
       </ul>
+      <p><b>Scramble</b>, also under Clockwork, decodes every word from random characters a letter at a time, over that share of each beat: each cell starts at its own moment (<b>Spread</b>), scrambling with letters and numbers, symbols, binary or blocks, and the undecoded characters change <b>Flicker</b> times a loop.</p>
 
       <h2 id="effects-guide">Effects</h2>
       <p>Applied in this order, each off at zero:</p>
@@ -183,6 +184,9 @@
         <tr><th>Liquid</th><td>The frame seen through moving water.</td></tr>
         <tr><th>Melt</th><td>Columns drip from a held top edge.</td></tr>
         <tr><th>ASCII</th><td>The frame re-set in type. Each character cell takes the brightness under it and picks a character from a set running sparse to dense (classic, a dense 70-step ramp, blocks, binary, slashes, half-width kana, or your own), drawn in the picture's colour or one ink, over <b>Tiles</b> of the cell's colour. <b>Flicker</b> swaps a share of characters each step, so even a still seems to compute; the <b>Scan line</b> sweeps down once a loop, lighting and scrambling what it passes. On a light <b>Ground</b>, dark parts get the densest characters, like a typewriter drawing.</td></tr>
+        <tr><th>Dot matrix</th><td>One dot per cell. <b>LED</b> lights fixed dots by brightness, the unlit ones still faintly there; <b>Pointillist</b> sizes them by brightness. <b>Scatter</b> sends every dot off on its own path and home again each loop.</td></tr>
+        <tr><th>Pixel sort</th><td>Each line is cut into spans of about the <b>Streak length</b>; a span with anything brighter than the threshold is sorted by brightness, so bright pixels drag out into streaks. <b>Sweep</b> grows and draws them back once a loop.</td></tr>
+        <tr><th>Mosaic</th><td>The picture as tiles of one colour each, with grout and rounding.</td></tr>
         <tr><th>Halftone</th><td>Dots, squares or lines at any screen angle, with dot gain. Drawn as vectors.</td></tr>
         <tr><th>Photocopy</th><td>Generation loss: softening, uneven toner, drum streaks, speckle and drop-out.</td></tr>
         <tr><th>Grain</th><td>Film grain. <b>Boil</b> changes it every frame.</td></tr>

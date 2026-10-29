@@ -40,7 +40,10 @@
   "effects": [
     "kaleidoscope",
     "liquid",
+    "pixelsort",
+    "mosaic",
     "ascii",
+    "dotmatrix",
     "halftone",
     "photocopy",
     "grain"

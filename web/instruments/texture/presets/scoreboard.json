@@ -1,0 +1,26 @@
+{
+  "name": "Scoreboard",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 132,
+  "params": {
+    "layers": [
+      {
+        "id": "dotmatrix-1",
+        "effect": "dotmatrix",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "dots": 9,
+          "dotStyle": "led",
+          "dotShape": "round",
+          "dotGain": 0.86,
+          "dotInk": "source",
+          "dotGround": "#0B0B0A",
+          "dotOff": 0.12
+        }
+      }
+    ]
+  }
+}

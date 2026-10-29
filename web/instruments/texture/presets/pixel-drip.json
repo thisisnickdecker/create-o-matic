@@ -1,0 +1,34 @@
+{
+  "name": "Pixel drip",
+  "instrument": "texture",
+  "version": "0.1.0",
+  "seed": 131,
+  "params": {
+    "layers": [
+      {
+        "id": "pixelsort-1",
+        "effect": "pixelsort",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "pixelSort": 0.45,
+          "sortLength": 360,
+          "sortDirection": "columns",
+          "sortOrder": "rise",
+          "sortSweep": 0.6
+        }
+      },
+      {
+        "id": "grain-2",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.1
+        }
+      }
+    ]
+  }
+}

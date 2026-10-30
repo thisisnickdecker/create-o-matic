@@ -53,8 +53,8 @@ async function examples(host) {
 // adjust it: size, typeface, colour, how much it moves, the look's own effect, the loop's length.
 // Each look is a real Motion preset with your words in. Download it here, or open it in Motion.
 const PLAY = [
-  ["clean-type", "Type"], ["c-fill", "Shape fill"], ["night-shift", "Night shift"], ["black-glass", "Black glass"],
-  ["signal", "ASCII"], ["led-sign", "LED"], ["sorted", "Pixel sort"], ["decode", "Decode"], ["scatter", "Scatter"],
+  ["clean-type", "Type"], ["c-fill", "Shape fill"], ["signal", "ASCII"], ["night-shift", "Night shift"],
+  ["led-sign", "LED"], ["sorted", "Pixel sort"], ["decode", "Decode"], ["scatter", "Scatter"],
   ["heat", "Heat"], ["monolith", "Cube"], ["tumbling-blocks", "Blocks"], ["kaleido", "Kaleido"],
 ]
 // Each look's own effect, on one 0 to 1 slider: the setting, and its value at each end.
@@ -63,6 +63,10 @@ const EFFECT = {
   decode: ["Scramble", "scramble", 0.1, 0.95], scatter: ["Scatter", "dotScatter", 0, 1], kaleido: ["Mirrors", "kaleido", 3, 14],
   monolith: ["Cube size", "cube", 0.35, 1], "tumbling-blocks": ["Block size", "cube", 0.06, 0.45],
 }
+// A look's own way of moving, where it has a choice of them: the label and the setting.
+const VARIANT = { signal: ["Motion", "asciiMotion"] }
+// Backgrounds to try, then your own colour, then none at all.
+const GROUNDS = [["Paper", "#F4F4F1"], ["White", "#FFFFFF"], ["Ink", "#121211"], ["Cobalt", "#1530FF"], ["Signal orange", "#FF5A1F"], ["Yellow", "#FFE800"], ["Pink", "#FF4FA3"]]
 const PLACEHOLDER = "TYPE\nSOMETHING"
 
 // The look with your words in: a logo joins as a mark, and fills a shape fill whole.
@@ -89,10 +93,12 @@ async function play(root) {
   const ui = { size: $("[data-size]"), font: $("[data-font]"), colours: $("[data-colours]"), motion: $("[data-motion]"), effect: $("[data-effect]"),
     effectRow: $("[data-effect-row]"), effectName: $("[data-effect-name]"), speed: $("[data-speed]"), speedOut: $("[data-speed-out]"),
     rows: $("[data-rows]"), columns: $("[data-columns]"), gap: $("[data-gap]"), ripple: $("[data-ripple]"),
-    rowsOut: $("[data-rows-out]"), columnsOut: $("[data-columns-out]"), gridRows: root.querySelectorAll("[data-grid-row]") }
+    rowsOut: $("[data-rows-out]"), columnsOut: $("[data-columns-out]"), gridRows: root.querySelectorAll("[data-grid-row]"),
+    grounds: $("[data-grounds]"), variant: $("[data-variant]"), variantRow: $("[data-variant-row]"), variantName: $("[data-variant-name]") }
   const presets = await Promise.all(PLAY.map(([id]) => load(id)))
   const { PALETTES } = await import("/assets/brand.js")
-  let look = 0, logo = null, colour = -1, stop = null
+  const { contrast, inkOn } = await import("/packages/core/colour.js")
+  let look = 0, logo = null, colour = -1, ground = null, stop = null
 
   // Looks
   const buttons = PLAY.map(([, label], i) => {
@@ -115,6 +121,25 @@ async function play(root) {
   }
   const swatches = [swatch("The look's own colours", null, -1), ...PALETTES.slice(0, 6).map((pal, i) => swatch(pal.name, pal.colours, i))]
 
+  // Background: the look's own, a few to try, your own colour, or see-through.
+  const groundSwatch = (label, value, text = "") => {
+    const b = Object.assign(document.createElement("button"), { type: "button", title: label, textContent: text })
+    b.setAttribute("role", "radio")
+    b.setAttribute("aria-label", label)
+    if (value?.startsWith("#")) b.style.background = value
+    if (value === "clear") b.className = "see-through"
+    b.onclick = () => { ground = value; show() }
+    b._value = value
+    ui.grounds.append(b)
+    return b
+  }
+  const groundSwatches = [groundSwatch("The look's own background", null, "Own"), ...GROUNDS.map(([label, hex]) => groundSwatch(label, hex))]
+  const picker = Object.assign(document.createElement("input"), { type: "color", value: "#1530FF", title: "Your own colour" })
+  picker.setAttribute("aria-label", "Your own background colour")
+  picker.oninput = () => { ground = picker.value.toUpperCase(); picker.style.background = picker.value; show() }
+  ui.grounds.append(picker)
+  groundSwatches.push(groundSwatch("See-through: no background, for PNG and GIF", "clear"))
+
   // The sliders start where the look itself sits.
   function fromLook() {
     const p = presets[look].params, e = EFFECT[PLAY[look][0]]
@@ -125,6 +150,14 @@ async function play(root) {
     ui.gap.value = p.gap ?? 0
     ui.ripple.value = p.rowOffset ?? 0.09
     for (const r of ui.gridRows) r.hidden = (p.layout ?? "grid") !== "grid"
+    const v = VARIANT[PLAY[look][0]]
+    ui.variantRow.hidden = !v
+    if (v) {
+      const d = EFFECTS.flatMap((x) => x.params).find((x) => x.key === v[1])
+      ui.variantName.textContent = v[0]
+      ui.variant.replaceChildren(...d.options.map(([value, text]) => Object.assign(document.createElement("option"), { value, textContent: text.split(":")[0] })))
+      ui.variant.value = p[v[1]] ?? d.default
+    }
     ui.effectRow.hidden = !e
     if (e) { const [name, key, a, b] = e; ui.effectName.textContent = name; ui.effect.value = Math.min(1, Math.max(0, ((p[key] ?? a) - a) / (b - a))) }
   }
@@ -134,7 +167,23 @@ async function play(root) {
     const patch = playPatch(presets[look], input.value, logo), p = patch.params, e = EFFECT[PLAY[look][0]]
     if (ui.size.value) p.format = ui.size.value
     if (ui.font.value) Object.assign(p, { font: ui.font.value, fontSource: "open" })
-    if (colour >= 0) { p.palette = PALETTES[colour].colours; if (p.gradient && p.gradient !== "off") p.gradientInks = PALETTES[colour].colours }
+    if (colour >= 0) {
+      p.palette = PALETTES[colour].colours
+      if (p.gradient && p.gradient !== "off") p.gradientInks = PALETTES[colour].colours
+      if (p.asciiInk === "sweep") p.asciiInks = PALETTES[colour].colours
+    }
+    if (ground === "clear") p.transparent = true
+    else if (ground) {
+      p.background = ground; p.transparent = false
+      if (p.dotGround) p.dotGround = ground
+      if (p.asciiGround) p.asciiGround = ground
+      // An ink that would vanish into the new background turns black or white, whichever reads.
+      const reads = (c) => (contrast(c, ground) < 1.6 ? inkOn(ground) : c)
+      p.palette = p.palette.map(reads)
+      if (p.asciiInks) p.asciiInks = p.asciiInks.map(reads)
+    }
+    const v = VARIANT[PLAY[look][0]]
+    if (v) p[v[1]] = ui.variant.value
     p.amount = +ui.motion.value
     p.duration = +ui.speed.value
     p.gap = +ui.gap.value
@@ -161,6 +210,9 @@ async function play(root) {
     } else stop.update(patch)
     buttons.forEach((b, i) => { b.classList.toggle("on", i === look); b.setAttribute("aria-checked", String(i === look)) })
     swatches.forEach((b, i) => b.classList.toggle("on", i - 1 === colour))
+    groundSwatches.forEach((b) => b.classList.toggle("on", b._value === ground))
+    picker.classList.toggle("on", Boolean(ground) && ground !== "clear" && !GROUNDS.some(([, hex]) => hex === ground))
+    card.classList.toggle("see-through", Boolean(patch.params.transparent))
     ui.speedOut.textContent = `${(+ui.speed.value).toFixed(1)} s`
     ui.rowsOut.textContent = ui.rows.value
     ui.columnsOut.textContent = ui.columns.value
@@ -171,7 +223,7 @@ async function play(root) {
   let wait = 0
   const soon = (ms = 160) => { clearTimeout(wait); wait = setTimeout(() => show(), ms) }
   input.addEventListener("input", () => soon(280))
-  for (const el of [ui.size, ui.font]) el.addEventListener("change", () => show())
+  for (const el of [ui.size, ui.font, ui.variant]) el.addEventListener("change", () => show())
   for (const el of [ui.motion, ui.effect, ui.speed, ui.rows, ui.columns, ui.gap, ui.ripple]) el.addEventListener("input", () => soon())
 
   // A logo: chosen, or dropped anywhere on the page.
@@ -180,7 +232,7 @@ async function play(root) {
     try {
       const { name, svg } = await addMarkFile(f)
       logo = { name, svg }
-      hint.textContent = `${f.name} is in${svg ? "" : ", with its background taken out"}. Try Shape fill, Black glass or ASCII; clear the words to fill every cell with it.`
+      hint.textContent = `${f.name} is in${svg ? "" : ", with its background taken out"}. Try Shape fill or ASCII; clear the words to fill every cell with it.`
       show(true)
     } catch (e) { hint.textContent = e.message }
   }
@@ -217,10 +269,12 @@ async function play(root) {
     const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
     const n = engine.frameCount(patch), fps = Number(patch.params.fps)
     const draw = (c, i) => engine.render(c, patch, kind === "png" ? 0.25 : i / n, { scale: s, frame: i, marks })
+    // See-through stays see-through in PNG and GIF; an MP4 can't hold it, so it gets the look's background.
+    const clear = patch.params.transparent, matte = patch.params.background
     const blob = kind === "png" ? await exporters.exportPng({ w, h, draw })
-      : kind === "gif" ? await exporters.exportGif({ w, h, fps, frames: n, draw, onProgress })
-      : await exporters.exportVideo({ kind, w, h, fps, frames: n, draw, onProgress })
-    return { blob, name: `${fileSlug(input.value || logo?.name || "create-o-matic")}-${w}x${h}.${kind}`, w, h, kind }
+      : kind === "gif" ? await exporters.exportGif({ w, h, fps, frames: n, draw, onProgress, clear })
+      : await exporters.exportVideo({ kind, w, h, fps, frames: n, draw, onProgress, clear, matte })
+    return { blob, name: `${fileSlug(input.value || logo?.name || "create-o-matic")}-${w}x${h}.${kind}`, w, h, kind, clear }
   }
   const mb = (blob) => `${(blob.size / 1048576).toFixed(1)} MB`
 
@@ -236,6 +290,7 @@ async function play(root) {
         if (sharable) { shareButton.hidden = false; shareButton.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}` }
         if (sharable && exporters.touchFirst()) hint.textContent = `Your ${w}×${h} ${kind.toUpperCase()} is ready (${mb(blob)}). Tap Save or share to put it in Photos, or send it.`
         else { exporters.download(blob, name); hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${mb(blob)}).${sharable ? " Share sends it by AirDrop or Messages." : ""}` }
+        if (kind === "mp4" && ready.clear) hint.textContent += " MP4 can't be see-through, so it has the look's background: for see-through, use PNG or GIF here, or WebM and PNG frames in Motion."
       } catch (e) { hint.textContent = e.message }
       b.textContent = label
       busy = false
@@ -259,33 +314,37 @@ async function play(root) {
   show(true)
 }
 
-// The Texture lab's looks, each drawn once onto its test card when it comes near the screen.
-const LOOKS = ["riso-duo", "photocopy-grunge", "newsprint", "film-still", "holographic-foil", "kraft-print"]
-// One frame of Motion's Black glass, the Texture lab's own default source, for the looks to treat.
-async function glassFrame() {
-  const { ensureFont } = await import("/packages/core/fonts.js")
-  const patch = sanitize(manifest, await load("black-glass"))
-  const elastic = await import("/instruments/elastic/elastic.js")
-  await ensureFont(elastic.fontRequest(patch))
-  elastic.clearMetrics()
-  const c = Object.assign(document.createElement("canvas"), { width: 1080, height: 608 })
-  elastic.render(c.getContext("2d", { willReadFrequently: true }), patch, 0.25, { scale: 1080 / size(patch).w, frame: 60 })
-  return c
+// The Texture lab's looks, each drawn once onto its test card when it comes near the screen, each
+// over a different Motion loop, so the six don't treat the same picture.
+const LOOKS = [["riso-duo", "decode"], ["photocopy-grunge", "clean-type"], ["newsprint", "night-shift"], ["film-still", "heat"], ["holographic-foil", "signal"], ["kraft-print", "sorted"]]
+const frames = new Map()
+// One frame of a Motion preset, at most 1200 wide, for a look to treat.
+function motionFrame(name) {
+  if (!frames.has(name)) frames.set(name, (async () => {
+    const { ensureFont } = await import("/packages/core/fonts.js")
+    const patch = sanitize(manifest, await load(name))
+    const elastic = await import("/instruments/elastic/elastic.js")
+    await ensureFont(elastic.fontRequest(patch))
+    elastic.clearMetrics()
+    const { w, h } = size(patch), k = Math.min(1, 1200 / w)
+    const c = Object.assign(document.createElement("canvas"), { width: Math.round(w * k), height: Math.round(h * k) })
+    elastic.render(c.getContext("2d", { willReadFrequently: true }), patch, 0.25, { scale: k, frame: 60 })
+    return c
+  })())
+  return frames.get(name)
 }
 
 async function looks(host) {
   const texture = await import("/instruments/texture/texture.js")
-  const patches = await Promise.all(LOOKS.map((n) => fetch(`/instruments/texture/presets/${n}.json`).then((r) => r.json())))
-  let source = null
+  const patches = await Promise.all(LOOKS.map(([n]) => fetch(`/instruments/texture/presets/${n}.json`).then((r) => r.json())))
   const near = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting) continue
       near.unobserve(e.target)
-      // A 4:3 frame, as the tiles are, with the whole source fitted inside it on its own black.
-      const patch = sanitize(texture.manifest, { ...e.target._patch, params: { background: "#0B0B0A", ...e.target._patch.params, format: "custom", width: 1200, height: 900, fit: "contain", sourceWidth: 1080, sourceHeight: 608 } })
       const c = e.target.querySelector("canvas"), w = c.clientWidth * Math.min(devicePixelRatio || 1, 2)
-      source ??= glassFrame()
-      source.then((frame) => {
+      motionFrame(e.target._source).then((frame) => {
+        // A 4:3 frame, as the tiles are, filled with the source.
+        const patch = sanitize(texture.manifest, { ...e.target._patch, params: { ...e.target._patch.params, format: "custom", width: 1200, height: 900, fit: "cover", sourceWidth: frame.width, sourceHeight: frame.height } })
         c.width = Math.round(w); c.height = Math.round((w * 3) / 4)
         texture.render(c.getContext("2d", { willReadFrequently: true }), patch, 0.25, { scale: c.width / 1200, frame: 7, source: frame })
       })
@@ -297,6 +356,7 @@ async function looks(host) {
     tile.querySelector(".meta span").textContent = patch.name
     tile.querySelector(".meta span:last-child").textContent = patch.params.layers.map((l) => effectById(l.effect).label).join(" · ")
     tile.querySelector(".art")._patch = patch
+    tile.querySelector(".art")._source = LOOKS[patches.indexOf(patch)][1]
     near.observe(tile.querySelector(".art"))
     return tile
   }))
@@ -326,6 +386,7 @@ async function specimens(host) {
     tile.querySelector(".meta span").textContent = patch.name
     tile.querySelector(".meta span:last-child").textContent = [...new Set(patch.params.rows.map((r) => r.font))].join(" · ")
     tile.querySelector(".art")._patch = patch
+    tile.querySelector(".art")._source = LOOKS[patches.indexOf(patch)][1]
     near.observe(tile.querySelector(".art"))
     return tile
   }))
@@ -354,6 +415,7 @@ async function studies(host) {
     tile.querySelector(".meta span").textContent = patch.name
     tile.querySelector(".meta span:last-child").textContent = `${patch.params.inks.length} inks`
     tile.querySelector(".art")._patch = patch
+    tile.querySelector(".art")._source = LOOKS[patches.indexOf(patch)][1]
     near.observe(tile.querySelector(".art"))
     return tile
   }))
@@ -384,6 +446,7 @@ async function boards(host) {
     tile.querySelector(".meta span").textContent = patch.name
     tile.querySelector(".meta span:last-child").textContent = { overview: "Brand board", logo: "Logo in ASCII" }[patch.params.board] ?? ""
     tile.querySelector(".art")._patch = patch
+    tile.querySelector(".art")._source = LOOKS[patches.indexOf(patch)][1]
     near.observe(tile.querySelector(".art"))
     return tile
   }))

@@ -14,7 +14,7 @@ export default {
     { key: "cubeSpin", when: { cube: { not: 0 } }, label: "Cube spin", type: "int", min: -4, max: 4, step: 1, default: 0, help: "How many times the artwork slides round the faces per loop." },
   ],
   active: (p) => p.cube > 0,
-  apply(ctx, p, { t, background }) {
+  apply(ctx, p, { t, background, clear }) {
     const { width: W, height: H } = ctx.canvas
     // The texture: the frame's central square, slid sideways by the spin, wrapping round.
     const S = Math.min(W, H)
@@ -26,8 +26,8 @@ export default {
 
     ctx.save()
     ctx.setTransform(1, 0, 0, 1, 0, 0)
-    ctx.fillStyle = background
-    ctx.fillRect(0, 0, W, H)
+    if (clear) ctx.clearRect(0, 0, W, H)
+    else { ctx.fillStyle = background; ctx.fillRect(0, 0, W, H) }
     // Edge length: at 1 the cube's hexagon just fits the frame (it's 2·cos30·s wide and 2s tall).
     const s = p.cube * Math.min(W / (2 * COS30), H / 2)
     const a = [COS30 * s, -0.5 * s], b = [-COS30 * s, -0.5 * s], d = [0, s]
@@ -35,7 +35,8 @@ export default {
     const face = (ox, oy, u, v, shade) => {
       ctx.setTransform(u[0] / S, u[1] / S, v[0] / S, v[1] / S, ox, oy)
       ctx.drawImage(tex.canvas, 0, 0)
-      if (shade > 0) { ctx.fillStyle = `rgba(0, 0, 0, ${shade})`; ctx.fillRect(0, 0, S, S) }
+      // Shading darkens only what's there, so a see-through frame stays see-through around it.
+      if (shade > 0) { ctx.globalCompositeOperation = "source-atop"; ctx.fillStyle = `rgba(0, 0, 0, ${shade})`; ctx.fillRect(0, 0, S, S); ctx.globalCompositeOperation = "source-over" }
     }
     const cube = (vx, vy) => {
       face(vx + b[0], vy + b[1], a, [-b[0], -b[1]], 0) // top

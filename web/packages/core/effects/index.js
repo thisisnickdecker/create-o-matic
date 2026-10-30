@@ -13,7 +13,8 @@
 // fresh: true if it paints a new layer (a texture, a gradient) rather than changing the frame.
 // Import it below and put it in EFFECTS where it belongs in the chain.
 //
-// env: { t, frame, scale, seed, background, assets }. t is 0 to 1 around the loop; anything that
+// env: { t, frame, scale, seed, background, clear, assets }. clear: the frame is see-through, so an
+// effect that paints a ground should leave it empty. t is 0 to 1 around the loop; anything that
 // moves must complete whole cycles so the loop closes. scale maps output pixels to canvas pixels:
 // measure sizes in output pixels and multiply, so the preview matches the export. assets holds
 // files the instrument has loaded (overlay textures).

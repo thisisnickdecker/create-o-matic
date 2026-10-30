@@ -13,6 +13,7 @@
         "blend": "source-over",
         "params": {
           "dots": 9,
+          "dotBack": "own",
           "dotStyle": "led",
           "dotShape": "round",
           "dotGain": 0.86,

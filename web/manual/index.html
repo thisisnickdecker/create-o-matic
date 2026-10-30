@@ -183,8 +183,8 @@
         <tr><th>Kaleidoscope</th><td>Folds the frame into mirrored wedges, turning a whole number of times per loop.</td></tr>
         <tr><th>Liquid</th><td>The frame seen through moving water.</td></tr>
         <tr><th>Melt</th><td>Columns drip from a held top edge.</td></tr>
-        <tr><th>ASCII</th><td>The frame re-set in type. Each character cell takes the brightness under it and picks a character from a set running sparse to dense (classic, a dense 70-step ramp, blocks, binary, slashes, half-width kana, or your own), drawn in the picture's colour or one ink, over <b>Tiles</b> of the cell's colour. <b>Flicker</b> swaps a share of characters each step, so even a still seems to compute; the <b>Scan line</b> sweeps down once a loop, lighting and scrambling what it passes. On a light <b>Ground</b>, dark parts get the densest characters, like a typewriter drawing.</td></tr>
-        <tr><th>Dot matrix</th><td>One dot per cell. <b>LED</b> lights fixed dots by brightness, the unlit ones still faintly there; <b>Pointillist</b> sizes them by brightness. <b>Scatter</b> sends every dot off on its own path and home again each loop.</td></tr>
+        <tr><th>ASCII</th><td>The frame re-set in type. Each character cell takes how far the picture under it stands out from the ground and picks a character from a set running sparse to dense (classic, a dense 70-step ramp, blocks, binary, slashes, half-width kana, or your own), drawn in the picture's colour, one ink, or a <b>sweep of inks</b> that travels across it, over <b>Tiles</b> of the cell's colour. <b>Motion</b> moves the characters on their own: <b>Assemble</b> bursts them outwards and brings them home, <b>Swirl</b> twists them into a vortex and back, <b>Ripple</b> sends rings out from the middle, <b>Rain</b> drops falling code that writes the picture as it passes, and <b>Glitch</b> slips bands sideways; <b>How far</b> sets how much. <b>Flicker</b> swaps a share of characters each step, so even a still seems to compute; the <b>Scan line</b> sweeps down once a loop. The <b>Ground</b> is the frame's background (so changing the background changes it), a colour of its own (by brightness, best for photographs), or nothing, for see-through.</td></tr>
+        <tr><th>Dot matrix</th><td>One dot per cell. <b>LED</b> lights fixed dots by brightness, the unlit ones still faintly there; <b>Pointillist</b> sizes them by brightness. <b>Scatter</b> sends every dot off on its own path and home again each loop. The <b>Ground</b> works as ASCII's does.</td></tr>
         <tr><th>Pixel sort</th><td>Each line is cut into spans of about the <b>Streak length</b>; a span with anything brighter than the threshold is sorted by brightness, so bright pixels drag out into streaks. <b>Sweep</b> grows and draws them back once a loop.</td></tr>
         <tr><th>Mosaic</th><td>The picture as tiles of one colour each, with grout and rounding.</td></tr>
         <tr><th>Halftone</th><td>Dots, squares or lines at any screen angle, with dot gain. Drawn as vectors.</td></tr>
@@ -203,12 +203,14 @@
       <table>
         <tr><th>Format</th><th>Use it for</th><th>Notes</th></tr>
         <tr><td>MP4</td><td>Social, decks, Premiere, After Effects</td><td>H.264 via your graphics hardware. Chrome, Edge and Safari.</td></tr>
-        <tr><td>WebM</td><td>Websites</td><td>VP9. Slower to make; small and sharp.</td></tr>
+        <tr><td>WebM</td><td>Websites, see-through video</td><td>VP9. Slower to make; small and sharp. With <b>See-through</b> on, it keeps the alpha: browsers play it over whatever's behind. Chrome and Edge.</td></tr>
         <tr><td>GIF</td><td>Slack, email, Figma prototypes</td><td>Use half or quarter size; grain makes GIFs heavy.</td></tr>
         <tr><td>PNG</td><td>Stills and print</td><td>Taken at <b>Freeze frame</b>, which pausing or scrubbing sets. Up to double size.</td></tr>
+        <tr><td>PNG frames</td><td>After Effects, Premiere, Resolve</td><td>Every frame as a PNG, in a zip, numbered in order: import it as an image sequence. Keeps see-through. Large.</td></tr>
         <tr><td>Embed</td><td>Your website, live</td><td>See <a href="#embed">On your website</a>.</td></tr>
         <tr><td>Patch</td><td>Keeping and sharing the recipe</td><td><b>Download .json</b>, or <b>Copy link</b>.</td></tr>
       </table>
+      <p><b>See-through</b> (under Colour) drops the background altogether, for laying a loop over footage or a page. PNG, PNG frames and WebM keep every soft edge; GIF keeps it too, but a GIF pixel is either there or not, so edges turn crisp. MP4 can't be see-through at all, so it gets the background colour.</p>
       <p>Everything is rendered offline, frame by frame, through the same code as the preview, so a slow computer makes a slower export, never a stuttering one. Exports carry on in a background tab.</p>
 
       <h2 id="patches">Patches</h2>

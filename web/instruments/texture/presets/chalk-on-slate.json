@@ -13,6 +13,7 @@
         "blend": "source-over",
         "params": {
           "ascii": 11,
+          "asciiBack": "own",
           "asciiSet": "slashes",
           "asciiInk": "ink",
           "asciiColour": "#F4EAD5",

@@ -71,6 +71,13 @@ body.site { overflow-x: hidden; }
 .swatch-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .swatch-row button { width: 30px; height: 30px; border: 0; border-radius: 50%; cursor: pointer; background: var(--white); font-size: 9px; color: var(--g600); box-shadow: inset 0 0 0 1px var(--g200); }
 .swatch-row button.on { box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--ink); }
+/* Your own background colour, as a swatch, and see-through, as the usual checkerboard. */
+.swatch-row input[type="color"] { width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: conic-gradient(#FF2E88, #FFE800, #39FF7A, #00B3FF, #7A00FF, #FF2E88); box-shadow: inset 0 0 0 1px var(--g200); overflow: hidden; }
+.swatch-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.swatch-row input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 50%; opacity: 0; }
+.swatch-row input[type="color"]::-moz-color-swatch { border: 0; opacity: 0; }
+.swatch-row input[type="color"].on { box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--ink); }
+.swatch-row button.see-through, .stage-card.see-through canvas { background: repeating-conic-gradient(#E4E4E0 0 25%, #FFFFFF 0 50%) 0 0 / 12px 12px; }
 .play-actions { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px 24px; margin-top: 14px; }
 .play-download { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .play-download > span { margin-right: 4px; font-size: 14px; color: var(--g600); }

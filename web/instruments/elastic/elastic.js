@@ -194,8 +194,8 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
 
   ctx.setTransform(scale, 0, 0, scale, 0, 0)
   ctx.globalAlpha = 1
-  ctx.fillStyle = p.background
-  ctx.fillRect(0, 0, W, H)
+  if (p.transparent) ctx.clearRect(0, 0, W, H)
+  else { ctx.fillStyle = p.background; ctx.fillRect(0, 0, W, H) }
   if (p.gradient !== "off") paintGradient(ctx, p, seed, t, W, H)
   if (backdrop && p.backdropOpacity > 0) drawBackdrop(ctx, backdrop, p, W, H)
   const cells = layout(p, seed, t, W, H)
@@ -303,7 +303,7 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
 
   ctx.globalCompositeOperation = "source-over"
   ctx.setTransform(1, 0, 0, 1, 0, 0)
-  if (effects) applyEffects(ctx, p, { t, frame, scale, seed, background: p.background }, raw.effects)
+  if (effects) applyEffects(ctx, p, { t, frame, scale, seed, background: p.background, clear: p.transparent }, raw.effects)
 }
 
 function drawBackdrop(ctx, media, p, W, H) {

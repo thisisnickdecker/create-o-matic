@@ -6,6 +6,11 @@
 //   mp4   H.264 via WebCodecs + mp4-muxer   (Chrome, Edge, Safari 17+; not every Linux build)
 //   webm  VP9 via WebCodecs + webm-muxer    (Chrome, Edge, Firefox 130+)
 //   gif   gifenc, one 256-colour palette for the whole loop; best at reduced size
+//   png frames  a zip of every frame as a PNG: an image sequence for After Effects, Premiere, Resolve
+//
+// See-through frames: PNG, PNG frames and GIF keep them (a GIF pixel is either there or not), and
+// so does WebM, as VP9 with an alpha channel, which browsers play see-through. MP4 can't, so a
+// see-through frame is laid on its matte colour first.
 
 export async function exportPng({ w, h, draw }) {
   const { canvas, ctx } = surface(w, h)
@@ -30,42 +35,70 @@ export async function videoSupport(kind, w = 1920, h = 1080, fps = 30) {
   return null
 }
 
-export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onProgress, signal }) {
+// clear: the frames are see-through. MP4 lays them on matte. WebM keeps the alpha the way libvpx
+// does: a second VP9 stream, encoded from the alpha as a grey picture, rides along with each frame
+// as Matroska's BlockAdditional (browsers can't yet encode alpha in one stream themselves).
+export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onProgress, signal, clear = false, matte = "#FFFFFF" }) {
   const spec = CODECS[kind]
   const codec = await videoSupport(kind, w, h, fps)
   if (!codec) throw new Error(`This browser can't encode ${kind.toUpperCase()} at ${w}×${h}.`)
+  const alpha = clear && kind === "webm"
   const { Muxer, ArrayBufferTarget } = await import(spec.muxer)
   const track = kind === "webm" && codec === "vp8" ? "V_VP8" : spec.track
   const muxer = new Muxer({
     target: new ArrayBufferTarget(),
-    video: { codec: track, width: w, height: h, frameRate: fps },
+    video: { codec: track, width: w, height: h, frameRate: fps, ...(alpha ? { alpha: true } : {}) },
     ...(kind === "mp4" ? { fastStart: "in-memory" } : {}),
   })
   let failure = null
+  // With alpha, each frame waits for its alpha before it goes in, matched by time.
+  const colours = [], alphas = []
+  const pair = () => {
+    while (colours.length && alphas.length) {
+      const [chunk, meta] = colours.shift(), a = alphas.shift()
+      const bytes = new Uint8Array(a.byteLength)
+      a.copyTo(bytes)
+      muxer.addVideoChunk(chunk, { ...meta, alphaSideData: bytes })
+    }
+  }
   const encoder = new VideoEncoder({
-    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+    output: (chunk, meta) => { if (alpha) { colours.push([chunk, meta]); pair() } else muxer.addVideoChunk(chunk, meta) },
     error: (e) => { failure = e },
   })
+  const alphaEncoder = alpha ? new VideoEncoder({ output: (chunk) => { alphas.push(chunk); pair() }, error: (e) => { failure = e } }) : null
   // Flat colour type compresses well, but a stretching frame changes everywhere at once: be generous.
   bitrate ??= Math.round(Math.min(40e6, w * h * fps * 0.28))
-  encoder.configure({ codec, width: w, height: h, bitrate, framerate: fps, latencyMode: "quality",
-    ...(kind === "mp4" ? { avc: { format: "avc" } } : {}) })
+  const config = { codec, width: w, height: h, bitrate, framerate: fps, latencyMode: "quality", ...(kind === "mp4" ? { avc: { format: "avc" } } : {}) }
+  encoder.configure(config)
+  alphaEncoder?.configure(config)
 
   const { canvas, ctx } = surface(w, h)
   const us = 1e6 / fps
+  // The alpha picture: its luma is the alpha, exactly (no range squeeze), and no colour.
+  const planes = alpha ? new Uint8Array(w * h * 1.5).fill(128) : null
+  const close = () => { encoder.close(); alphaEncoder?.close() }
   for (let i = 0; i < frames; i++) {
-    if (signal?.aborted) { encoder.close(); throw new DOMException("Export cancelled", "AbortError") }
+    if (signal?.aborted) { close(); throw new DOMException("Export cancelled", "AbortError") }
     if (failure) throw failure
     await draw(ctx, i)
-    const frame = new VideoFrame(canvas, { timestamp: Math.round(i * us), duration: Math.round(us) })
-    encoder.encode(frame, { keyFrame: i % (fps * 2) === 0 })
+    if (clear && !alpha) onMatte(ctx, matte)
+    const timing = { timestamp: Math.round(i * us), duration: Math.round(us) }, keyFrame = i % (fps * 2) === 0
+    const frame = new VideoFrame(canvas, { ...timing, alpha: "discard" })
+    encoder.encode(frame, { keyFrame })
     frame.close()
+    if (alpha) {
+      const { data } = ctx.getImageData(0, 0, w, h)
+      for (let q = 0; q < w * h; q++) planes[q] = data[q * 4 + 3]
+      const mask = new VideoFrame(planes, { format: "I420", codedWidth: w, codedHeight: h, colorSpace: { fullRange: true, matrix: "bt709", primaries: "bt709", transfer: "bt709" }, ...timing })
+      alphaEncoder.encode(mask, { keyFrame })
+      mask.close()
+    }
     // Let the encoder drain so memory stays flat on long or large exports.
-    while (encoder.encodeQueueSize > 4) await breathe()
+    while (encoder.encodeQueueSize > 4 || alphaEncoder?.encodeQueueSize > 4) await breathe()
     onProgress?.((i + 1) / frames)
     if (i % 4 === 3) await breathe()
   }
-  await encoder.flush()
+  await Promise.all([encoder.flush(), alphaEncoder?.flush()])
   if (failure) throw failure
   muxer.finalize()
   return new Blob([muxer.target.buffer], { type: spec.type })
@@ -77,8 +110,9 @@ export const gifDelays = (frames, fps) => Array.from({ length: frames }, (_, i) 
 
 // GIF: one palette for the whole loop, so a flat colour can't shift shade from frame to frame (a
 // palette per frame made backgrounds flicker). It's built from eight frames across the loop, and
-// the commonest colours in them (backgrounds, main inks) are kept exactly.
-export async function exportGif({ w, h, fps, frames, draw, onProgress, signal }) {
+// the commonest colours in them (backgrounds, main inks) are kept exactly. With clear, the last
+// entry is kept for see-through: a pixel less than half covered is left out.
+export async function exportGif({ w, h, fps, frames, draw, onProgress, signal, clear = false }) {
   const { GIFEncoder, quantize } = await import("./vendor/gifenc.esm.js")
   const gif = GIFEncoder()
   const { ctx } = surface(w, h)
@@ -89,13 +123,15 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal })
     await draw(ctx, i)
     const { data } = ctx.getImageData(0, 0, w, h)
     for (let q = 0; q < data.length; q += 4 * stride) {
+      if (clear && data[q + 3] < 128) continue
       pool.push(data[q], data[q + 1], data[q + 2], 255)
       const key = (data[q] << 16) | (data[q + 1] << 8) | data[q + 2]
       counts.set(key, (counts.get(key) ?? 0) + 1)
     }
     await breathe()
   }
-  const palette = quantize(new Uint8ClampedArray(pool), 256)
+  if (!pool.length) pool.push(0, 0, 0, 255)
+  const palette = quantize(new Uint8ClampedArray(pool), clear ? 255 : 256)
   // Snap the nearest palette entry to each of the commonest exact colours.
   const taken = new Set()
   for (const [key] of [...counts].sort((a, b) => b[1] - a[1]).slice(0, 8)) {
@@ -104,6 +140,7 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal })
     palette.forEach((p, k) => { if (taken.has(k)) return; const d = (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 + (p[2] - c[2]) ** 2; if (d < bestD) { bestD = d; best = k } })
     if (best >= 0) { palette[best] = c; taken.add(best) }
   }
+  const see = clear ? palette.push([0, 0, 0]) - 1 : -1
   // Each exact colour goes to its nearest palette entry, remembered across frames. (gifenc's own
   // mapping buckets colours coarsely and lets the first one in a bucket decide for all of them,
   // which could move a whole background to a neighbouring shade.)
@@ -111,11 +148,13 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal })
   const indexed = (data) => {
     const out = new Uint8Array(data.length / 4)
     for (let q = 0, o = 0; q < data.length; q += 4, o++) {
+      if (see >= 0 && data[q + 3] < 128) { out[o] = see; continue }
       const key = (data[q] << 16) | (data[q + 1] << 8) | data[q + 2]
       let k = nearest.get(key)
       if (k === undefined) {
         let best = Infinity
         for (let j = 0; j < palette.length; j++) {
+          if (j === see) continue
           const p = palette[j], d = (p[0] - data[q]) ** 2 + (p[1] - data[q + 1]) ** 2 + (p[2] - data[q + 2]) ** 2
           if (d < best) { best = d; k = j }
         }
@@ -131,12 +170,40 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal })
     if (signal?.aborted) throw new DOMException("Export cancelled", "AbortError")
     await draw(ctx, i)
     const { data } = ctx.getImageData(0, 0, w, h)
-    gif.writeFrame(indexed(data), w, h, { palette: i === 0 ? palette : undefined, delay: delays[i] * 10, repeat: 0 })
+    gif.writeFrame(indexed(data), w, h, { palette: i === 0 ? palette : undefined, delay: delays[i] * 10, repeat: 0, ...(see >= 0 ? { transparent: true, transparentIndex: see, dispose: 2 } : {}) })
     onProgress?.((i + 1) / frames)
     await breathe()
   }
   gif.finish()
   return new Blob([gif.bytes()], { type: "image/gif" })
+}
+
+// Every frame as a PNG, in a zip: an image sequence, see-through if the frames are. Names count
+// from 0001 so editing software reads them in order.
+export async function exportFrames({ w, h, frames, draw, onProgress, signal, name = "frame" }) {
+  const { zip } = await import("./zip.js")
+  const { canvas, ctx } = surface(w, h)
+  const files = []
+  for (let i = 0; i < frames; i++) {
+    if (signal?.aborted) throw new DOMException("Export cancelled", "AbortError")
+    ctx.clearRect(0, 0, w, h)
+    await draw(ctx, i)
+    files.push({ name: `${name}-${String(i + 1).padStart(4, "0")}.png`, data: await new Promise((resolve) => canvas.toBlob(resolve, "image/png")) })
+    onProgress?.((i + 1) / frames)
+    await breathe()
+  }
+  return zip(files)
+}
+
+// Lay a see-through frame on a colour, for formats that can't hold see-through.
+function onMatte(ctx, colour) {
+  ctx.save()
+  ctx.setTransform(1, 0, 0, 1, 0, 0)
+  ctx.globalAlpha = 1
+  ctx.globalCompositeOperation = "destination-over"
+  ctx.fillStyle = colour
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  ctx.restore()
 }
 
 // Saving on a phone: the share sheet takes the file itself (Save Video or Save Image to Photos,

@@ -691,6 +691,12 @@ var Muxer = class {
     if (meta)
       __privateMethod(this, _writeVideoDecoderConfig, writeVideoDecoderConfig_fn).call(this, meta);
     let videoChunk = __privateMethod(this, _createInternalChunk, createInternalChunk_fn).call(this, data, type, timestamp, VIDEO_TRACK_NUMBER);
+    // Create-o-matic: a VP9 encoder keeping alpha hands it over as side data; Matroska carries it as
+    // BlockAdditional 1 (BlockMore, ID 1), and a delta frame in a BlockGroup needs a ReferenceBlock.
+    if (meta?.alphaSideData) {
+      videoChunk.additions = [{ id: 166, data: [{ id: 238, data: 1 }, { id: 165, data: new Uint8Array(meta.alphaSideData.buffer ?? meta.alphaSideData, meta.alphaSideData.byteOffset ?? 0, meta.alphaSideData.byteLength) }] }];
+      if (type === "delta") videoChunk.reference = true;
+    }
     if (__privateGet(this, _options).video.codec === "V_VP9")
       __privateMethod(this, _fixVP9ColorSpace, fixVP9ColorSpace_fn).call(this, videoChunk);
     __privateSet(this, _lastVideoTimestamp, videoChunk.timestamp);
@@ -1246,6 +1252,7 @@ writeBlock_fn = function(chunk, canCreateNewCluster) {
         chunk.data
       ] },
       chunk.duration !== void 0 ? { id: 155 /* BlockDuration */, data: msDuration } : null,
+      chunk.reference ? { id: 251 /* ReferenceBlock */, data: new Uint8Array([255]) } : null,
       chunk.additions ? { id: 30113 /* BlockAdditions */, data: chunk.additions } : null
     ] };
     __privateGet(this, _writer).writeEBML(blockGroup);

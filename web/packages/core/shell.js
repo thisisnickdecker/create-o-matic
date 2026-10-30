@@ -29,7 +29,7 @@ import { defaults, sanitize, coerce, toHash, fromHash, library } from "./patch.j
 import { createPanel, fillRange } from "./panel.js"
 import { createTimeline } from "./timeline.js"
 import { resolve, timelinePos, setKey } from "./keys.js"
-import { exportPng, exportVideo, exportGif, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
+import { exportPng, exportVideo, exportGif, exportFrames, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
 import { mulberry32, newSeed } from "./rng.js"
 
 const TEMPLATE = `
@@ -78,11 +78,12 @@ const TEMPLATE = `
           <button class="btn" data-export="mp4" type="button">MP4</button>
           <button class="btn" data-export="webm" type="button">WebM</button>
           <button class="btn" data-export="gif" type="button">GIF</button>
+          <button class="btn" data-export="frames" type="button" title="Every frame as a PNG, in a zip: an image sequence for After Effects, Premiere or Resolve, see-through if the frame is">PNG frames</button>
           <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a full-size PNG on the clipboard, to paste into Figma, Slack or a message">Copy PNG</button>
           <button class="btn" data-ref="cancel" type="button" hidden>Cancel</button>
         </div>
         <div class="strip">
-          <button class="btn solid" data-ref="share" type="button" hidden>Save or share</button>
+          <button class="btn solid" data-ref="send" type="button" hidden>Save or share</button>
         </div>
         <div class="strip">
           <select data-ref="exportScale" aria-label="Export size">
@@ -326,6 +327,7 @@ export async function createMachine(host, engine, hooks = {}) {
     canvas.style.width = cssW + "px"
     canvas.style.height = cssH + "px"
     scale = pw / W
+    canvas.classList.toggle("see-through", Boolean(patch.params.transparent))
     q(".dims").textContent = `${W} × ${H} · ${Math.round(fit * 100)}%`
   }
   new ResizeObserver(resize).observe(frame)
@@ -414,19 +416,22 @@ export async function createMachine(host, engine, hooks = {}) {
       if (kind === "png") {
         blob = await exportPng({ w, h, draw: (c) => draw(c, Math.floor(phase * n), phase) })
       } else {
-        const job = { w, h, fps, frames: n, signal: abort.signal, onProgress: (p) => { bar.style.width = `${p * 100}%` }, draw: (c, i) => draw(c, i, i / n) }
-        blob = kind === "gif" ? await exportGif(job) : await exportVideo({ kind, ...job })
+        // A see-through frame stays see-through where the format can hold it, and is laid on the
+        // background where it can't.
+        const job = { w, h, fps, frames: n, signal: abort.signal, onProgress: (p) => { bar.style.width = `${p * 100}%` }, draw: (c, i) => draw(c, i, i / n),
+          clear: Boolean(snap.params.transparent), matte: snap.params.background ?? "#FFFFFF" }
+        blob = kind === "gif" ? await exportGif(job) : kind === "frames" ? await exportFrames({ ...job, name: slug() }) : await exportVideo({ kind, ...job })
       }
-      const name = `${slug()}-${snap.seed}-${w}x${h}.${kind}`
+      const name = `${slug()}-${snap.seed}-${w}x${h}${kind === "frames" ? `-${n}-frames.zip` : `.${kind}`}`
       const size = `${(blob.size / 1048576).toFixed(2)} MB`
       if (save) {
         // On a phone the share sheet saves to Photos (and it needs its own tap); elsewhere the file
         // downloads, and Share stays on offer for AirDrop and Messages.
         const sharable = canShare(blob, name)
-        ref.share.hidden = !sharable
+        ref.send.hidden = !sharable
         if (sharable) {
-          ref.share.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}`
-          ref.share.onclick = () => share(blob, name).catch((e) => { if (e.name !== "AbortError") download(blob, name) })
+          ref.send.textContent = kind === "png" ? "Save or share image" : kind === "frames" ? "Save or share the frames" : `Save or share ${kind.toUpperCase()}`
+          ref.send.onclick = () => share(blob, name).catch((e) => { if (e.name !== "AbortError") download(blob, name) })
         }
         if (sharable && touchFirst()) note(`${name} is ready · ${size}. Tap Save or share to put it in Photos, or send it.`, false, where)
         else { download(blob, name); note(`${name} · ${size}`, false, where) }

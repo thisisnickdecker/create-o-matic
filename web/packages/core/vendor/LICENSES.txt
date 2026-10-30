@@ -1,4 +1,4 @@
-mp4-muxer 5.2.1 (MIT, Vanilagy) · webm-muxer 5.1.4 (MIT, Vanilagy) · gifenc 1.0.3 (MIT, Matt DesLauriers). Unmodified builds from npm.
+mp4-muxer 5.2.1 (MIT, Vanilagy) · webm-muxer 5.1.4 (MIT, Vanilagy) · gifenc 1.0.3 (MIT, Matt DesLauriers). Builds from npm, unmodified except webm-muxer, which also writes VP9 alpha (BlockAdditions, marked "Create-o-matic" in the file).
 
 == mp4-muxer-5.2.1
 MIT License

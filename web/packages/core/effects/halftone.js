@@ -13,7 +13,7 @@ export default {
     { key: "halftoneGain", when: { halftone: { not: 0 } }, label: "Dot gain", type: "number", min: 0.5, max: 1.6, step: 0.01, default: 1, help: "Above 1, dots spread and touch, like ink on soft paper." },
   ],
   active: (p) => p.halftone >= 1,
-  apply(ctx, p, { scale, background }) {
+  apply(ctx, p, { scale, background, clear }) {
     const { width: W, height: H } = ctx.canvas
     const { data } = ctx.getImageData(0, 0, W, H)
     const [br, bg, bb] = hexRgb(background)
@@ -35,7 +35,8 @@ export default {
           const sx = Math.min(W - 1, Math.max(0, (x + ox * cell) | 0)), sy = Math.min(H - 1, Math.max(0, (y + oy * cell) | 0))
           const q = (sy * W + sx) * 4
           const dr = data[q] - br, dg = data[q + 1] - bg, db = data[q + 2] - bb
-          const c = Math.min(1, Math.sqrt(dr * dr + dg * dg + db * db) / 160)
+          // On a see-through frame, coverage is how much is there at all.
+          const c = clear ? data[q + 3] / 255 : Math.min(1, Math.sqrt(dr * dr + dg * dg + db * db) / 160)
           m += c
           if (c > best) { best = c; bq = q }
         }
@@ -43,7 +44,7 @@ export default {
         if (cov < 0.02) continue
         // A half-inked sample is ink blended with paper: take the paper back out.
         const k = 1 / Math.max(best, 0.35)
-        const ink = (i, bgc) => Math.min(255, Math.max(0, Math.round((bgc + (data[bq + i] - bgc) * k) / 4) * 4))
+        const ink = (i, bgc) => Math.min(255, Math.max(0, Math.round((clear ? data[bq + i] : bgc + (data[bq + i] - bgc) * k) / 4) * 4))
         const key = `rgb(${ink(0, br)},${ink(1, bg)},${ink(2, bb)})`
         let path = paths.get(key)
         if (!path) paths.set(key, (path = new Path2D()))
@@ -64,8 +65,8 @@ export default {
         }
       }
     }
-    ctx.fillStyle = background
-    ctx.fillRect(0, 0, W, H)
+    if (clear) ctx.clearRect(0, 0, W, H)
+    else { ctx.fillStyle = background; ctx.fillRect(0, 0, W, H) }
     for (const [colour, path] of paths) { ctx.fillStyle = colour; ctx.fill(path) }
   },
 }

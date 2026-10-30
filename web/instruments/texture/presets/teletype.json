@@ -13,6 +13,7 @@
         "blend": "source-over",
         "params": {
           "ascii": 12,
+          "asciiBack": "own",
           "asciiSet": "classic",
           "asciiTiles": 0.3,
           "asciiFlicker": 0.06,

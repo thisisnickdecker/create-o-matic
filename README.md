@@ -104,10 +104,29 @@ Keynote and Photos use: every frame read, with the right share see-through. Quic
 see-through. Decoded with FFmpeg, colour matched the engine's frames to 0.04 to 0.3 of a level on
 average (out of 255), and alpha to within one level. Frame rate and duration were exact.
 
-MP4 and WebM go up to double size (3840 pixels across) at about 0.1 bits a pixel a frame. That rate
-was chosen by encoding 4K loops at 6, 12, 24 and 40 Mbps and comparing them with the engine's
-frames. Plain type came back within one level (out of 255) even at the lowest rate, and ASCII
-looked the same as the original from 24 Mbps up. A 6-second 4K loop is about 15 MB.
+MP4 and WebM go up to double size (3840 pixels across). In Chrome and Edge, MP4 is made at
+constant quality rather than a fixed bitrate. Settings were chosen by encoding 4K loops of clean
+type (Clean type), fast ASCII (Signal) and pixel sort (Sorted) with every encoder Chrome offers
+(H.264, VP9 and AV1, 4:2:0 and 4:4:4, fixed bitrate and constant quality), then comparing them with
+the engine's frames by numbers and close crops:
+
+- The old fixed rate (0.1 bits a pixel a frame) wasted bits on calm type and visibly smeared fast
+  ASCII at 4K. An earlier check had missed this.
+- H.264 at quantizer 24 can't be told from the original on clean type. A 6-second 4K loop is
+  8 MB, half the old size.
+- Busy loops hide coarser steps in their own movement. A loop that comes out above 0.1 bits a
+  pixel a frame in its first two seconds is made at 30. At 30, ASCII looks the same as at 24 at
+  about two thirds the size; at 34 it softens and at 38 it muddies. A 6-second 4K Signal loop is
+  47 MB (the smeared one was 21 MB). Pixel sort is 20 MB.
+- Chrome's VP9 and AV1 encoders are built for calls. At the same size they lost to H.264, and
+  their constant-quality modes run large. So WebM is given twice the bitrate that the two-second
+  look says H.264 needs, which matched H.264's quality on every clip.
+- 4:4:4 colour kept saturated small type exact (40 dB against 22 for 4:2:0) but at three times
+  the size, and Safari and Figma can't play it. Double size covers most of the same ground:
+  a 4K file has full colour detail at 1920 across.
+- MP4 over 95 MB is made again a little coarser, to stay under Figma's 100 MB.
+
+Safari has no constant-quality mode yet, so it uses the old fixed rate.
 
 ## Deploying
 

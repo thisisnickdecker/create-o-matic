@@ -36,13 +36,46 @@ export async function videoSupport(kind, w = 1920, h = 1080, fps = 30) {
   return null
 }
 
+// Constant quality: each frame gets the same quantizer, so a calm loop comes out small and a busy
+// one gets the bits it needs, where a fixed bitrate starves one and wastes on the other. Measured
+// at 4K against the engine's frames (README, "How exports are checked"): H.264 at 24 is
+// indistinguishable from the original on clean type at half the old fixed rate's size. A busy loop
+// (fast ASCII, pixel sort) hides finer steps in its own movement, so one above BUSY bits a pixel a
+// frame is made at 30, which looks the same at about two thirds the size.
+// Chrome and Edge offer this; Safari doesn't yet, so it gets a bitrate instead.
+export const QUALITY = 24, BUSY_QUALITY = 30, BUSY = 0.1
+async function constantQuality(codec, w, h, fps) {
+  try { return (await VideoEncoder.isConfigSupported({ codec, width: w, height: h, framerate: fps, bitrateMode: "quantizer" })).supported } catch { return false }
+}
+// Figma takes video up to 100 MB; past this a constant-quality MP4 is made again, a little coarser.
+export const VIDEO_BUDGET = 95e6
+
 // clear: the frames are see-through. MP4 lays them on matte. WebM keeps the alpha the way libvpx
 // does: a second VP9 stream, encoded from the alpha as a grey picture, rides along with each frame
 // as Matroska's BlockAdditional (browsers can't yet encode alpha in one stream themselves).
-export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onProgress, signal, clear = false, matte = "#FFFFFF" }) {
+//
+// MP4 is made at constant quality where the browser can (see QUALITY), after a look at the first
+// two seconds to see how busy the loop is. Browsers' VP9 encoders are built for calls, not
+// quality: given a bitrate they fall short on busy loops, and their constant quality runs large.
+// So WebM asks VP9 for twice what that look says H.264 needs, which matched H.264's quality at 4K
+// on both clean type and fast ASCII.
+export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, quality, onProgress, signal, clear = false, matte = "#FFFFFF" }) {
   const spec = CODECS[kind]
   const codec = await videoSupport(kind, w, h, fps)
   if (!codec) throw new Error(`This browser can't encode ${kind.toUpperCase()} at ${w}×${h}.`)
+  const auto = bitrate == null && quality == null && await constantQuality((await videoSupport("mp4", w, h, fps)) ?? "", w, h, fps)
+  if (auto) {
+    const report = onProgress, tick = (from, to) => (p) => report?.(from + p * (to - from))
+    const bpp = await busyness({ w, h, fps, frames, draw, signal, clear, matte, onProgress: tick(0, 0.1) })
+    if (kind === "mp4") {
+      let q = bpp > BUSY ? BUSY_QUALITY : QUALITY, blob = await exportVideo({ kind, w, h, fps, frames, draw, bitrate: 0, quality: q, signal, clear, matte, onProgress: tick(0.1, 1) })
+      while (blob.size > VIDEO_BUDGET && q < 40) blob = await exportVideo({ kind, w, h, fps, frames, draw, bitrate: 0, quality: (q += 4), signal, clear, matte, onProgress: tick(0.1, 1) })
+      return blob
+    }
+    // A busy loop's MP4 comes out about two thirds the size at BUSY_QUALITY.
+    bitrate = Math.round(Math.min(200e6, Math.max(1e6, 2 * bpp * (bpp > BUSY ? 0.65 : 1) * w * h * fps)))
+    onProgress = tick(0.1, 1)
+  }
   const alpha = clear && kind === "webm"
   const { Muxer, ArrayBufferTarget } = await import(spec.muxer)
   const track = kind === "webm" && codec === "vp8" ? "V_VP8" : spec.track
@@ -67,10 +100,11 @@ export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onPr
     error: (e) => { failure = e },
   })
   const alphaEncoder = alpha ? new VideoEncoder({ output: (chunk) => { alphas.push(chunk); pair() }, error: (e) => { failure = e } }) : null
-  // About 0.1 bits a pixel a frame: type stays crisp at 4K (checked against the engine's frames)
-  // while a 6-second 4K loop stays near 15 MB, well inside Figma's 100 MB for video.
-  bitrate ??= Math.round(Math.min(30e6, Math.max(4e6, w * h * fps * 0.1)))
-  const config = { codec, width: w, height: h, bitrate, framerate: fps, latencyMode: "quality", ...(kind === "mp4" ? { avc: { format: "avc" } } : {}) }
+  // Without constant quality or a pilot, about 0.1 bits a pixel a frame: clean type stays crisp,
+  // though the busiest loops (fast ASCII at 4K) soften.
+  bitrate ||= quality ? 0 : Math.round(Math.min(30e6, Math.max(4e6, w * h * fps * 0.1)))
+  const config = { codec, width: w, height: h, framerate: fps, latencyMode: "quality", ...(quality ? { bitrateMode: "quantizer" } : { bitrate }), ...(kind === "mp4" ? { avc: { format: "avc" } } : {}) }
+  const per = quality ? { avc: { quantizer: quality } } : {}
   encoder.configure(config)
   alphaEncoder?.configure(config)
 
@@ -86,7 +120,7 @@ export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onPr
     if (clear && !alpha) onMatte(ctx, matte)
     const timing = { timestamp: Math.round(i * us), duration: Math.round(us) }, keyFrame = i % (fps * 2) === 0
     const frame = new VideoFrame(canvas, { ...timing, alpha: "discard" })
-    encoder.encode(frame, { keyFrame })
+    encoder.encode(frame, { keyFrame, ...per })
     frame.close()
     if (alpha) {
       const { data } = ctx.getImageData(0, 0, w, h)
@@ -104,6 +138,14 @@ export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onPr
   if (failure) throw failure
   muxer.finalize()
   return new Blob([muxer.target.buffer], { type: spec.type })
+}
+
+// How busy a loop is: bits a pixel a frame for its first two seconds as H.264 at QUALITY, which
+// includes one keyframe, as every two seconds of the whole does.
+async function busyness({ w, h, fps, frames, ...rest }) {
+  const n = Math.min(frames, fps * 2)
+  const blob = await exportVideo({ kind: "mp4", w, h, fps, frames: n, bitrate: 0, quality: QUALITY, ...rest })
+  return (blob.size * 8) / (w * h * n)
 }
 
 // GIF delays are in hundredths of a second, which 1/30 s isn't: each frame takes its share of the

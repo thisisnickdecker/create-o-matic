@@ -29,7 +29,7 @@ import { defaults, sanitize, coerce, toHash, fromHash, library } from "./patch.j
 import { createPanel, fillRange } from "./panel.js"
 import { createTimeline } from "./timeline.js"
 import { resolve, timelinePos, setKey } from "./keys.js"
-import { exportPng, exportVideo, exportGif, exportMov, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
+import { exportPng, exportVideo, exportGif, exportMov, figmaGif, FIGMA_GIF_PIXELS, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
 import { mulberry32, newSeed } from "./rng.js"
 
 const TEMPLATE = `
@@ -79,7 +79,8 @@ const TEMPLATE = `
           <button class="btn" data-export="webm" type="button">WebM</button>
           <button class="btn" data-export="gif" type="button">GIF</button>
           <button class="btn" data-export="mov" type="button" title="ProRes 4444 .mov, see-through if the frame is: for Final Cut, Premiere, After Effects, Keynote and Photos. Large.">MOV</button>
-          <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a double-size PNG on the clipboard, see-through if the frame is: paste it straight into Figma">Copy for Figma</button>
+          <button class="btn" data-export="figmagif" type="button" title="The loop as a see-through GIF, sized and paced so Figma will play it: drag the file onto the canvas">GIF for Figma</button>
+          <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a double-size PNG on the clipboard, see-through if the frame is: paste it straight into Figma">Copy still</button>
           <button class="btn" data-ref="cancel" type="button" hidden>Cancel</button>
         </div>
         <div class="strip">
@@ -394,9 +395,11 @@ export async function createMachine(host, engine, hooks = {}) {
     const { w: W, h: H } = size(snap)
     let k = forced ?? +ref.exportScale.value
     if (kind !== "png" && k > 1) k = 1
-    const w = even(W * k), h = even(H * k)
+    let w = even(W * k), h = even(H * k), n = frameCount(snap), fps = Number(snap.params.fps)
+    // GIF for Figma: sized and paced so Figma will play it, whatever the export size says.
+    const figma = kind === "figmagif"
+    if (figma) { ({ w, h, fps, frames: n } = figmaGif(W, H, snap.params.duration, fps)); kind = "gif" }
     const s = w / W
-    const n = frameCount(snap), fps = Number(snap.params.fps)
     const bar = q(".progress i")
     const where = ref.exportNote
     abort = new AbortController()
@@ -422,6 +425,8 @@ export async function createMachine(host, engine, hooks = {}) {
           clear: Boolean(snap.params.transparent), matte: snap.params.background ?? "#FFFFFF" }
         blob = kind === "gif" ? await exportGif(job) : kind === "mov" ? await exportMov(job) : await exportVideo({ kind, ...job })
       }
+      // A GIF bigger than Figma will play: say so, and point to the one that fits.
+      const tooBig = kind === "gif" && !figma && w * h * n > FIGMA_GIF_PIXELS * 1.1
       const name = `${slug()}-${snap.seed}-${w}x${h}.${kind}`
       const size = `${(blob.size / 1048576).toFixed(2)} MB`
       if (save) {
@@ -436,6 +441,8 @@ export async function createMachine(host, engine, hooks = {}) {
         if (sharable && touchFirst()) note(`${name} is ready · ${size}. Tap Save or share to put it in Photos, or send it.`, false, where)
         else { download(blob, name); note(`${name} · ${size}`, false, where) }
       } else note(`${name} · ${size}`, false, where)
+      if (save && figma) where.textContent += ". Sized to play in Figma: drag the file onto the canvas."
+      if (save && tooBig) where.textContent += ". Too big for Figma to play: use GIF for Figma."
       return blob
     } catch (e) {
       note(e.name === "AbortError" ? "Cancelled." : e.message || String(e), e.name !== "AbortError", where)
@@ -455,7 +462,7 @@ export async function createMachine(host, engine, hooks = {}) {
     ref.cancel.hidden = !on
   }
   host.querySelectorAll("[data-export]").forEach((b) => { b.onclick = () => doExport(b.dataset.export) })
-  // Copy for Figma: the freeze frame at double size (up to Figma's 4096 pixels a side). The clipboard
+  // Copy still: the freeze frame at double size (up to Figma's 4096 pixels a side). The clipboard
   // is handed the render while it's still going, so the copy stays inside the click (browsers allow
   // it only then).
   if (canCopyImage()) {

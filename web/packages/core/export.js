@@ -179,6 +179,17 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal, c
   return new Blob([gif.bytes()], { type: "image/gif" })
 }
 
+// A GIF Figma will take. Figma reportedly stops playing GIFs past about 50 million pixels, counted
+// over every frame, so this one runs at 20 fps (exact in GIF's hundredths) and is as big as fits in
+// 45 million, at most the loop's own size. Returns the size, frame rate and frame count to export.
+export const FIGMA_GIF_PIXELS = 45e6
+export function figmaGif(W, H, duration, fps) {
+  const rate = Math.min(fps, 20), frames = Math.max(1, Math.round(duration * rate))
+  const k = Math.min(1, Math.sqrt(FIGMA_GIF_PIXELS / (W * H * frames)))
+  const even = (x) => Math.max(2, Math.round(x / 2) * 2)
+  return { w: even(W * k), h: even(H * k), fps: rate, frames }
+}
+
 // ProRes 4444 in a .mov. Every frame keeps its alpha; an opaque loop is simply opaque.
 export async function exportMov({ w, h, fps, frames, draw, onProgress, signal }) {
   const [{ proresFrame }, { mov }] = await Promise.all([import("./prores.js"), import("./mov.js")])

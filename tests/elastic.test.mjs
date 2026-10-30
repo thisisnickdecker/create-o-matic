@@ -86,3 +86,14 @@ test("GIF delays add up to the loop's exact length, however the frame rate divid
     assert.ok(Math.max(...d) - Math.min(...d) <= 1)
   }
 })
+
+test("a GIF for Figma stays inside Figma's budget, at 20 fps, and never grows past the loop", async () => {
+  const { figmaGif, FIGMA_GIF_PIXELS, gifDelays } = await import("../web/packages/core/export.js")
+  const g = figmaGif(1920, 1080, 6, 30)
+  assert.equal(g.fps, 20)
+  assert.equal(g.frames, 120)
+  assert.ok(g.w * g.h * g.frames <= FIGMA_GIF_PIXELS * 1.01)
+  assert.ok(gifDelays(g.frames, g.fps).every((d) => d === 5))
+  const small = figmaGif(200, 200, 2, 30)
+  assert.deepEqual([small.w, small.h], [200, 200])
+})

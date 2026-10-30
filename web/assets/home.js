@@ -306,8 +306,11 @@ async function play(root) {
     await ensureFont(engine.fontRequest(patch))
     engine.clearMetrics()
     const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : kind === "png" ? Math.min(2, 4096 / Math.max(W, H)) : 1
-    const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
-    const n = engine.frameCount(patch), fps = Number(patch.params.fps)
+    let w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2)
+    let n = engine.frameCount(patch), fps = Number(patch.params.fps)
+    // The GIF is sized for Figma, which is where a see-through loop usually goes.
+    if (kind === "gif") ({ w, h, fps, frames: n } = exporters.figmaGif(W, H, patch.params.duration, fps))
+    const s = w / W
     const draw = (c, i) => engine.render(c, patch, kind === "png" ? moment : i / n, { scale: s, frame: i, marks })
     // See-through stays see-through in PNG, GIF and MOV; an MP4 can't hold it, so it gets the look's background.
     const clear = patch.params.transparent, matte = patch.params.background
@@ -331,6 +334,7 @@ async function play(root) {
         if (sharable) { shareButton.hidden = false; shareButton.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}` }
         if (sharable && exporters.touchFirst()) hint.textContent = `Your ${w}×${h} ${kind.toUpperCase()} is ready (${mb(blob)}). Tap Save or share to put it in Photos, or send it.`
         else { exporters.download(blob, name); hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${mb(blob)}).${sharable ? " Share sends it by AirDrop or Messages." : ""}` }
+        if (kind === "gif") hint.textContent += " Sized to play in Figma: drag the file onto the canvas."
         if (kind === "mov") hint.textContent += " See-through ProRes 4444: for Keynote, Final Cut, Premiere, After Effects and Photos."
       } catch (e) { hint.textContent = e.message }
       b.textContent = label

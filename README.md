@@ -104,6 +104,11 @@ Keynote and Photos use: every frame read, with the right share see-through. Quic
 see-through. Decoded with FFmpeg, colour matched the engine's frames to 0.04 to 0.3 of a level on
 average (out of 255), and alpha to within one level. Frame rate and duration were exact.
 
+MP4 and WebM go up to double size (3840 pixels across) at about 0.1 bits a pixel a frame. That rate
+was chosen by encoding 4K loops at 6, 12, 24 and 40 Mbps and comparing them with the engine's
+frames. Plain type came back within one level (out of 255) even at the lowest rate, and ASCII
+looked the same as the original from 24 Mbps up. A 6-second 4K loop is about 15 MB.
+
 ## Deploying
 
 It's a Cloudflare Pages project called `createomatic`, serving `web/` as static files

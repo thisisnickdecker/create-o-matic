@@ -305,7 +305,11 @@ async function play(root) {
     const marks = await prepareMarks(patch)
     await ensureFont(engine.fontRequest(patch))
     engine.clearMetrics()
-    const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : kind === "png" ? Math.min(2, 4096 / Math.max(W, H)) : 1
+    // Stills and MP4 at double size (up to 4096 pixels a side for a still, 3840 for video) for sharp
+    // type in Figma and on big screens; MP4 drops back to full size if this browser can't encode it.
+    const { w: W, h: H } = engine.size(patch)
+    let k = kind === "png" ? Math.min(2, 4096 / Math.max(W, H)) : kind === "mp4" ? Math.min(2, 3840 / Math.max(W, H)) : 1
+    if (kind === "mp4" && k > 1 && !(await exporters.videoSupport("mp4", Math.round(W * k / 2) * 2, Math.round(H * k / 2) * 2, Number(patch.params.fps)))) k = 1
     let w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2)
     let n = engine.frameCount(patch), fps = Number(patch.params.fps)
     // The GIF is sized for Figma, which is where a see-through loop usually goes.
@@ -335,6 +339,7 @@ async function play(root) {
         if (sharable && exporters.touchFirst()) hint.textContent = `Your ${w}×${h} ${kind.toUpperCase()} is ready (${mb(blob)}). Tap Save or share to put it in Photos, or send it.`
         else { exporters.download(blob, name); hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${mb(blob)}).${sharable ? " Share sends it by AirDrop or Messages." : ""}` }
         if (kind === "gif") hint.textContent += " Sized to play in Figma: drag the file onto the canvas."
+        if (kind === "mp4") hint.textContent += " For Figma (paid plans): set Background to your frame's colour first, since Figma doesn't play see-through video."
         if (kind === "mov") hint.textContent += " See-through ProRes 4444: for Keynote, Final Cut, Premiere, After Effects and Photos."
       } catch (e) { hint.textContent = e.message }
       b.textContent = label

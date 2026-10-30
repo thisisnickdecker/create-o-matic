@@ -91,7 +91,7 @@ const TEMPLATE = `
             <option value="1" selected>Full size</option>
             <option value="0.5">Half size</option>
             <option value="0.25">Quarter size</option>
-            <option value="2">Double size, PNG only</option>
+            <option value="2">Double size</option>
           </select>
           <button class="btn" data-ref="embed" type="button" hidden>Copy embed code</button>
         </div>
@@ -192,7 +192,7 @@ export async function createMachine(host, engine, hooks = {}) {
     const { w, h } = size(patch)
     for (const o of ref.exportScale.options) {
       const k = +o.value, name = { 1: "Full size", 0.5: "Half size", 0.25: "Quarter size", 2: "Double size" }[k]
-      o.textContent = `${name} · ${even(w * k)}×${even(h * k)}${k > 1 ? ", PNG only" : ""}`
+      o.textContent = `${name} · ${even(w * k)}×${even(h * k)}${k > 1 ? " (PNG, MP4, WebM)" : ""}`
     }
   }
 
@@ -394,7 +394,11 @@ export async function createMachine(host, engine, hooks = {}) {
     const snap = structuredClone(patch)
     const { w: W, h: H } = size(snap)
     let k = forced ?? +ref.exportScale.value
-    if (kind !== "png" && k > 1) k = 1
+    // Double size is for stills and video. GIF and MOV stay at most full size (a GIF that big won't
+    // play anywhere useful; a 4K ProRes is huge), and video drops back if this browser can't encode it.
+    let note2 = ""
+    if ((kind === "gif" || kind === "mov" || kind === "figmagif") && k > 1) k = 1
+    if ((kind === "mp4" || kind === "webm") && k > 1 && !(await videoSupport(kind, even(W * k), even(H * k), Number(snap.params.fps)))) { k = 1; note2 = ". This browser can't encode video that big, so it's full size" }
     let w = even(W * k), h = even(H * k), n = frameCount(snap), fps = Number(snap.params.fps)
     // GIF for Figma: sized and paced so Figma will play it, whatever the export size says.
     const figma = kind === "figmagif"
@@ -441,6 +445,7 @@ export async function createMachine(host, engine, hooks = {}) {
         if (sharable && touchFirst()) note(`${name} is ready · ${size}. Tap Save or share to put it in Photos, or send it.`, false, where)
         else { download(blob, name); note(`${name} · ${size}`, false, where) }
       } else note(`${name} · ${size}`, false, where)
+      if (save && note2) where.textContent += note2
       if (save && figma) where.textContent += ". Sized to play in Figma: drag the file onto the canvas."
       if (save && tooBig) where.textContent += ". Too big for Figma to play: use GIF for Figma."
       return blob

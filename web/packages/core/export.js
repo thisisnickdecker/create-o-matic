@@ -67,8 +67,9 @@ export async function exportVideo({ kind, w, h, fps, frames, draw, bitrate, onPr
     error: (e) => { failure = e },
   })
   const alphaEncoder = alpha ? new VideoEncoder({ output: (chunk) => { alphas.push(chunk); pair() }, error: (e) => { failure = e } }) : null
-  // Flat colour type compresses well, but a stretching frame changes everywhere at once: be generous.
-  bitrate ??= Math.round(Math.min(40e6, w * h * fps * 0.28))
+  // About 0.1 bits a pixel a frame: type stays crisp at 4K (checked against the engine's frames)
+  // while a 6-second 4K loop stays near 15 MB, well inside Figma's 100 MB for video.
+  bitrate ??= Math.round(Math.min(30e6, Math.max(4e6, w * h * fps * 0.1)))
   const config = { codec, width: w, height: h, bitrate, framerate: fps, latencyMode: "quality", ...(kind === "mp4" ? { avc: { format: "avc" } } : {}) }
   encoder.configure(config)
   alphaEncoder?.configure(config)

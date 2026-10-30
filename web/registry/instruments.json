@@ -1,6 +1,228 @@
 {
   "instruments": [
     {
+      "id": "brand",
+      "name": "Brand bench",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "brand",
+        "identity",
+        "guidelines"
+      ],
+      "description": "A brand, put together. Drop in a logo (SVG keeps its colours; PNG and JPEG lose their background), set the palette, the faces and how the logo moves, and see it all as a brand board. Take the kit away as design tokens, CSS, a BRAND.md for agents and the logo, or send the brand to Motion, the Colour lab and the Type tester.",
+      "path": "/brand/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "patch-json": "verified",
+        "kit-zip": "verified"
+      },
+      "effects": [
+        "kaleidoscope",
+        "liquid",
+        "pixelsort",
+        "mosaic",
+        "ascii",
+        "dotmatrix",
+        "halftone",
+        "photocopy",
+        "grain"
+      ],
+      "parameters": [
+        "brandName",
+        "tagline",
+        "logo",
+        "logoColour",
+        "inks",
+        "background",
+        "labels",
+        "faces",
+        "adobeKit",
+        "board",
+        "logoSize",
+        "transparent",
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "margin",
+        "gap",
+        "corner",
+        "motion",
+        "amount",
+        "beats",
+        "keyMode",
+        "phase",
+        "kaleido",
+        "kaleidoSpin",
+        "kaleidoZoom",
+        "liquid",
+        "liquidScale",
+        "liquidFlow",
+        "pixelSort",
+        "sortLength",
+        "sortDirection",
+        "sortOrder",
+        "sortSweep",
+        "mosaic",
+        "mosaicGrout",
+        "mosaicRound",
+        "mosaicGroutColour",
+        "ascii",
+        "asciiSet",
+        "asciiChars",
+        "asciiMotion",
+        "asciiMotionAmount",
+        "asciiInk",
+        "asciiColour",
+        "asciiInks",
+        "asciiBack",
+        "asciiGround",
+        "asciiTiles",
+        "asciiCurve",
+        "asciiWeight",
+        "asciiFlicker",
+        "asciiSteps",
+        "asciiScan",
+        "dots",
+        "dotStyle",
+        "dotShape",
+        "dotGain",
+        "dotInk",
+        "dotColour",
+        "dotBack",
+        "dotGround",
+        "dotOff",
+        "dotScatter",
+        "halftone",
+        "halftoneAngle",
+        "halftoneShape",
+        "halftoneGain",
+        "copier",
+        "boil",
+        "grain",
+        "grainBoil"
+      ],
+      "presets": [
+        {
+          "file": "create-o-matic.json",
+          "name": "Create-o-matic"
+        },
+        {
+          "file": "logo-loop.json",
+          "name": "Logo loop"
+        },
+        {
+          "file": "night-shift.json",
+          "name": "Night shift"
+        }
+      ]
+    },
+    {
+      "id": "colour",
+      "name": "Colour lab",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "colour",
+        "palette"
+      ],
+      "description": "Colour studies from your own inks: a swatch card with HEX, RGB and OKLCH readouts, Albers' nested squares, proportion bands, tints and shades, a contrast check against WCAG, and blends mixed in OKLab. Vary deals new palettes by harmony; set them moving and export the study, or the palette as CSS, JSON or an Adobe swatch file.",
+      "path": "/colour/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "inks",
+        "harmony",
+        "labels",
+        "study",
+        "nest",
+        "rule",
+        "direction",
+        "steps",
+        "bands",
+        "gap",
+        "corner",
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "margin",
+        "background",
+        "motion",
+        "amount",
+        "stagger",
+        "beats",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "swatch-card.json",
+          "name": "Swatch card"
+        },
+        {
+          "file": "homage.json",
+          "name": "Homage"
+        },
+        {
+          "file": "sixty-thirty-ten.json",
+          "name": "Sixty, thirty, ten"
+        },
+        {
+          "file": "tints-and-shades.json",
+          "name": "Tints and shades"
+        },
+        {
+          "file": "will-it-read.json",
+          "name": "Will it read?"
+        },
+        {
+          "file": "sunset-strip.json",
+          "name": "Sunset strip"
+        },
+        {
+          "file": "carousel.json",
+          "name": "Carousel"
+        }
+      ]
+    },
+    {
       "id": "elastic",
       "name": "Elastic",
       "version": "0.4.0",
@@ -29,6 +251,7 @@
         "mp4": "verified",
         "webm": "verified",
         "gif": "verified",
+        "mov": "verified",
         "embed": "verified",
         "patch-json": "verified"
       },
@@ -36,9 +259,16 @@
         "kaleidoscope",
         "liquid",
         "melt",
+        "pixelsort",
+        "mosaic",
+        "ascii",
+        "dotmatrix",
         "halftone",
         "photocopy",
-        "grain"
+        "grain",
+        "reflector",
+        "cube",
+        "pin"
       ],
       "parameters": [
         "format",
@@ -48,6 +278,7 @@
         "fps",
         "margin",
         "content",
+        "proportions",
         "mode",
         "case",
         "fontSource",
@@ -56,15 +287,21 @@
         "weightMin",
         "weightMax",
         "fit",
+        "align",
         "padding",
         "markFit",
         "markColour",
+        "layout",
         "direction",
         "columns",
         "rows",
         "columnOffset",
         "rowOffset",
         "crossAmount",
+        "goldenDepth",
+        "goldenStart",
+        "goldenTurn",
+        "goldenSwing",
         "gap",
         "shape",
         "shapeMode",
@@ -77,12 +314,23 @@
         "cycles",
         "amount",
         "ease",
+        "scramble",
+        "scrambleSet",
+        "scrambleSpread",
+        "scrambleBeats",
+        "scrambleRate",
         "keyMode",
         "phase",
         "background",
+        "transparent",
         "palette",
         "colourMode",
         "blend",
+        "gradient",
+        "gradientInks",
+        "gradientDrift",
+        "gradientAngle",
+        "gradientSoftness",
         "backdrop",
         "backdropFit",
         "backdropOpacity",
@@ -96,70 +344,492 @@
         "melt",
         "meltDrips",
         "meltCycles",
+        "pixelSort",
+        "sortLength",
+        "sortDirection",
+        "sortOrder",
+        "sortSweep",
+        "mosaic",
+        "mosaicGrout",
+        "mosaicRound",
+        "mosaicGroutColour",
+        "ascii",
+        "asciiSet",
+        "asciiChars",
+        "asciiMotion",
+        "asciiMotionAmount",
+        "asciiInk",
+        "asciiColour",
+        "asciiInks",
+        "asciiBack",
+        "asciiGround",
+        "asciiTiles",
+        "asciiCurve",
+        "asciiWeight",
+        "asciiFlicker",
+        "asciiSteps",
+        "asciiScan",
+        "dots",
+        "dotStyle",
+        "dotShape",
+        "dotGain",
+        "dotInk",
+        "dotColour",
+        "dotBack",
+        "dotGround",
+        "dotOff",
+        "dotScatter",
         "halftone",
         "halftoneAngle",
         "halftoneShape",
         "halftoneGain",
         "copier",
         "boil",
-        "grain"
+        "grain",
+        "grainBoil",
+        "mirror",
+        "mirrorHorizon",
+        "mirrorFade",
+        "cube",
+        "cubeTile",
+        "cubeShade",
+        "cubeSpin",
+        "pin",
+        "pinTable",
+        "pinGloss",
+        "pinWear"
       ],
       "presets": [
         {
-          "file": "sizes.json",
-          "name": "Sizes · paper"
+          "file": "clean-type.json",
+          "name": "Clean type"
         },
         {
-          "file": "hire-nick.json",
-          "name": "Hire Nick · job printer"
+          "file": "campaign-pin.json",
+          "name": "Campaign pin"
         },
         {
-          "file": "night-shift.json",
-          "name": "Night shift · blocks"
+          "file": "golden-section.json",
+          "name": "Golden section"
         },
         {
-          "file": "copier.json",
-          "name": "Generation loss"
+          "file": "phi.json",
+          "name": "φ"
         },
         {
-          "file": "bloom.json",
-          "name": "Bloom · widescreen"
-        },
-        {
-          "file": "coming-clear.json",
-          "name": "Coming clear · keyframed copier"
+          "file": "heat.json",
+          "name": "Heat"
         },
         {
           "file": "kaleido.json",
           "name": "Kaleido"
         },
         {
-          "file": "meltdown.json",
-          "name": "Meltdown · halftone"
+          "file": "signal.json",
+          "name": "Signal"
+        },
+        {
+          "file": "decode.json",
+          "name": "Decode"
+        },
+        {
+          "file": "led-sign.json",
+          "name": "LED sign"
+        },
+        {
+          "file": "sorted.json",
+          "name": "Sorted"
+        },
+        {
+          "file": "scatter.json",
+          "name": "Scatter"
+        },
+        {
+          "file": "tiles.json",
+          "name": "Tiles"
+        },
+        {
+          "file": "tumbling-blocks.json",
+          "name": "Tumbling blocks"
+        },
+        {
+          "file": "c-fill.json",
+          "name": "Big C"
+        },
+        {
+          "file": "black-glass.json",
+          "name": "Black glass"
         },
         {
           "file": "liquid.json",
-          "name": "Liquid · blue hour"
+          "name": "Blue hour"
         },
         {
-          "file": "studiolo-stack.json",
-          "name": "Studiolo × ND · stack"
+          "file": "monolith.json",
+          "name": "Monolith"
         },
         {
-          "file": "signature-halftone.json",
-          "name": "Signature · halftone"
+          "file": "gradient-maker.json",
+          "name": "Gradient maker"
         },
         {
-          "file": "signature-fill.json",
-          "name": "Signature fill"
+          "file": "o-sweep.json",
+          "name": "Inside the O"
         },
         {
-          "file": "studiolo-sweep.json",
-          "name": "Studiolo sweep · around"
+          "file": "night-shift.json",
+          "name": "Night shift"
         },
         {
-          "file": "campaign-button.json",
-          "name": "Campaign button · Hire Nick"
+          "file": "coming-clear.json",
+          "name": "Coming clear"
+        },
+        {
+          "file": "meltdown.json",
+          "name": "Meltdown"
+        },
+        {
+          "file": "bloom.json",
+          "name": "Bloom"
+        },
+        {
+          "file": "sizes.json",
+          "name": "S, M, L, XL"
+        },
+        {
+          "file": "wordmark-stack.json",
+          "name": "Wordmark stack"
+        },
+        {
+          "file": "wordmark-halftone.json",
+          "name": "Wordmark in halftone"
+        }
+      ]
+    },
+    {
+      "id": "showroom",
+      "name": "Showroom",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "image",
+        "motion",
+        "3d"
+      ],
+      "description": "Your work as tiles in 3D space: screenshots, landing pages and images laid out as a grid wall, a cloud, a ring, a tunnel or a deck, with rounded corners and shadows, and a camera that drifts, orbits, flies through or dives into one tile after another. Every frame comes from the patch and the time, so the loop closes and the export matches the preview.",
+      "path": "/showroom/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "webgl2",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "mov": "untested",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "images",
+        "count",
+        "order",
+        "crop",
+        "pageScroll",
+        "layout",
+        "columns",
+        "gap",
+        "depth",
+        "scatter",
+        "tilt",
+        "sizeMix",
+        "rotX",
+        "rotY",
+        "rotZ",
+        "aspect",
+        "size",
+        "radius",
+        "shadow",
+        "float",
+        "spin",
+        "move",
+        "loops",
+        "stops",
+        "zoom",
+        "fov",
+        "panX",
+        "panY",
+        "focus",
+        "fog",
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "background",
+        "transparent",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "portfolio-wall.json",
+          "name": "Portfolio wall"
+        },
+        {
+          "file": "drifting-cloud.json",
+          "name": "Drifting cloud"
+        },
+        {
+          "file": "fly-through.json",
+          "name": "Fly through"
+        },
+        {
+          "file": "dive-in.json",
+          "name": "Dive in"
+        },
+        {
+          "file": "carousel-ring.json",
+          "name": "Carousel ring"
+        },
+        {
+          "file": "helix.json",
+          "name": "Helix"
+        },
+        {
+          "file": "tunnel.json",
+          "name": "Tunnel"
+        },
+        {
+          "file": "deck.json",
+          "name": "Deck"
+        },
+        {
+          "file": "wave-wall.json",
+          "name": "Wave wall"
+        },
+        {
+          "file": "phone-stack.json",
+          "name": "Phone screens"
+        }
+      ]
+    },
+    {
+      "id": "texture",
+      "name": "Texture lab",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "image",
+        "texture",
+        "print"
+      ],
+      "description": "A darkroom for any image or video, or for a loop from the other instruments. Stack print and texture effects (risograph, halftone, photocopy, paper, grunge, film, chroma, holographic foil, gradient maps, your own overlays) in any order, each with its own blend mode and opacity, and export at the source's full size or any format.",
+      "path": "/texture/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "source",
+        "sample",
+        "sourceWidth",
+        "sourceHeight",
+        "fit",
+        "zoom",
+        "panX",
+        "panY",
+        "videoSpeed",
+        "background",
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "layers",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "riso-duo.json",
+          "name": "Riso duo"
+        },
+        {
+          "file": "newsprint.json",
+          "name": "Newsprint"
+        },
+        {
+          "file": "teletype.json",
+          "name": "Teletype"
+        },
+        {
+          "file": "pixel-drip.json",
+          "name": "Pixel drip"
+        },
+        {
+          "file": "scoreboard.json",
+          "name": "Scoreboard"
+        },
+        {
+          "file": "screen-print.json",
+          "name": "Screen print"
+        },
+        {
+          "file": "photocopy-grunge.json",
+          "name": "Photocopy, third generation"
+        },
+        {
+          "file": "holographic-foil.json",
+          "name": "Holographic foil"
+        },
+        {
+          "file": "film-still.json",
+          "name": "Film still"
+        },
+        {
+          "file": "riso-three-drum.json",
+          "name": "Riso, three drums"
+        },
+        {
+          "file": "chalk-on-slate.json",
+          "name": "Chalk on slate"
+        },
+        {
+          "file": "green-screen.json",
+          "name": "Green screen"
+        },
+        {
+          "file": "duotone.json",
+          "name": "Duotone, pink and black"
+        },
+        {
+          "file": "acid-house.json",
+          "name": "Acid house"
+        },
+        {
+          "file": "kraft-print.json",
+          "name": "Kraft print"
+        },
+        {
+          "file": "gradient-wash.json",
+          "name": "Gradient wash"
+        },
+        {
+          "file": "untouched.json",
+          "name": "Untouched"
+        }
+      ]
+    },
+    {
+      "id": "type",
+      "name": "Type tester",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "typography",
+        "specimen"
+      ],
+      "description": "Live type specimens. Rows of your own text, each in its own font from the open library, your Adobe Fonts project, your computer or your files, at its own size, weight, tracking and leading. Stack or grid them, compare faces side by side, set them moving, and export a specimen sheet or a loop.",
+      "path": "/type/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "margin",
+        "background",
+        "rows",
+        "adobeKit",
+        "layout",
+        "columns",
+        "gap",
+        "align",
+        "valign",
+        "rules",
+        "labels",
+        "labelInk",
+        "motion",
+        "motionAmount",
+        "stagger",
+        "beats",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "specimen-sheet.json",
+          "name": "Specimen sheet"
+        },
+        {
+          "file": "weight-sweep.json",
+          "name": "Weight sweep"
+        },
+        {
+          "file": "waterfall.json",
+          "name": "Waterfall"
+        },
+        {
+          "file": "pairings.json",
+          "name": "Pairings"
+        },
+        {
+          "file": "ticker.json",
+          "name": "Ticker"
+        },
+        {
+          "file": "typewriter.json",
+          "name": "Typewriter"
+        },
+        {
+          "file": "wave.json",
+          "name": "Wave"
         }
       ]
     }

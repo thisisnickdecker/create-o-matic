@@ -1,0 +1,21 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Carousel ring",
+  "seed": 5,
+  "params": {
+    "layout": "ring",
+    "count": 16,
+    "depth": 0.3,
+    "radius": 0.06,
+    "shadow": 0.3,
+    "move": "orbit",
+    "loops": 1,
+    "rotX": 12,
+    "fov": 35,
+    "zoom": 1.2,
+    "fog": 0.45,
+    "background": "#1530FF",
+    "duration": 16
+  }
+}

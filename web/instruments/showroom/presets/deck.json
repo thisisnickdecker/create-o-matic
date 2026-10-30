@@ -1,0 +1,23 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Deck",
+  "seed": 8,
+  "params": {
+    "layout": "stack",
+    "count": 14,
+    "depth": 0.5,
+    "tilt": 0.3,
+    "radius": 0.05,
+    "shadow": 0.5,
+    "move": "fly",
+    "loops": 1,
+    "rotY": -24,
+    "rotX": 8,
+    "fov": 30,
+    "zoom": 1.1,
+    "fog": 0.3,
+    "background": "#FF4D1F",
+    "duration": 10
+  }
+}

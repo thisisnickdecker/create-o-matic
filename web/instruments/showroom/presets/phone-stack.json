@@ -1,0 +1,25 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Phone screens",
+  "seed": 6,
+  "params": {
+    "layout": "cloud",
+    "count": 14,
+    "aspect": "phone",
+    "depth": 0.4,
+    "scatter": 0.2,
+    "tilt": 0.35,
+    "radius": 0.14,
+    "shadow": 0.45,
+    "float": 0.7,
+    "pageScroll": 0.6,
+    "move": "drift",
+    "fov": 30,
+    "zoom": 0.9,
+    "focus": 0.2,
+    "fog": 0.2,
+    "background": "#FFD3E0",
+    "duration": 10
+  }
+}

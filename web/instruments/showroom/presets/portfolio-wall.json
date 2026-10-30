@@ -1,0 +1,25 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Portfolio wall",
+  "seed": 7,
+  "params": {
+    "layout": "grid",
+    "columns": 6,
+    "count": 30,
+    "gap": 0.1,
+    "depth": 0,
+    "radius": 0.04,
+    "shadow": 0.25,
+    "move": "scroll",
+    "loops": 1,
+    "rotX": 18,
+    "rotY": -16,
+    "rotZ": 4,
+    "fov": 30,
+    "zoom": 1.7,
+    "fog": 0,
+    "background": "#ECECE8",
+    "duration": 10
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Drifting cloud",
+  "seed": 12,
+  "params": {
+    "layout": "cloud",
+    "count": 28,
+    "depth": 0.6,
+    "scatter": 0.3,
+    "tilt": 0.25,
+    "sizeMix": 0.5,
+    "radius": 0.05,
+    "shadow": 0.35,
+    "float": 0.5,
+    "move": "drift",
+    "fov": 40,
+    "zoom": 1.1,
+    "focus": 0.25,
+    "fog": 0.3,
+    "background": "#F4F4F1",
+    "duration": 10
+  }
+}

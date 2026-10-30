@@ -1,0 +1,23 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Dive in",
+  "seed": 21,
+  "params": {
+    "layout": "grid",
+    "columns": 5,
+    "count": 25,
+    "gap": 0.14,
+    "depth": 0.2,
+    "radius": 0.05,
+    "shadow": 0.3,
+    "move": "dive",
+    "stops": 3,
+    "fov": 35,
+    "zoom": 1,
+    "focus": 0.35,
+    "fog": 0,
+    "background": "#E9E4FF",
+    "duration": 12
+  }
+}

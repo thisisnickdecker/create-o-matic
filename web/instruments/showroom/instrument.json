@@ -1,0 +1,696 @@
+{
+  "id": "showroom",
+  "name": "Showroom",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "image",
+    "motion",
+    "3d"
+  ],
+  "description": "Your work as tiles in 3D space: screenshots, landing pages and images laid out as a grid wall, a cloud, a ring, a tunnel or a deck, with rounded corners and shadows, and a camera that drifts, orbits, flies through or dives into one tile after another. Every frame comes from the patch and the time, so the loop closes and the export matches the preview.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "webgl2",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "showroom.js",
+    "app": "app.js"
+  },
+  "page": "/showroom/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
+    "mov": "untested",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch and the same images give the same frames; GPUs can differ by a level at soft edges.",
+  "references": [
+    {
+      "title": "IMGshfflr (Playspace)",
+      "note": "The prompt: images moving in patterns. Nothing borrowed but the idea of animating a set of images; the 3D space, camera and tiles are original."
+    },
+    {
+      "title": "Portfolio walls on the web",
+      "note": "Grids of rounded website tiles, as studios show their work; the look this aims to make easy."
+    }
+  ],
+  "groups": [
+    {
+      "id": "work",
+      "label": "The work",
+      "hint": "your images and screenshots"
+    },
+    {
+      "id": "layout",
+      "label": "Arrangement",
+      "hint": "where tiles sit in space"
+    },
+    {
+      "id": "tiles",
+      "label": "Tiles",
+      "hint": "shape and finish"
+    },
+    {
+      "id": "camera",
+      "label": "Camera",
+      "hint": "how you move through it"
+    },
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size, time and background"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "keyframes"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "images",
+      "group": "work",
+      "label": "Images",
+      "type": "list",
+      "default": [],
+      "hidden": true,
+      "max": 60,
+      "itemName": "an image",
+      "item": [
+        {
+          "key": "src",
+          "label": "Image",
+          "type": "media",
+          "default": ""
+        }
+      ],
+      "help": "Your images, kept in this browser. Add them above or drop them on the page."
+    },
+    {
+      "key": "count",
+      "group": "work",
+      "label": "Tiles",
+      "type": "int",
+      "default": 24,
+      "min": 1,
+      "max": 120,
+      "step": 1,
+      "animate": false,
+      "help": "How many tiles. With fewer images than tiles, the images repeat."
+    },
+    {
+      "key": "order",
+      "group": "work",
+      "label": "Order",
+      "type": "select",
+      "default": "shuffled",
+      "options": [
+        [
+          "given",
+          "As added"
+        ],
+        [
+          "shuffled",
+          "Shuffled (Reroll for another)"
+        ]
+      ]
+    },
+    {
+      "key": "crop",
+      "group": "work",
+      "label": "Show",
+      "type": "select",
+      "default": "top",
+      "options": [
+        [
+          "top",
+          "The top (page screenshots)"
+        ],
+        [
+          "middle",
+          "The middle"
+        ]
+      ],
+      "help": "Which part of an image shows when it doesn't fit its tile. The top keeps a landing page's hero in view."
+    },
+    {
+      "key": "pageScroll",
+      "group": "work",
+      "label": "Scroll pages",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Tall images, such as full-page screenshots, scroll inside their tiles: down and back once a loop. This is how far."
+    },
+    {
+      "key": "layout",
+      "group": "layout",
+      "label": "Arrangement",
+      "type": "select",
+      "default": "grid",
+      "options": [
+        [
+          "grid",
+          "Grid wall"
+        ],
+        [
+          "cloud",
+          "Cloud"
+        ],
+        [
+          "ring",
+          "Ring"
+        ],
+        [
+          "helix",
+          "Helix"
+        ],
+        [
+          "tunnel",
+          "Tunnel"
+        ],
+        [
+          "stack",
+          "Stack"
+        ],
+        [
+          "wave",
+          "Wave wall"
+        ]
+      ],
+      "help": "Grid wall: a website grid. Cloud: tiles scattered through space. Ring and Helix: around you. Tunnel: walls to fly down. Stack: a deck, front to back. Wave wall: a grid that ripples."
+    },
+    {
+      "key": "columns",
+      "group": "layout",
+      "label": "Columns",
+      "type": "int",
+      "default": 6,
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "animate": false,
+      "when": {
+        "layout": [
+          "grid",
+          "wave"
+        ]
+      }
+    },
+    {
+      "key": "gap",
+      "group": "layout",
+      "label": "Gap",
+      "type": "number",
+      "default": 0.12,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Space between tiles, as a share of a tile."
+    },
+    {
+      "key": "depth",
+      "group": "layout",
+      "label": "Depth",
+      "type": "number",
+      "default": 0.5,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "How deep the arrangement is: how far apart tiles sit front to back."
+    },
+    {
+      "key": "scatter",
+      "group": "layout",
+      "label": "Scatter",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Nudges each tile from its place. Reroll for a new scatter."
+    },
+    {
+      "key": "tilt",
+      "group": "layout",
+      "label": "Tilt",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Turns each tile a little on its own, in all three axes."
+    },
+    {
+      "key": "sizeMix",
+      "group": "layout",
+      "label": "Size mix",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Some tiles larger, some smaller."
+    },
+    {
+      "key": "rotX",
+      "group": "layout",
+      "label": "Turn X",
+      "type": "number",
+      "default": 0,
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "help": "Tips the whole arrangement towards or away from you."
+    },
+    {
+      "key": "rotY",
+      "group": "layout",
+      "label": "Turn Y",
+      "type": "number",
+      "default": 0,
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "help": "Swings the whole arrangement left or right. Drag the preview to turn it."
+    },
+    {
+      "key": "rotZ",
+      "group": "layout",
+      "label": "Turn Z",
+      "type": "number",
+      "default": 0,
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "help": "Rolls the whole arrangement."
+    },
+    {
+      "key": "aspect",
+      "group": "tiles",
+      "label": "Shape",
+      "type": "select",
+      "default": "web",
+      "options": [
+        [
+          "original",
+          "Each image's own"
+        ],
+        [
+          "web",
+          "Desktop · 16:10"
+        ],
+        [
+          "wide",
+          "Wide · 16:9"
+        ],
+        [
+          "classic",
+          "4:3"
+        ],
+        [
+          "square",
+          "Square"
+        ],
+        [
+          "portrait",
+          "Portrait · 4:5"
+        ],
+        [
+          "phone",
+          "Phone · 9:19.5"
+        ]
+      ]
+    },
+    {
+      "key": "size",
+      "group": "tiles",
+      "label": "Size",
+      "type": "number",
+      "default": 1,
+      "min": 0.2,
+      "max": 3,
+      "step": 0.01
+    },
+    {
+      "key": "radius",
+      "group": "tiles",
+      "label": "Corners",
+      "type": "number",
+      "default": 0.04,
+      "min": 0,
+      "max": 0.5,
+      "step": 0.005,
+      "help": "Corner radius, as a share of the tile's shorter side. Half makes a pill or a circle."
+    },
+    {
+      "key": "shadow",
+      "group": "tiles",
+      "label": "Shadow",
+      "type": "number",
+      "default": 0.3,
+      "min": 0,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "float",
+      "group": "tiles",
+      "label": "Float",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Each tile bobs gently, in its own time."
+    },
+    {
+      "key": "spin",
+      "group": "tiles",
+      "label": "Spin",
+      "type": "int",
+      "default": 0,
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "help": "Whole turns each tile makes in a loop, around its own upright."
+    },
+    {
+      "key": "move",
+      "group": "camera",
+      "label": "Move",
+      "type": "select",
+      "default": "drift",
+      "options": [
+        [
+          "still",
+          "Still"
+        ],
+        [
+          "drift",
+          "Drift"
+        ],
+        [
+          "orbit",
+          "Orbit"
+        ],
+        [
+          "fly",
+          "Fly through"
+        ],
+        [
+          "dive",
+          "Dive in"
+        ],
+        [
+          "pan",
+          "Pan across"
+        ],
+        [
+          "scroll",
+          "Scroll down"
+        ]
+      ],
+      "help": "Drift: a slow sway. Orbit: round the arrangement. Fly through: forward through the tiles, for ever. Dive in: from the whole view into one tile after another. Pan and Scroll: the wall slides past, wrapping round."
+    },
+    {
+      "key": "loops",
+      "group": "camera",
+      "label": "Times a loop",
+      "type": "int",
+      "default": 1,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "when": {
+        "move": [
+          "orbit",
+          "fly",
+          "pan",
+          "scroll",
+          "drift"
+        ]
+      }
+    },
+    {
+      "key": "stops",
+      "group": "camera",
+      "label": "Tiles to visit",
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "when": {
+        "move": "dive"
+      }
+    },
+    {
+      "key": "zoom",
+      "group": "camera",
+      "label": "Zoom",
+      "type": "number",
+      "default": 1,
+      "min": 0.25,
+      "max": 6,
+      "step": 0.01,
+      "help": "Closer or further. Pinch or scroll on the preview."
+    },
+    {
+      "key": "fov",
+      "group": "camera",
+      "label": "Lens",
+      "type": "number",
+      "default": 35,
+      "min": 8,
+      "max": 100,
+      "step": 1,
+      "unit": "°",
+      "help": "Field of view. Low is a long lens, flat and calm; high is wide, with deep perspective."
+    },
+    {
+      "key": "panX",
+      "group": "camera",
+      "label": "Look X",
+      "type": "number",
+      "default": 0,
+      "min": -1,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "panY",
+      "group": "camera",
+      "label": "Look Y",
+      "type": "number",
+      "default": 0,
+      "min": -1,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "focus",
+      "group": "camera",
+      "label": "Depth of field",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Softens tiles nearer and further than the middle of the arrangement."
+    },
+    {
+      "key": "fog",
+      "group": "camera",
+      "label": "Fade",
+      "type": "number",
+      "default": 0.2,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "Far tiles fade into the background."
+    },
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "landscape",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "format",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "format",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 8,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "background",
+      "group": "format",
+      "label": "Background",
+      "type": "color",
+      "default": "#ECECE8",
+      "clear": "transparent"
+    },
+    {
+      "key": "transparent",
+      "group": "format",
+      "label": "See-through",
+      "type": "bool",
+      "default": false,
+      "hidden": true,
+      "help": "No background at all, for laying over anything. MOV, PNG, GIF and WebM keep it see-through; MP4 gets the background colour."
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

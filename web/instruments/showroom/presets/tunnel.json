@@ -1,0 +1,21 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Tunnel",
+  "seed": 4,
+  "params": {
+    "layout": "tunnel",
+    "count": 48,
+    "gap": 0.08,
+    "depth": 0.3,
+    "radius": 0.03,
+    "shadow": 0,
+    "move": "fly",
+    "loops": 1,
+    "fov": 70,
+    "zoom": 1,
+    "fog": 0.6,
+    "background": "#0E0E0E",
+    "duration": 12
+  }
+}

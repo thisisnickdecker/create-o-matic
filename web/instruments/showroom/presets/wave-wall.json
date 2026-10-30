@@ -1,0 +1,24 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Wave wall",
+  "seed": 2,
+  "params": {
+    "layout": "wave",
+    "columns": 8,
+    "count": 40,
+    "gap": 0.08,
+    "depth": 0.4,
+    "radius": 0.1,
+    "shadow": 0.25,
+    "move": "drift",
+    "loops": 1,
+    "rotX": 28,
+    "rotY": 20,
+    "fov": 35,
+    "zoom": 1.5,
+    "fog": 0.2,
+    "background": "#DCEBDD",
+    "duration": 8
+  }
+}

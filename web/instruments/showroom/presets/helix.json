@@ -1,0 +1,21 @@
+{
+  "instrument": "showroom",
+  "version": "0.1.0",
+  "name": "Helix",
+  "seed": 9,
+  "params": {
+    "layout": "helix",
+    "count": 36,
+    "depth": 0.4,
+    "radius": 0.08,
+    "shadow": 0.2,
+    "move": "orbit",
+    "loops": 1,
+    "rotZ": -8,
+    "fov": 40,
+    "zoom": 1.1,
+    "fog": 0.4,
+    "background": "#F2EFE6",
+    "duration": 16
+  }
+}

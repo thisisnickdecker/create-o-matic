@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site reader · Create-o-matic</title>
+<meta name="description" content="Read any website: its colours, typefaces, share image, headlines, what it is built with and hosted on, and whether it is open to AI. Then make with it: a brand kit, a carousel, a palette or a type specimen. Free, by Nick Decker.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Create-o-matic">
+<meta property="og:title" content="Site reader · Create-o-matic">
+<meta property="og:description" content="Read any website, then make with it.">
+<meta property="og:url" content="https://createomatic.xyz/read/">
+<meta property="og:image" content="https://createomatic.xyz/og/home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The create-o-matic wordmark beside a frame made with it.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://createomatic.xyz/read/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://use.typekit.net/gfn7ugl.css">
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body class="site">
+  <header class="masthead">
+    <a class="home" href="/" data-wordmark aria-label="Create-o-matic, home"></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Site">
+      <a href="/make/">Motion</a>
+      <a href="/texture/">Texture lab</a>
+      <a href="/showroom/">Showroom</a>
+      <a href="/spiro/">Spirotype</a>
+      <a href="/carousel/">Carousel creator</a>
+      <a href="/stopmotion/">Stop motion</a>
+      <a href="/read/" aria-current="page">Site reader</a>
+      <a href="/type/">Type tester</a>
+      <a href="/colour/">Colour lab</a>
+      <a href="/brand/">Brand bench</a>
+      <a href="/#examples">Examples</a>
+      <a href="/manual/" >Manual</a>
+      <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      <a href="/#nick">Work with Nick</a>
+    </nav>
+    <div class="knob" data-knob></div>
+  </header>
+
+  <main>
+    <section class="hero reader-hero">
+      <h1 class="display">Read any <span data-colourful>website.</span></h1>
+      <p class="lead">Paste an address and see what it's made of: its colours, its typefaces, its share image and headlines, what it's built with and hosted on, and whether it lets AI in. Then make with it.</p>
+      <form class="reader-form" data-form>
+        <input type="text" name="url" placeholder="Paste an address, like pentagram.com" autocomplete="off" spellcheck="false" aria-label="Website address" required>
+        <button class="btn solid" type="submit">Read it</button>
+      </form>
+      <p class="reader-try">Try <button type="button" data-try>nickdecker.net</button> <button type="button" data-try>thestudiolo.com</button> <button type="button" data-try>digthis.website</button> <button type="button" data-try>createomatic.xyz</button></p>
+      <p class="reader-note" data-note></p>
+    </section>
+    <section class="reader-result" data-result hidden></section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <a class="home" href="/" data-wordmark aria-label="Create-o-matic, home"></a>
+      <p>Free and open source under the MIT licence. Made by <a href="https://nickdecker.net">Nick Decker</a>, 2026.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="/make/">Motion</a>
+      <a href="/texture/">Texture lab</a>
+      <a href="/showroom/">Showroom</a>
+      <a href="/spiro/">Spirotype</a>
+      <a href="/carousel/">Carousel creator</a>
+      <a href="/stopmotion/">Stop motion</a>
+      <a href="/read/">Site reader</a>
+      <a href="/type/">Type tester</a>
+      <a href="/colour/">Colour lab</a>
+      <a href="/brand/">Brand bench</a>
+      <a href="/manual/">Manual</a>
+      <a href="https://github.com/thisisnickdecker/create-o-matic">GitHub</a>
+      <a href="https://hirenick.xyz">Hire Nick</a>
+      <a href="https://thestudiolo.com">The Studiolo</a>
+    </nav>
+  </footer>
+
+  <script type="module" src="/assets/chrome.js"></script>
+  <script type="module" src="/assets/read.js"></script>
+</body>
+</html>

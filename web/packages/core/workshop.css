@@ -99,6 +99,15 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px 
 .swatch { width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--r-s); cursor: pointer; flex: none; box-shadow: inset 0 0 0 1px rgba(18, 18, 17, .12); transition: transform .15s var(--ease); }
 .swatch:hover { transform: scale(1.06); }
 .hex, .hexlist { text-transform: uppercase; }
+/* A colour that can be none: the swatch turns to the usual checkerboard, beside a See-through toggle. */
+.colour.clearable { grid-template-columns: 32px 1fr auto; }
+.swatch.see-through, .sw-checker { background: repeating-conic-gradient(#E4E4E0 0 25%, #FFFFFF 0 50%) 0 0 / 10px 10px; }
+.see-toggle { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px 0 8px; border: 0; border-radius: 999px; background: var(--g100); color: var(--ink); font: inherit; cursor: pointer; white-space: nowrap; }
+.see-toggle::before { content: ""; width: 16px; height: 16px; border-radius: 4px; background: repeating-conic-gradient(#C9C9C4 0 25%, #FFFFFF 0 50%) 0 0 / 8px 8px; box-shadow: inset 0 0 0 1px rgba(18, 18, 17, .12); }
+.see-toggle.on { background: var(--ink); color: var(--white); }
+.sw-none { display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 0; padding: 8px 10px; border: 0; border-radius: var(--r-s); background: var(--g100); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.sw-none .sw-checker { width: 24px; height: 24px; border-radius: 6px; flex: none; box-shadow: inset 0 0 0 1px rgba(18, 18, 17, .12); }
+.sw-none.on { box-shadow: inset 0 0 0 2px var(--ink); }
 .palette { display: grid; gap: 8px; }
 .palette-top { display: flex; flex-wrap: wrap; gap: 6px; }
 .swatches { display: contents; }
@@ -254,6 +263,8 @@ body.dragging .drop { display: grid; }
   input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; }
   .swatch, .mini { width: 44px; height: 44px; }
   .colour { grid-template-columns: 44px 1fr; }
+  .colour.clearable { grid-template-columns: 44px 1fr auto; }
+  .see-toggle { height: 44px; }
   .switch { width: 46px; height: 28px; border-radius: 14px; }
   .switch::after { width: 22px; height: 22px; }
   .switch:checked::after { transform: translateX(18px); }

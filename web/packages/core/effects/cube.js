@@ -21,6 +21,10 @@ export default {
     if (tex.canvas.width !== S) { tex.canvas.width = S; tex.canvas.height = S }
     const off = ((p.cubeSpin * t) % 1 + 1) % 1 * S
     const sx = (W - S) / 2, sy = (H - S) / 2
+    // Wiped first, or a see-through frame would leave the last one showing. On a see-through frame
+    // the faces are printed on the background, so the cube stays solid and only around it is clear.
+    tex.clearRect(0, 0, S, S)
+    if (clear) { tex.fillStyle = background; tex.fillRect(0, 0, S, S) }
     tex.drawImage(ctx.canvas, sx, sy, S, S, -off, 0, S, S)
     tex.drawImage(ctx.canvas, sx, sy, S, S, S - off, 0, S, S)
 

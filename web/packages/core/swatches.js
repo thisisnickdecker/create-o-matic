@@ -138,7 +138,8 @@ export function writeAse(name, colours) {
 // ---- the popover ----
 let open = null
 
-export function openSwatches({ anchor, value, onPick, inks, onInks }) {
+// onClear: the colour can be none at all (a background that's see-through); cleared: it is now.
+export function openSwatches({ anchor, value, onPick, inks, onInks, onClear, cleared = false }) {
   close()
   let hex = normHex(value) || "#000000"
   let [h, s, b] = rgbToHsb(...hexToRgb(hex))
@@ -255,8 +256,13 @@ export function openSwatches({ anchor, value, onPick, inks, onInks }) {
     for (const f of syncers) f()
   }
 
+  let none = null
+  if (onClear) {
+    none = el("button", { type: "button", className: `sw-none${cleared ? " on" : ""}` }, el("span", { className: "sw-checker" }), el("span", { textContent: "No background: see-through" }))
+    none.onclick = () => { onClear(); close() }
+  }
   const pop = el("div", { className: "sw-pop", role: "dialog", "aria-label": "Colour" },
-    el("div", { className: "sw-head" }, big, hexIn, dropper), tabs, panes)
+    el("div", { className: "sw-head" }, big, hexIn, dropper), none, tabs, panes)
   document.body.append(pop)
   first.click()
   paint()

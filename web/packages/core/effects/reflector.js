@@ -18,7 +18,13 @@ export default {
     const { width: W, height: H } = ctx.canvas
     const src = copy.canvas
     if (src.width !== W || src.height !== H) { src.width = W; src.height = H }
+    copy.clearRect(0, 0, W, H)
     copy.drawImage(ctx.canvas, 0, 0)
+    // On a see-through frame, the half being mirrored onto is cleared first, so it isn't drawn
+    // over what was there.
+    if (clear && p.mirror === "left") ctx.clearRect(W / 2, 0, W / 2, H)
+    else if (clear && p.mirror === "top") ctx.clearRect(0, H / 2, W, H / 2)
+    else if (clear && p.mirror === "quad") { ctx.clearRect(W / 2, 0, W / 2, H); ctx.clearRect(0, H / 2, W / 2, H / 2) }
     const flip = (sx, sy, sw, sh, fx, fy) => {
       ctx.save()
       ctx.translate(fx ? W : 0, fy ? H : 0)

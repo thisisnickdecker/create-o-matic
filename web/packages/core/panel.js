@@ -1,6 +1,8 @@
 // The control rack, built from an instrument's manifest. Each parameter type gets one control:
 //   number / int  fader + typed readout        select  menu
 //   color         swatch (opens the picker)    palette swatches, + and −, and a pasteable hex list
+// A colour with "clear": "<bool key>" can also be none at all: a See-through button sits beside it,
+// and the picker offers No background. That bool is usually hidden, so there's one place for it.
 //   text          multi-line field             string  one-line field
 //   font          family field + font browser  media   choose / clear a backdrop file
 //   mark          menu of the marks available (from hooks.markNames)
@@ -65,7 +67,7 @@ export function createPanel(root, manifest, hooks) {
     // params: values to show (keyframes already resolved); keys: the patch's keyframes; u: playhead.
     sync(params, keys = {}, u = 0) {
       for (const [key, r] of rows) {
-        r.set(params[key])
+        r.set(params[key], params)
         const when = r.def.when
         r.row.hidden = !shows(when, params)
         if (r.watch) {
@@ -81,7 +83,7 @@ export function createPanel(root, manifest, hooks) {
       for (const key of Object.keys(keys)) {
         const r = rows.get(key)
         if (!r) continue
-        r.set(params[key])
+        r.set(params[key], params)
         r.watch?.classList.toggle("on-key", keys[key].some((k) => Math.abs(k.t - u) < 0.002))
       }
     },
@@ -118,13 +120,26 @@ function control(d, emit, hooks) {
       return { node: box, set(v) { box.checked = v } }
     }
     case "color": {
-      let value = d.default
-      const sw = colourButton(emit, () => value, () => ({}))
+      let value = d.default, cleared = false
+      const clear = d.clear ? (on) => hooks.onChange(d.clear, on) : null
+      // Picking a colour brings the colour back.
+      const pick = (c) => { if (cleared) clear(false); emit(c) }
+      const sw = colourButton(pick, () => value, () => (clear ? { cleared, onClear: () => clear(true) } : {}))
       const hex = el("input", { type: "text", className: "hex", spellcheck: false, maxLength: 7, "aria-label": `${d.label} hex` })
-      hex.addEventListener("change", () => emit(hex.value))
+      hex.addEventListener("change", () => pick(hex.value))
+      const none = clear ? el("button", { type: "button", className: "see-toggle", textContent: "See-through", title: "No background at all, for laying over anything. PNG, PNG frames, GIF and WebM keep it; MP4 can't, so it gets the colour." }) : null
+      none?.addEventListener("click", (e) => { e.preventDefault(); clear(!cleared) })
       return {
-        node: el("span", { className: "colour" }, sw, hex),
-        set(v) { value = v; sw.style.background = v; if (document.activeElement !== hex) hex.value = v },
+        node: el("span", { className: clear ? "colour clearable" : "colour" }, sw, hex, none),
+        set(v, params) {
+          value = v
+          if (clear) cleared = Boolean(params?.[d.clear])
+          sw.classList.toggle("see-through", cleared)
+          sw.style.background = cleared ? "" : v
+          hex.placeholder = cleared ? "None" : ""
+          if (document.activeElement !== hex) hex.value = cleared ? "" : v
+          if (none) { none.classList.toggle("on", cleared); none.setAttribute("aria-pressed", String(cleared)) }
+        },
       }
     }
     case "palette": {

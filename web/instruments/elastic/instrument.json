@@ -922,7 +922,8 @@
       "group": "colour",
       "label": "Background",
       "type": "color",
-      "default": "#F4F4F1"
+      "default": "#F4F4F1",
+      "clear": "transparent"
     },
     {
       "key": "transparent",
@@ -930,6 +931,7 @@
       "label": "See-through",
       "type": "bool",
       "default": false,
+      "hidden": true,
       "help": "No background at all. PNG, PNG frames, GIF and WebM (in Chrome and Edge) keep it see-through, for laying over anything; MP4 can't, so it gets the background colour."
     },
     {

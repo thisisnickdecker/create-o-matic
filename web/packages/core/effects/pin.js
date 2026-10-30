@@ -35,21 +35,24 @@ export default {
     { key: "pinWear", when: { pin: { not: 0 } }, label: "Wear", type: "number", min: 0, max: 1, step: 0.01, default: 0.35, help: "Paper fibre, scuffs and a little fading, like a button from a drawer." },
   ],
   active: (p) => p.pin > 0,
-  apply(ctx, p, { scale, seed }) {
+  apply(ctx, p, { scale, seed, background, clear }) {
     const { width: W, height: H } = ctx.canvas
     const art = scratch.canvas
     if (art.width !== W || art.height !== H) { art.width = W; art.height = H }
+    scratch.clearRect(0, 0, W, H)
     scratch.drawImage(ctx.canvas, 0, 0)
 
     const R = (Math.min(W, H) * p.pin) / 2, cx = W / 2, cy = H / 2
     const S = Math.min(W, H) // the square of the artwork that's printed on the button
     const disc = (r) => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2) }
 
+    // On a see-through frame there's no table, just the button and its shadow, printed on the
+    // background so the button stays solid.
     ctx.save()
-    ctx.fillStyle = p.pinTable
-    ctx.fillRect(0, 0, W, H)
+    if (clear) ctx.clearRect(0, 0, W, H)
+    else { ctx.fillStyle = p.pinTable; ctx.fillRect(0, 0, W, H) }
     // Shadow: a soft cast shadow and a tight contact shadow.
-    ctx.fillStyle = p.pinTable
+    ctx.fillStyle = clear ? background : p.pinTable
     ctx.shadowColor = "rgba(0, 0, 0, .28)"
     ctx.shadowBlur = R * 0.16
     ctx.shadowOffsetY = R * 0.07

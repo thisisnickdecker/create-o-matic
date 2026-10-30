@@ -178,8 +178,12 @@ async function play(root) {
       p.background = ground; p.transparent = false
       if (p.dotGround) p.dotGround = ground
       if (p.asciiGround) p.asciiGround = ground
-      // An ink that would vanish into the new background turns black or white, whichever reads.
-      const reads = (c) => (contrast(c, ground) < 1.6 ? inkOn(ground) : c)
+    }
+    // With your colours or background, an ink that would vanish into the background turns black or
+    // white, whichever reads. Thin characters need more contrast than solid type.
+    if ((colour >= 0 || ground) && !p.transparent) {
+      const bg = p.background, least = p.ascii ? 3 : 1.6
+      const reads = (c) => (contrast(c, bg) < least ? inkOn(bg) : c)
       p.palette = p.palette.map(reads)
       if (p.asciiInks) p.asciiInks = p.asciiInks.map(reads)
     }
@@ -230,6 +234,30 @@ async function play(root) {
   input.addEventListener("input", () => soon(280))
   for (const el of [ui.size, ui.font, ui.variant]) el.addEventListener("change", () => show())
   for (const b of ui.proportions) b.onclick = () => { proportions = b.dataset.value; show() }
+
+  // Vary: a new mix of the controls for the look you're on: typeface, colours, background, grid,
+  // spacing, motion and the look's own effect. Your words, logo, look and size stay. Inks that would
+  // vanish into the background flip, so every roll reads.
+  const any = (list) => list[Math.floor(Math.random() * list.length)]
+  const roll = (input, lo = +input.min, hi = +input.max) => { input.value = lo + Math.random() * (hi - lo) }
+  const vary = $("[data-vary]")
+  vary.onclick = () => {
+    ui.font.value = any([...ui.font.options].map((o) => o.value).filter(Boolean))
+    colour = Math.random() < 0.2 ? -1 : Math.floor(Math.random() * (swatches.length - 1))
+    ground = Math.random() < 0.3 ? null : any(GROUNDS)[1]
+    proportions = Math.random() < 0.3 ? "keep" : "stretch"
+    // Character looks need room to read: fewer, bigger cells.
+    const fine = Boolean(VARIANT[PLAY[look][0]])
+    if (!ui.gridRows[0]?.hidden) { roll(ui.rows, 1, fine ? 5 : 10); roll(ui.columns, 1, fine ? 2 : 5) }
+    if (Math.random() < 0.6) ui.gap.value = 0; else roll(ui.gap, 2, 24)
+    roll(ui.ripple, 0, 0.45)
+    roll(ui.motion, 0.45, 1)
+    roll(ui.speed, 4, 10)
+    if (!ui.effectRow.hidden) roll(ui.effect, 0.15, fine ? 0.5 : 0.9)
+    if (!ui.variantRow.hidden) ui.variant.value = any([...ui.variant.options].map((o) => o.value).filter((v) => v !== "still"))
+    vary.classList.remove("rolling"); void vary.offsetWidth; vary.classList.add("rolling")
+    show()
+  }
   for (const el of [ui.motion, ui.effect, ui.speed, ui.rows, ui.columns, ui.gap, ui.ripple]) el.addEventListener("input", () => soon())
 
   // A logo: chosen, or dropped anywhere on the page.

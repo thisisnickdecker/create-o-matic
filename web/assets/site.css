@@ -49,6 +49,12 @@ body.site { overflow-x: hidden; }
 }
 .play-word:focus { box-shadow: 0 0 0 2px var(--ink); background: var(--white); }
 .play-bar .btn { height: 52px; }
+/* Vary: a die beside the word, so it reads as a roll. */
+.play-bar .vary { display: inline-flex; align-items: center; gap: 8px; }
+.play-bar .vary::before { content: ""; width: 18px; height: 18px; border-radius: 5px; background: radial-gradient(circle, currentColor 1.6px, transparent 2.2px) 4px 4px / 10px 10px, transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+.play-bar .vary.rolling::before { animation: roll .45s var(--ease); }
+@keyframes roll { to { transform: rotate(180deg); } }
+@media (prefers-reduced-motion: reduce) { .play-bar .vary.rolling::before { animation: none; } }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .chips button { border: 0; border-radius: 999px; padding: 9px 14px; background: none; box-shadow: inset 0 0 0 1px var(--g200); cursor: pointer; font: inherit; font-size: 14px; color: var(--g600); white-space: nowrap; transition: background .2s var(--ease), color .2s var(--ease); }
 .chips button:hover { color: var(--ink); background: var(--g100); }

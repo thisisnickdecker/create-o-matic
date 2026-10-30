@@ -63,6 +63,10 @@ body.site { overflow-x: hidden; }
 .play-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px 24px; margin-top: 14px; padding: 20px 22px; border-radius: var(--r-l); background: var(--g100); }
 .play-controls label, .play-colour { display: grid; gap: 8px; align-content: start; }
 .play-colour { grid-column: span 2; }
+/* Stretch or Keep proportions: side-by-side buttons, the first choice in the controls. */
+.play .segmented { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 999px; background: var(--white); max-width: 420px; }
+.play .segmented button { min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: none; color: var(--g600); font: inherit; cursor: pointer; white-space: nowrap; }
+.play .segmented button.on { background: var(--ink); color: var(--white); }
 .play-controls span { font-size: 13px; color: var(--g600); }
 .play-controls label[hidden] { display: none; }
 .play-controls select { width: 100%; min-width: 0; height: 40px; padding: 0 12px; border: 0; border-radius: var(--r-s); background: var(--white); font: inherit; font-size: 14px; color: var(--ink); }

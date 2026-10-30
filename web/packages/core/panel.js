@@ -10,6 +10,8 @@
 //   list          rows of settings ("item" holds their definitions), as cards to add, copy, move, remove
 // A parameter marked "hidden" has no control (it's set by the instrument, such as an image's size).
 //   bool          switch
+// A select with "ui": "segmented" shows its options side by side as buttons, for a choice that
+// matters enough to be seen at a glance.
 // Numbers and colours that can be keyframed get a stopwatch, as in After Effects: click it to start
 // animating that setting from the playhead. A parameter with "when": { key: value } only shows
 // while that other parameter has that value. The rack never owns state: it reports changes
@@ -110,6 +112,17 @@ function control(d, emit, hooks) {
       return { node, set(v) { range.value = v; fillRange(range); if (document.activeElement !== num) num.value = (+v).toFixed(decimals) } }
     }
     case "select": {
+      if (d.ui === "segmented") {
+        const buttons = d.options.map(([v, l]) => {
+          const b = el("button", { type: "button", textContent: l })
+          b.setAttribute("role", "radio")
+          b.addEventListener("click", (e) => { e.preventDefault(); emit(v) })
+          b._value = v
+          return b
+        })
+        const node = el("span", { className: "segmented", role: "radiogroup", "aria-label": d.label }, ...buttons)
+        return { node, set(v) { for (const b of buttons) { b.classList.toggle("on", b._value === v); b.setAttribute("aria-checked", String(b._value === v)) } } }
+      }
       const sel = el("select", {}, ...d.options.map(([v, l]) => el("option", { value: v, textContent: l })))
       sel.addEventListener("change", () => emit(sel.value))
       return { node: sel, set(v) { sel.value = v } }

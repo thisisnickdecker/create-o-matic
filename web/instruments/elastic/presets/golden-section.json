@@ -13,7 +13,7 @@
     "font": "Fraunces",
     "weightMin": 300,
     "weightMax": 800,
-    "fit": "contain",
+    "fit": "ink",
     "align": "end",
     "padding": 0.06,
     "layout": "golden",
@@ -33,6 +33,7 @@
       "#E4372B",
       "#2F2F2C"
     ],
-    "colourMode": "blocks"
+    "colourMode": "blocks",
+    "proportions": "keep"
   }
 }

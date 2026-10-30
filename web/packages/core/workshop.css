@@ -99,6 +99,10 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px 
 .swatch { width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--r-s); cursor: pointer; flex: none; box-shadow: inset 0 0 0 1px rgba(18, 18, 17, .12); transition: transform .15s var(--ease); }
 .swatch:hover { transform: scale(1.06); }
 .hex, .hexlist { text-transform: uppercase; }
+/* A choice shown as side-by-side buttons. */
+.segmented { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: var(--r-m, 12px); background: var(--g100); }
+.segmented button { min-height: 32px; padding: 0 10px; border: 0; border-radius: var(--r-s); background: none; color: var(--g600); font: inherit; cursor: pointer; white-space: nowrap; }
+.segmented button.on { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px rgba(18, 18, 17, .14); }
 /* A colour that can be none: the swatch turns to the usual checkerboard, beside a See-through toggle. */
 .colour.clearable { grid-template-columns: 32px 1fr auto; }
 .swatch.see-through, .sw-checker { background: repeating-conic-gradient(#E4E4E0 0 25%, #FFFFFF 0 50%) 0 0 / 10px 10px; }
@@ -265,6 +269,7 @@ body.dragging .drop { display: grid; }
   .colour { grid-template-columns: 44px 1fr; }
   .colour.clearable { grid-template-columns: 44px 1fr auto; }
   .see-toggle { height: 44px; }
+  .segmented button { min-height: 40px; }
   .switch { width: 46px; height: 28px; border-radius: 14px; }
   .switch::after { width: 22px; height: 22px; }
   .switch:checked::after { transform: translateX(18px); }

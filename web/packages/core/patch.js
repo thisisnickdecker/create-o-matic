@@ -21,6 +21,9 @@ export function sanitize(manifest, patch) {
   if (Number.isFinite(patch.seed)) out.seed = patch.seed | 0
   const given = patch.params || {}
   for (const d of manifest.parameters) {
+    // A setting that took over from older ones ("from": { oldKey: { oldValue: newValue } }) reads
+    // them when a patch predates it, so older links still open the same.
+    if (!(d.key in given) && d.from) for (const [k, map] of Object.entries(d.from)) if (given[k] in map) out.params[d.key] = map[given[k]]
     if (!(d.key in given)) continue
     const v = coerce(d, given[d.key])
     if (v !== undefined) out.params[d.key] = v

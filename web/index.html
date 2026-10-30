@@ -52,6 +52,7 @@
         <div class="chips" role="radiogroup" aria-label="Looks"></div>
         <div class="stage-card" data-hero aria-label="Your words, playing live"></div>
         <div class="play-controls" aria-label="Controls">
+          <div class="play-colour"><span>Proportions</span><div class="segmented" role="radiogroup" aria-label="Proportions" data-proportions><button type="button" role="radio" data-value="stretch">Stretch</button><button type="button" role="radio" data-value="keep">Keep proportions</button></div></div>
           <label><span>Size</span><select data-size>
             <option value="">The look's own</option><option value="square">Square 1:1</option><option value="landscape">Landscape 16:9</option><option value="story">Story 9:16</option><option value="portrait">Portrait 4:5</option>
           </select></label>
@@ -65,7 +66,7 @@
           <label data-grid-row><span>Columns</span><input type="range" min="1" max="16" step="1" data-columns><output data-columns-out></output></label>
           <label><span>Spacing</span><input type="range" min="0" max="60" step="1" data-gap></label>
           <label><span>Ripple</span><input type="range" min="0" max="1" step="0.01" data-ripple></label>
-          <label><span>Stretch</span><input type="range" min="0" max="1" step="0.01" data-motion></label>
+          <label><span>Movement</span><input type="range" min="0" max="1" step="0.01" data-motion></label>
           <label data-effect-row><span data-effect-name>Effect</span><input type="range" min="0" max="1" step="0.01" data-effect></label>
           <label><span>Loop</span><input type="range" min="2" max="16" step="0.5" data-speed><output data-speed-out></output></label>
         </div>

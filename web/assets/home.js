@@ -94,11 +94,11 @@ async function play(root) {
     effectRow: $("[data-effect-row]"), effectName: $("[data-effect-name]"), speed: $("[data-speed]"), speedOut: $("[data-speed-out]"),
     rows: $("[data-rows]"), columns: $("[data-columns]"), gap: $("[data-gap]"), ripple: $("[data-ripple]"),
     rowsOut: $("[data-rows-out]"), columnsOut: $("[data-columns-out]"), gridRows: root.querySelectorAll("[data-grid-row]"),
-    grounds: $("[data-grounds]"), variant: $("[data-variant]"), variantRow: $("[data-variant-row]"), variantName: $("[data-variant-name]") }
+    grounds: $("[data-grounds]"), proportions: [...root.querySelectorAll("[data-proportions] button")], variant: $("[data-variant]"), variantRow: $("[data-variant-row]"), variantName: $("[data-variant-name]") }
   const presets = await Promise.all(PLAY.map(([id]) => load(id)))
   const { PALETTES } = await import("/assets/brand.js")
   const { contrast, inkOn } = await import("/packages/core/colour.js")
-  let look = 0, logo = null, colour = -1, ground = null, stop = null
+  let look = 0, logo = null, colour = -1, ground = null, proportions = "stretch", stop = null
 
   // Looks
   const buttons = PLAY.map(([, label], i) => {
@@ -143,6 +143,7 @@ async function play(root) {
   // The sliders start where the look itself sits.
   function fromLook() {
     const p = presets[look].params, e = EFFECT[PLAY[look][0]]
+    proportions = p.proportions ?? "stretch"
     ui.motion.value = p.amount ?? 0.6
     ui.speed.value = p.duration
     ui.rows.value = p.rows ?? 12
@@ -184,6 +185,9 @@ async function play(root) {
     }
     const v = VARIANT[PLAY[look][0]]
     if (v) p[v[1]] = ui.variant.value
+    // Keep proportions: words and logos keep their true shape; the cells still move.
+    p.proportions = proportions
+    if (proportions === "keep" && presets[look].params.proportions !== "keep") p.align = "center"
     p.amount = +ui.motion.value
     p.duration = +ui.speed.value
     p.gap = +ui.gap.value
@@ -211,6 +215,7 @@ async function play(root) {
     buttons.forEach((b, i) => { b.classList.toggle("on", i === look); b.setAttribute("aria-checked", String(i === look)) })
     swatches.forEach((b, i) => b.classList.toggle("on", i - 1 === colour))
     groundSwatches.forEach((b) => b.classList.toggle("on", b._value === ground))
+    ui.proportions.forEach((b) => { b.classList.toggle("on", b.dataset.value === proportions); b.setAttribute("aria-checked", String(b.dataset.value === proportions)) })
     picker.classList.toggle("on", Boolean(ground) && ground !== "clear" && !GROUNDS.some(([, hex]) => hex === ground))
     card.classList.toggle("see-through", Boolean(patch.params.transparent))
     ui.speedOut.textContent = `${(+ui.speed.value).toFixed(1)} s`
@@ -224,6 +229,7 @@ async function play(root) {
   const soon = (ms = 160) => { clearTimeout(wait); wait = setTimeout(() => show(), ms) }
   input.addEventListener("input", () => soon(280))
   for (const el of [ui.size, ui.font, ui.variant]) el.addEventListener("change", () => show())
+  for (const b of ui.proportions) b.onclick = () => { proportions = b.dataset.value; show() }
   for (const el of [ui.motion, ui.effect, ui.speed, ui.rows, ui.columns, ui.gap, ui.ripple]) el.addEventListener("input", () => soon())
 
   // A logo: chosen, or dropped anywhere on the page.

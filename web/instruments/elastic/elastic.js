@@ -191,6 +191,9 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
   const words = slots(p), N = words.length
   const inks = p.palette, P = inks.length
   const blocks = p.colourMode === "blocks"
+  // Keep proportions: words and marks keep their true shape in their cells, which still move.
+  const keep = p.proportions === "keep"
+  const fit = keep ? "contain" : p.fit, markFit = keep ? "contain" : p.markFit
 
   ctx.setTransform(scale, 0, 0, scale, 0, 0)
   ctx.globalAlpha = 1
@@ -231,14 +234,14 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
       const mark = isMark(word) && marks?.get(word.slice(1))
       if (mark) {
         const px = c.w * p.padding, py = c.h * p.padding
-        if (c.w - 2 * px > 0 && c.h - 2 * py > 0) drawMark(ctx, mark, c.x + px, c.y + py, c.w - 2 * px, c.h - 2 * py, ink, { fit: p.markFit, colour: p.markColour, scale })
+        if (c.w - 2 * px > 0 && c.h - 2 * py > 0) drawMark(ctx, mark, c.x + px, c.y + py, c.w - 2 * px, c.h - 2 * py, ink, { fit: markFit, colour: p.markColour, scale })
         continue
       }
 
       if (p.scramble > 0) word = scrambled(word, p, seed, c, t)
       const weight = Math.round((p.weightMin + (p.weightMax - p.weightMin) * c.v) / 10) * 10
       const font = fontString(weight, 100, p.font)
-      const m = measure(ctx, font, word, p.fit)
+      const m = measure(ctx, font, word, fit)
       if (m.w <= 0 || m.h <= 0) continue
       const px = c.w * p.padding, py = c.h * p.padding
       const cw = c.w - 2 * px, ch = c.h - 2 * py
@@ -246,14 +249,14 @@ export function render(ctx, patch, t, { scale = 1, frame = 0, effects = true, ba
       let sx = cw / m.w, sy = ch / m.h
       let ox = c.x + px, oy = c.y + py
       // Editorial fit: the word keeps its proportions and sits in the cell by the alignment.
-      if (p.fit === "contain") {
+      if (fit === "contain") {
         const k = Math.min(sx, sy)
         if (p.align === "center") { ox += (cw - m.w * k) / 2; oy += (ch - m.h * k) / 2 }
         else if (p.align === "end") oy += ch - m.h * k
         sx = sy = k
       }
 
-      const clip = p.fit === "cap"
+      const clip = fit === "cap"
       if (clip) {
         ctx.save()
         ctx.setTransform(scale, 0, 0, scale, 0, 0)

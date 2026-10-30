@@ -134,7 +134,8 @@
         <tr><th>Random</th><td>A pick for each cell, decided by the seed.</td></tr>
       </table>
       <h3>Marks: logos and graphics</h3>
-      <p>Drop an SVG on the page, or use <b>Add mark…</b> under Content. It becomes a line such as <code>@logo</code>, and from then on it behaves exactly like a word: it stretches, takes the inks, blends and goes through the effects. <b>Marks fit</b> can keep a logo's proportions; <b>Marks colour</b> can keep its own colours.</p>
+      <p>Drop an SVG on the page, or use <b>Add mark…</b> under Content. It becomes a line such as <code>@logo</code>, and from then on it behaves exactly like a word: it stretches, takes the inks, blends and goes through the effects. <b>Marks colour</b> can keep its own colours.</p>
+      <p><b>Proportions</b>, just under Content, is the first choice to make. <b>Stretch</b> lets words and logos fill their cells and distort as the cells move: the elastic look. <b>Keep proportions</b> never distorts them: each sits in its cell at its true shape, placed by <b>Align</b>, while the cells still move round it. Under Stretch, <b>Stretch to</b> picks how a word fills its cell, and <b>Logos</b> can keep a logo true while the words stretch. The same choice is the first control in the playground on the home page.</p>
       <p>SVG gives the best result: it's drawn as vectors, sharp at any export size, and travels inside the patch. Only filled shapes come through, so outline strokes and text first (in Illustrator: <i>Object › Expand</i> and <i>Type › Create Outlines</i>). PNG and JPEG work too: transparent images use their alpha as the shape, opaque ones use their darkness. Those stay in your browser rather than in the patch.</p>
 
       <h2 id="fonts">Fonts</h2>
@@ -162,7 +163,7 @@
         <tr><th>Seed</th><td>Every random choice comes from it. Same seed, same result.</td></tr>
       </table>
       <h3>Golden section</h3>
-      <p>Set <b>Layout</b> to <b>Golden section</b> and the frame is cut into a spiral of golden rectangles: each cut takes 1/φ (0.618) of the long side, leaving a smaller golden rectangle to cut again, turning a quarter each time. Choose the <b>First cut</b>, the <b>Spiral</b>'s direction and the number of <b>Golden cuts</b>; <b>Golden swing</b> lets the cuts breathe away from φ and back as the wave passes (0 holds them exactly golden). With <b>Fit</b> set to <b>Keep proportions (editorial)</b>, words sit in their blocks at their true proportions, aligned like a page; with <b>Ink by: Blocks</b> the blocks themselves take the inks.</p>
+      <p>Set <b>Layout</b> to <b>Golden section</b> and the frame is cut into a spiral of golden rectangles: each cut takes 1/φ (0.618) of the long side, leaving a smaller golden rectangle to cut again, turning a quarter each time. Choose the <b>First cut</b>, the <b>Spiral</b>'s direction and the number of <b>Golden cuts</b>; <b>Golden swing</b> lets the cuts breathe away from φ and back as the wave passes (0 holds them exactly golden). With <b>Proportions</b> set to <b>Keep proportions</b>, words sit in their blocks at their true proportions, aligned like a page; with <b>Ink by: Blocks</b> the blocks themselves take the inks.</p>
 
       <h2 id="shape">Shape fill</h2>
       <p>Pick any mark as the <b>Shape</b> and the type fills its silhouette, or flows around it. <b>Fill</b> cuts the type to the edge or keeps only whole cells; <b>Around</b> makes the shape negative space. <b>Shape size</b>, <b>across</b> and <b>down</b> can be keyframed, so a logo can grow, pulse or sweep through the type. Thin shapes like a signature want many small cells: try 30 or more columns.</p>

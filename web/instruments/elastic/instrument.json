@@ -222,6 +222,30 @@
       "help": "One slot per line. A line like @logo puts that mark (a logo or graphic you've added) in the slot. In Size mode the first line goes in the smallest cells, the last in the largest."
     },
     {
+      "key": "proportions",
+      "group": "type",
+      "label": "Proportions",
+      "type": "select",
+      "ui": "segmented",
+      "default": "stretch",
+      "options": [
+        [
+          "stretch",
+          "Stretch"
+        ],
+        [
+          "keep",
+          "Keep proportions"
+        ]
+      ],
+      "help": "Stretch: words and logos fill their cells and distort as the cells move. Keep proportions: they never distort; each sits in its cell at its true shape, and the cells still move.",
+      "from": {
+        "fit": {
+          "contain": "keep"
+        }
+      }
+    },
+    {
       "key": "mode",
       "group": "type",
       "label": "Content mode",
@@ -339,23 +363,22 @@
     {
       "key": "fit",
       "group": "type",
-      "label": "Fit",
+      "label": "Stretch to",
       "type": "select",
       "default": "ink",
       "options": [
         [
           "ink",
-          "Stretch to ink"
+          "The ink: letters fill the cell"
         ],
         [
           "cap",
-          "Stretch to cap height"
-        ],
-        [
-          "contain",
-          "Keep proportions (editorial)"
+          "Cap height: ascenders and descenders run over"
         ]
-      ]
+      ],
+      "when": {
+        "proportions": "stretch"
+      }
     },
     {
       "key": "align",
@@ -378,7 +401,7 @@
         ]
       ],
       "when": {
-        "fit": "contain"
+        "proportions": "keep"
       }
     },
     {
@@ -394,20 +417,23 @@
     {
       "key": "markFit",
       "group": "type",
-      "label": "Marks fit",
+      "label": "Logos",
       "type": "select",
       "default": "stretch",
       "options": [
         [
           "stretch",
-          "Stretch like type"
+          "Stretch like the words"
         ],
         [
           "contain",
-          "Keep proportions"
+          "Keep their proportions"
         ]
       ],
-      "help": "Keep proportions when a logo mustn't be distorted."
+      "help": "Stretch the words but keep a logo true, when it mustn't be distorted.",
+      "when": {
+        "proportions": "stretch"
+      }
     },
     {
       "key": "markColour",

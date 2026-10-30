@@ -3,6 +3,7 @@
 //   const stop = mount(element, patch)        // patch: an object, or the URL of a .json
 //   mount(element, patch, { backdrop: "https://…/clip.mp4" })   // an image or video behind the type
 //   stop.update(patch)                         // a new patch for the same loop: it changes in place
+//   stop.time()                                // where in the loop it is now, 0 to 1
 // Backdrops and added fonts live in the browser that made the patch, so a page supplies its own.
 // SVG marks travel inside the patch and just work; PNG or JPEG marks don't travel.
 // The canvas fits inside the element, keeping the patch's proportions (give the element a size or an
@@ -70,6 +71,7 @@ export function mount(el, patchOrUrl, { backdrop: backdropUrl } = {}) {
 
   const stop = () => { stopped = true; cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); canvas.remove() }
   stop.update = (raw) => use(raw)
+  stop.time = () => (still ? patch?.params.phase ?? 0 : ((performance.now() - start) / 1000 / (patch?.params.duration || 1)) % 1)
   return stop
 }
 

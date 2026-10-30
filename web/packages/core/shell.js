@@ -79,7 +79,7 @@ const TEMPLATE = `
           <button class="btn" data-export="webm" type="button">WebM</button>
           <button class="btn" data-export="gif" type="button">GIF</button>
           <button class="btn" data-export="mov" type="button" title="ProRes 4444 .mov, see-through if the frame is: for Final Cut, Premiere, After Effects, Keynote and Photos. Large.">MOV</button>
-          <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a full-size PNG on the clipboard, to paste into Figma, Slack or a message">Copy PNG</button>
+          <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a double-size PNG on the clipboard, see-through if the frame is: paste it straight into Figma">Copy for Figma</button>
           <button class="btn" data-ref="cancel" type="button" hidden>Cancel</button>
         </div>
         <div class="strip">
@@ -388,11 +388,11 @@ export async function createMachine(host, engine, hooks = {}) {
 
   // ---- export ----
   let abort = null
-  async function doExport(kind, { save = true } = {}) {
+  async function doExport(kind, { save = true, scale: forced } = {}) {
     if (abort) return null
     const snap = structuredClone(patch)
     const { w: W, h: H } = size(snap)
-    let k = +ref.exportScale.value
+    let k = forced ?? +ref.exportScale.value
     if (kind !== "png" && k > 1) k = 1
     const w = even(W * k), h = even(H * k)
     const s = w / W
@@ -455,13 +455,15 @@ export async function createMachine(host, engine, hooks = {}) {
     ref.cancel.hidden = !on
   }
   host.querySelectorAll("[data-export]").forEach((b) => { b.onclick = () => doExport(b.dataset.export) })
-  // Copy PNG: the clipboard is handed the render while it's still going, so the copy stays inside
-  // the click (browsers allow it only then).
+  // Copy for Figma: the freeze frame at double size (up to Figma's 4096 pixels a side). The clipboard
+  // is handed the render while it's still going, so the copy stays inside the click (browsers allow
+  // it only then).
   if (canCopyImage()) {
     ref.copy.hidden = false
     ref.copy.onclick = () => {
-      const png = doExport("png", { save: false }).then((blob) => blob ?? Promise.reject(new Error("an export is already running")))
-      copyPng(png).then(() => note("Copied the frame as a full-size PNG. Paste it into Figma, Slack or a message.", false, ref.exportNote))
+      const { w, h } = size(patch), k = Math.min(2, 4096 / Math.max(w, h))
+      const png = doExport("png", { save: false, scale: k }).then((blob) => blob ?? Promise.reject(new Error("an export is already running")))
+      copyPng(png).then(() => note(`Copied the frame as a ${even(w * k)}×${even(h * k)} PNG${patch.params.transparent ? ", see-through" : ""}. Paste it into Figma, Slack or a message.`, false, ref.exportNote))
         .catch((e) => note(`Couldn't copy: ${e.message}`, true, ref.exportNote))
     }
   }

@@ -297,15 +297,18 @@ async function play(root) {
   const shareButton = $("[data-share]"), copyButton = $("[data-copy]")
   let busy = false, ready = null
 
+  // A still is the moment on screen, at double size (up to Figma's 4096 pixels a side), so it stays
+  // sharp when it's scaled up in a layout.
   async function make(kind, onProgress) {
+    const moment = stop?.time?.() ?? 0.25
     const patch = sanitize(engine.manifest, current())
     const marks = await prepareMarks(patch)
     await ensureFont(engine.fontRequest(patch))
     engine.clearMetrics()
-    const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : 1
+    const { w: W, h: H } = engine.size(patch), k = kind === "gif" ? 0.5 : kind === "png" ? Math.min(2, 4096 / Math.max(W, H)) : 1
     const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
     const n = engine.frameCount(patch), fps = Number(patch.params.fps)
-    const draw = (c, i) => engine.render(c, patch, kind === "png" ? 0.25 : i / n, { scale: s, frame: i, marks })
+    const draw = (c, i) => engine.render(c, patch, kind === "png" ? moment : i / n, { scale: s, frame: i, marks })
     // See-through stays see-through in PNG, GIF and MOV; an MP4 can't hold it, so it gets the look's background.
     const clear = patch.params.transparent, matte = patch.params.background
     const blob = kind === "png" ? await exporters.exportPng({ w, h, draw })
@@ -341,9 +344,9 @@ async function play(root) {
   if (exporters.canCopyImage()) {
     copyButton.hidden = false
     copyButton.onclick = () => {
-      const png = make("png").then((r) => r.blob)
+      const made = make("png"), png = made.then((r) => r.blob)
       exporters.copyPng(png)
-        .then(() => png.then((blob) => { hint.textContent = `Copied a full-size PNG (${mb(blob)}). Paste it into Figma, Slack or a message.` }))
+        .then(() => made.then(({ w, h, clear }) => { hint.textContent = `Copied this moment as a ${w}×${h} PNG${clear ? ", see-through" : ""}. Paste it into Figma, Slack or a message.` }))
         .catch((e) => { hint.textContent = `Couldn't copy: ${e.message}` })
     }
   }

@@ -91,7 +91,7 @@ frame step, so the loop closes. GIFs share one palette across the loop, keep the
 exact, and alternate delays (3, 3, 4 hundredths at 30 fps) so their length is exact.
 
 See-through exports (Motion's **See-through**) were checked the same way on a see-through loop. The
-PNG and every frame of the PNG-frames zip match the engine's frames exactly, alpha included. The
+PNG matches the engine's frame exactly, alpha included. The
 GIF's see-through pixels match wherever the engine's cover is past half; GIFs have no soft edges.
 The WebM carries its alpha as a second VP9 stream (`alpha_mode=1`). Decoded with libvpx, the
 colour matched to under 1/255 on average and the alpha to about 2/255, with differences only at

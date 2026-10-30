@@ -140,7 +140,7 @@ function control(d, emit, hooks) {
       const sw = colourButton(pick, () => value, () => (clear ? { cleared, onClear: () => clear(true) } : {}))
       const hex = el("input", { type: "text", className: "hex", spellcheck: false, maxLength: 7, "aria-label": `${d.label} hex` })
       hex.addEventListener("change", () => pick(hex.value))
-      const none = clear ? el("button", { type: "button", className: "see-toggle", textContent: "See-through", title: "No background at all, for laying over anything. PNG, PNG frames, GIF and WebM keep it; MP4 can't, so it gets the colour." }) : null
+      const none = clear ? el("button", { type: "button", className: "see-toggle", textContent: "See-through", title: "No background at all, for laying over anything. MOV, PNG, GIF and WebM keep it; MP4 can't, so it gets the colour." }) : null
       none?.addEventListener("click", (e) => { e.preventDefault(); clear(!cleared) })
       return {
         node: el("span", { className: clear ? "colour clearable" : "colour" }, sw, hex, none),

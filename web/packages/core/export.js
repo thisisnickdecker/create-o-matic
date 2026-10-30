@@ -6,11 +6,10 @@
 //   mp4   H.264 via WebCodecs + mp4-muxer   (Chrome, Edge, Safari 17+; not every Linux build)
 //   webm  VP9 via WebCodecs + webm-muxer    (Chrome, Edge, Firefox 130+)
 //   gif   gifenc, one 256-colour palette for the whole loop; best at reduced size
-//   png frames  a zip of every frame as a PNG: an image sequence for After Effects, Premiere, Resolve
 //   mov   ProRes 4444 with alpha, our own encoder (prores.js, mov.js): see-through video that Apple's
 //         apps, Premiere and After Effects read. Large, as editing formats are.
 //
-// See-through frames: PNG, PNG frames and GIF keep them (a GIF pixel is either there or not), and
+// See-through frames: PNG and GIF keep them (a GIF pixel is either there or not), and
 // so does WebM, as VP9 with an alpha channel, which browsers play see-through, and so does MOV. MP4
 // can't, so a see-through frame is laid on its matte colour first.
 
@@ -178,23 +177,6 @@ export async function exportGif({ w, h, fps, frames, draw, onProgress, signal, c
   }
   gif.finish()
   return new Blob([gif.bytes()], { type: "image/gif" })
-}
-
-// Every frame as a PNG, in a zip: an image sequence, see-through if the frames are. Names count
-// from 0001 so editing software reads them in order.
-export async function exportFrames({ w, h, frames, draw, onProgress, signal, name = "frame" }) {
-  const { zip } = await import("./zip.js")
-  const { canvas, ctx } = surface(w, h)
-  const files = []
-  for (let i = 0; i < frames; i++) {
-    if (signal?.aborted) throw new DOMException("Export cancelled", "AbortError")
-    ctx.clearRect(0, 0, w, h)
-    await draw(ctx, i)
-    files.push({ name: `${name}-${String(i + 1).padStart(4, "0")}.png`, data: await new Promise((resolve) => canvas.toBlob(resolve, "image/png")) })
-    onProgress?.((i + 1) / frames)
-    await breathe()
-  }
-  return zip(files)
 }
 
 // ProRes 4444 in a .mov. Every frame keeps its alpha; an opaque loop is simply opaque.

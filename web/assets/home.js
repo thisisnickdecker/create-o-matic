@@ -222,6 +222,9 @@ async function play(root) {
     ui.proportions.forEach((b) => { b.classList.toggle("on", b.dataset.value === proportions); b.setAttribute("aria-checked", String(b.dataset.value === proportions)) })
     picker.classList.toggle("on", Boolean(ground) && ground !== "clear" && !GROUNDS.some(([, hex]) => hex === ground))
     card.classList.toggle("see-through", Boolean(patch.params.transparent))
+    // See-through video is MOV (MP4 can't hold it); otherwise MP4, which is far smaller.
+    $('[data-export="mp4"]').hidden = Boolean(patch.params.transparent)
+    $('[data-export="mov"]').hidden = !patch.params.transparent
     ui.speedOut.textContent = `${(+ui.speed.value).toFixed(1)} s`
     ui.rowsOut.textContent = ui.rows.value
     ui.columnsOut.textContent = ui.columns.value
@@ -325,8 +328,7 @@ async function play(root) {
         if (sharable) { shareButton.hidden = false; shareButton.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}` }
         if (sharable && exporters.touchFirst()) hint.textContent = `Your ${w}×${h} ${kind.toUpperCase()} is ready (${mb(blob)}). Tap Save or share to put it in Photos, or send it.`
         else { exporters.download(blob, name); hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${mb(blob)}).${sharable ? " Share sends it by AirDrop or Messages." : ""}` }
-        if (kind === "mp4" && ready.clear) hint.textContent += " MP4 can't be see-through, so it has the look's background. For see-through video, use MOV."
-        if (kind === "mov") hint.textContent += ` ProRes 4444${ready.clear ? ", see-through" : ""}: for Final Cut, Premiere, After Effects and Keynote.`
+        if (kind === "mov") hint.textContent += " See-through ProRes 4444: for Keynote, Final Cut, Premiere, After Effects and Photos."
       } catch (e) { hint.textContent = e.message }
       b.textContent = label
       busy = false

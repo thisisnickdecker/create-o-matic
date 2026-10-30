@@ -33,7 +33,6 @@
     "mp4": "verified",
     "webm": "verified",
     "gif": "verified",
-    "png-frames": "verified",
     "mov": "verified",
     "embed": "verified",
     "patch-json": "verified"
@@ -959,7 +958,7 @@
       "type": "bool",
       "default": false,
       "hidden": true,
-      "help": "No background at all. PNG, PNG frames, GIF and WebM (in Chrome and Edge) keep it see-through, for laying over anything; MP4 can't, so it gets the background colour."
+      "help": "No background at all, for laying over anything. MOV (for Apple's apps and video editors), PNG, GIF and WebM (for websites) keep it see-through; MP4 can't, so it gets the background colour."
     },
     {
       "key": "palette",

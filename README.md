@@ -97,6 +97,13 @@ The WebM carries its alpha as a second VP9 stream (`alpha_mode=1`). Decoded with
 colour matched to under 1/255 on average and the alpha to about 2/255, with differences only at
 antialiased edges. Chrome plays it see-through. The MP4 is laid on the background colour.
 
+MOV is ProRes 4444 with alpha, from an encoder written for this (`web/packages/core/prores.js`,
+with `mov.js` writing the QuickTime file), since no browser makes it. Exports from Motion, the
+Type tester and the home playground were decoded with Apple's AVFoundation, which Final Cut,
+Keynote and Photos use: every frame read, with the right share see-through. Quick Look showed it
+see-through. Decoded with FFmpeg, colour matched the engine's frames to 0.04 to 0.3 of a level on
+average (out of 255), and alpha to within one level. Frame rate and duration were exact.
+
 ## Deploying
 
 It's a Cloudflare Pages project called `createomatic`, serving `web/` as static files

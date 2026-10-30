@@ -29,7 +29,7 @@ import { defaults, sanitize, coerce, toHash, fromHash, library } from "./patch.j
 import { createPanel, fillRange } from "./panel.js"
 import { createTimeline } from "./timeline.js"
 import { resolve, timelinePos, setKey } from "./keys.js"
-import { exportPng, exportVideo, exportGif, exportFrames, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
+import { exportPng, exportVideo, exportGif, exportFrames, exportMov, videoSupport, download, canShare, share, touchFirst, canCopyImage, copyPng } from "./export.js"
 import { mulberry32, newSeed } from "./rng.js"
 
 const TEMPLATE = `
@@ -78,6 +78,7 @@ const TEMPLATE = `
           <button class="btn" data-export="mp4" type="button">MP4</button>
           <button class="btn" data-export="webm" type="button">WebM</button>
           <button class="btn" data-export="gif" type="button">GIF</button>
+          <button class="btn" data-export="mov" type="button" title="ProRes 4444 .mov, see-through if the frame is: for Final Cut, Premiere, After Effects, Keynote and Photos. Large.">MOV</button>
           <button class="btn" data-export="frames" type="button" title="Every frame as a PNG, in a zip: an image sequence for After Effects, Premiere or Resolve, see-through if the frame is">PNG frames</button>
           <button class="btn" data-ref="copy" type="button" hidden title="The freeze frame as a full-size PNG on the clipboard, to paste into Figma, Slack or a message">Copy PNG</button>
           <button class="btn" data-ref="cancel" type="button" hidden>Cancel</button>
@@ -420,7 +421,7 @@ export async function createMachine(host, engine, hooks = {}) {
         // background where it can't.
         const job = { w, h, fps, frames: n, signal: abort.signal, onProgress: (p) => { bar.style.width = `${p * 100}%` }, draw: (c, i) => draw(c, i, i / n),
           clear: Boolean(snap.params.transparent), matte: snap.params.background ?? "#FFFFFF" }
-        blob = kind === "gif" ? await exportGif(job) : kind === "frames" ? await exportFrames({ ...job, name: slug() }) : await exportVideo({ kind, ...job })
+        blob = kind === "gif" ? await exportGif(job) : kind === "frames" ? await exportFrames({ ...job, name: slug() }) : kind === "mov" ? await exportMov(job) : await exportVideo({ kind, ...job })
       }
       const name = `${slug()}-${snap.seed}-${w}x${h}${kind === "frames" ? `-${n}-frames.zip` : `.${kind}`}`
       const size = `${(blob.size / 1048576).toFixed(2)} MB`

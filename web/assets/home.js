@@ -303,10 +303,11 @@ async function play(root) {
     const w = Math.max(2, Math.round((W * k) / 2) * 2), h = Math.max(2, Math.round((H * k) / 2) * 2), s = w / W
     const n = engine.frameCount(patch), fps = Number(patch.params.fps)
     const draw = (c, i) => engine.render(c, patch, kind === "png" ? 0.25 : i / n, { scale: s, frame: i, marks })
-    // See-through stays see-through in PNG and GIF; an MP4 can't hold it, so it gets the look's background.
+    // See-through stays see-through in PNG, GIF and MOV; an MP4 can't hold it, so it gets the look's background.
     const clear = patch.params.transparent, matte = patch.params.background
     const blob = kind === "png" ? await exporters.exportPng({ w, h, draw })
       : kind === "gif" ? await exporters.exportGif({ w, h, fps, frames: n, draw, onProgress, clear })
+      : kind === "mov" ? await exporters.exportMov({ w, h, fps, frames: n, draw, onProgress })
       : await exporters.exportVideo({ kind, w, h, fps, frames: n, draw, onProgress, clear, matte })
     return { blob, name: `${fileSlug(input.value || logo?.name || "create-o-matic")}-${w}x${h}.${kind}`, w, h, kind, clear }
   }
@@ -324,7 +325,8 @@ async function play(root) {
         if (sharable) { shareButton.hidden = false; shareButton.textContent = kind === "png" ? "Save or share image" : `Save or share ${kind.toUpperCase()}` }
         if (sharable && exporters.touchFirst()) hint.textContent = `Your ${w}×${h} ${kind.toUpperCase()} is ready (${mb(blob)}). Tap Save or share to put it in Photos, or send it.`
         else { exporters.download(blob, name); hint.textContent = `Saved a ${w}×${h} ${kind.toUpperCase()} (${mb(blob)}).${sharable ? " Share sends it by AirDrop or Messages." : ""}` }
-        if (kind === "mp4" && ready.clear) hint.textContent += " MP4 can't be see-through, so it has the look's background: for see-through, use PNG or GIF here, or WebM and PNG frames in Motion."
+        if (kind === "mp4" && ready.clear) hint.textContent += " MP4 can't be see-through, so it has the look's background. For see-through video, use MOV."
+        if (kind === "mov") hint.textContent += ` ProRes 4444${ready.clear ? ", see-through" : ""}: for Final Cut, Premiere, After Effects and Keynote.`
       } catch (e) { hint.textContent = e.message }
       b.textContent = label
       busy = false

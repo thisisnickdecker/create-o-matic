@@ -318,3 +318,8 @@ body.dragging .drop { display: grid; }
 .slide-thumb span { position: absolute; left: 6px; bottom: 6px; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: rgba(18, 18, 17, .7); color: var(--white); font-size: 11px; font-variant-numeric: tabular-nums; }
 .slide-thumb.on { outline-color: var(--ink); }
 @media (max-width: 700px) { .slide-thumb canvas { height: 96px; } }
+.stage .slide-tools { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
+.stage .slide-tools .btn { min-height: 0; padding: 6px 12px; font-size: 13px; }
+.group .draft { margin-bottom: 12px; }
+.group .draft summary { cursor: pointer; font-size: 13px; color: var(--g600); padding: 4px 0; }
+.group .draft textarea { width: 100%; margin: 6px 0; }

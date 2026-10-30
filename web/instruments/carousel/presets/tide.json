@@ -1,6 +1,6 @@
 {
   "instrument": "carousel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "seed": 1,
   "name": "Tide",
   "params": {
@@ -14,7 +14,7 @@
     "accent": "#1F3BFF",
     "texture": "grain",
     "textureAmount": 0.6,
-    "motion": "drift",
+    "motion": "blur",
     "panorama": true
   }
 }

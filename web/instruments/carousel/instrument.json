@@ -1,7 +1,7 @@
 {
   "id": "carousel",
   "name": "Carousel creator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "experimental",
   "category": [
     "social",
@@ -47,9 +47,14 @@
   ],
   "groups": [
     {
+      "id": "slides",
+      "label": "Slides",
+      "hint": "each slide's words, image and motion"
+    },
+    {
       "id": "words",
-      "label": "Words",
-      "hint": "what you're saying"
+      "label": "Frame",
+      "hint": "series line and signature"
     },
     {
       "id": "system",
@@ -85,7 +90,407 @@
       "type": "text",
       "default": "The soul is a pattern *only you* can live\n\nPersonality is what happened to you.\n\n- Upbringing\n- Culture\n- Biology\n- Circumstance\n- Experience\n\nAll of it real. *None of it the whole story.*\n\n> The soul is the pattern underneath: what you are called to realise, through the life you actually have.\n\nSame world. A different pattern in *everyone.*\n\n-> Save this for the days you forget",
       "animate": false,
-      "help": "One slide per paragraph: leave a blank line between slides. The first is the cover. Lines starting - or 1. make a list; > makes a quote; a short line alone becomes a big word; [image] places your next image; -> makes the closing card. *Stars* mark emphasis."
+      "help": "An older patch's words, one paragraph a slide: read once into Slides.",
+      "hidden": true
+    },
+    {
+      "key": "slides",
+      "label": "Slides",
+      "type": "list",
+      "default": [
+        {
+          "id": "slides-0",
+          "text": "The soul is a pattern *only you* can live",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "rise",
+          "system": "inherit",
+          "colours": "same"
+        },
+        {
+          "id": "slides-1",
+          "text": "Personality is what happened to you.",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "scramble",
+          "system": "inherit",
+          "colours": "same"
+        },
+        {
+          "id": "slides-2",
+          "text": "- Upbringing\n- Culture\n- Biology\n- Circumstance\n- Experience",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "slide",
+          "system": "inherit",
+          "colours": "same"
+        },
+        {
+          "id": "slides-3",
+          "text": "All of it real. *None of it the whole story.*",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "highlight",
+          "system": "inherit",
+          "colours": "swap"
+        },
+        {
+          "id": "slides-4",
+          "text": "> The soul is the pattern underneath: what you are called to realise, through the life you actually have.",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "type",
+          "system": "inherit",
+          "colours": "same"
+        },
+        {
+          "id": "slides-5",
+          "text": "Same world. A different pattern in *everyone.*",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "wave",
+          "system": "inherit",
+          "colours": "accent"
+        },
+        {
+          "id": "slides-6",
+          "text": "-> Save this for the days you forget",
+          "layout": "auto",
+          "image": "",
+          "fit": "full",
+          "zoom": 1,
+          "x": 0,
+          "y": 0,
+          "tone": "colour",
+          "scrim": 0.6,
+          "motion": "stretch",
+          "system": "inherit",
+          "colours": "same"
+        }
+      ],
+      "group": "slides",
+      "max": 35,
+      "itemName": "a slide",
+      "title": "{text}",
+      "item": [
+        {
+          "key": "text",
+          "label": "Words",
+          "type": "text",
+          "default": "A new slide",
+          "help": "One slide's words. Lines starting - or 1. make a list; > makes a quote; -> makes a closing card. *Stars* mark emphasis."
+        },
+        {
+          "key": "layout",
+          "label": "Layout",
+          "type": "select",
+          "default": "auto",
+          "options": [
+            [
+              "auto",
+              "Read from the words"
+            ],
+            [
+              "cover",
+              "Cover"
+            ],
+            [
+              "statement",
+              "Statement"
+            ],
+            [
+              "list",
+              "List"
+            ],
+            [
+              "quote",
+              "Quote"
+            ],
+            [
+              "big",
+              "Big word"
+            ],
+            [
+              "end",
+              "Closing card"
+            ]
+          ]
+        },
+        {
+          "key": "image",
+          "label": "Image",
+          "type": "media",
+          "default": "",
+          "help": "A photo or screenshot for this slide. Drag it on the stage to move it; scroll or pinch to resize."
+        },
+        {
+          "key": "fit",
+          "label": "Image fills",
+          "type": "select",
+          "default": "full",
+          "options": [
+            [
+              "full",
+              "The whole slide"
+            ],
+            [
+              "top",
+              "The top half"
+            ],
+            [
+              "bottom",
+              "The bottom half"
+            ],
+            [
+              "left",
+              "The left half"
+            ],
+            [
+              "right",
+              "The right half"
+            ],
+            [
+              "free",
+              "Wherever you put it"
+            ],
+            [
+              "auto",
+              "Where the system puts it"
+            ]
+          ],
+          "when": {
+            "image": {
+              "not": ""
+            }
+          }
+        },
+        {
+          "key": "zoom",
+          "label": "Image size",
+          "type": "number",
+          "default": 1,
+          "min": 0.1,
+          "max": 4,
+          "step": 0.01,
+          "when": {
+            "image": {
+              "not": ""
+            }
+          }
+        },
+        {
+          "key": "x",
+          "label": "Image across",
+          "type": "number",
+          "default": 0,
+          "min": -1,
+          "max": 1,
+          "step": 0.01,
+          "when": {
+            "image": {
+              "not": ""
+            }
+          }
+        },
+        {
+          "key": "y",
+          "label": "Image down",
+          "type": "number",
+          "default": 0,
+          "min": -1,
+          "max": 1,
+          "step": 0.01,
+          "when": {
+            "image": {
+              "not": ""
+            }
+          }
+        },
+        {
+          "key": "tone",
+          "label": "Image tone",
+          "type": "select",
+          "default": "colour",
+          "options": [
+            [
+              "colour",
+              "Colour"
+            ],
+            [
+              "mono",
+              "Black and white"
+            ],
+            [
+              "duotone",
+              "In the slide's ink and paper"
+            ]
+          ],
+          "when": {
+            "image": {
+              "not": ""
+            }
+          }
+        },
+        {
+          "key": "scrim",
+          "label": "Shade",
+          "type": "number",
+          "default": 0.6,
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "when": {
+            "fit": "full"
+          },
+          "help": "Darkens or lightens a full-slide image so the words read."
+        },
+        {
+          "key": "motion",
+          "label": "Text motion",
+          "type": "select",
+          "default": "inherit",
+          "options": [
+            [
+              "inherit",
+              "As the carousel"
+            ],
+            [
+              "rise",
+              "Rise in"
+            ],
+            [
+              "type",
+              "Type on"
+            ],
+            [
+              "wave",
+              "Wave"
+            ],
+            [
+              "scramble",
+              "Scramble"
+            ],
+            [
+              "stretch",
+              "Stretch"
+            ],
+            [
+              "bounce",
+              "Bounce"
+            ],
+            [
+              "slide",
+              "Slide in"
+            ],
+            [
+              "blur",
+              "Blur in"
+            ],
+            [
+              "highlight",
+              "Highlight sweep"
+            ],
+            [
+              "still",
+              "Still"
+            ]
+          ]
+        },
+        {
+          "key": "system",
+          "label": "Look",
+          "type": "select",
+          "default": "inherit",
+          "options": [
+            [
+              "inherit",
+              "As the carousel"
+            ],
+            [
+              "editorial",
+              "Editorial"
+            ],
+            [
+              "poster",
+              "Poster"
+            ],
+            [
+              "tide",
+              "Tide"
+            ],
+            [
+              "zine",
+              "Zine"
+            ],
+            [
+              "notebook",
+              "Notebook"
+            ],
+            [
+              "swiss",
+              "Swiss"
+            ]
+          ]
+        },
+        {
+          "key": "colours",
+          "label": "Colours",
+          "type": "select",
+          "default": "same",
+          "options": [
+            [
+              "same",
+              "As the carousel"
+            ],
+            [
+              "swap",
+              "Swapped: ink becomes paper"
+            ],
+            [
+              "accent",
+              "On the accent"
+            ]
+          ]
+        }
+      ],
+      "animate": false,
+      "help": "Each slide's words, image, motion and look. Anything left 'As the carousel' follows the carousel's settings."
     },
     {
       "key": "kicker",
@@ -109,24 +514,6 @@
       "label": "Slide numbers",
       "type": "bool",
       "default": true
-    },
-    {
-      "key": "images",
-      "group": "words",
-      "label": "Images",
-      "type": "list",
-      "default": [],
-      "hidden": true,
-      "max": 20,
-      "itemName": "an image",
-      "item": [
-        {
-          "key": "src",
-          "label": "Image",
-          "type": "media",
-          "default": ""
-        }
-      ]
     },
     {
       "key": "system",
@@ -507,14 +894,10 @@
     {
       "key": "motion",
       "group": "motion",
-      "label": "Motion",
+      "label": "Text motion",
       "type": "select",
       "default": "rise",
       "options": [
-        [
-          "still",
-          "Still"
-        ],
         [
           "rise",
           "Rise in"
@@ -524,14 +907,39 @@
           "Type on"
         ],
         [
-          "drift",
-          "Drift"
+          "wave",
+          "Wave"
         ],
         [
-          "marquee",
-          "Marquee"
+          "scramble",
+          "Scramble"
+        ],
+        [
+          "stretch",
+          "Stretch"
+        ],
+        [
+          "bounce",
+          "Bounce"
+        ],
+        [
+          "slide",
+          "Slide in"
+        ],
+        [
+          "blur",
+          "Blur in"
+        ],
+        [
+          "highlight",
+          "Highlight sweep"
+        ],
+        [
+          "still",
+          "Still"
         ]
-      ]
+      ],
+      "help": "How words arrive on every slide, unless a slide says otherwise."
     },
     {
       "key": "keyMode",

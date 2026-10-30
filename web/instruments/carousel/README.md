@@ -6,21 +6,31 @@ as PNGs, a PDF for LinkedIn, a moving slide, or the whole carousel as one video.
 
 Open it at `/carousel/`.
 
-## Writing
+## Slides
 
-One slide per paragraph; leave a blank line between slides. Each paragraph is read for what it is:
+Every slide is a card in **Slides**, with its own words, image, motion, look and colours. Anything
+left "As the carousel" follows the carousel's settings, so slides can match exactly, share a
+format with different elements, or each be different.
 
-- the first paragraph is the **cover**;
-- lines starting `-` or `1.` make a **list**;
-- a paragraph starting `>` is a **quote**;
-- a short line alone (three words or fewer) is a **big word**;
-- `[image]` places your next image (or `[image 2]`, the second), with the rest as a caption;
-- `->` makes the **closing card**;
-- anything else is a **statement**: the first line is the headline, the rest the text.
+- **Words.** Read for what they are: the first slide is the **cover**; lines starting `-` or `1.`
+  make a **list**; `>` a **quote**; a short line alone a **big word**; `->` the **closing card**;
+  anything else a **statement** (first line the headline, the rest the text). Layout says outright.
+  `*Stars*` mark emphasis.
+- **Image.** Add image (over the strip of slides) puts one on the slide you're on; choose several
+  and each gets a new slide. Drop images on the page the same way, or use Choose… in a slide's
+  card. It can fill the whole slide (with a Shade so the words read), take a half (top, bottom,
+  left or right, the words moving to the other half), sit anywhere, or go where the system puts
+  it. **Drag it on the stage to move it; scroll or pinch to resize it.** Tone: colour, black and
+  white, or in the slide's own ink and paper.
+- **Text motion.** Rise in, Type on, Wave, Scramble, Stretch, Bounce, Slide in, Blur in,
+  Highlight sweep, or Still. Wave, Scramble, Stretch and Bounce move each letter on its own.
+  Everything arrives within the slide's loop and leaves at its end, or moves in whole cycles, so
+  a moving slide loops cleanly.
+- **Look** and **Colours.** Another system for this slide only; or its colours swapped (ink becomes
+  paper) or set on the accent.
 
-`*Stars*` mark emphasis: italic in Editorial, the accent colour in Swiss and Poster. Start a
-paragraph with `#cover`, `#big`, `#list`, `#quote`, `#statement`, `#image` or `#end` to say what
-it is outright.
+The toolbar adds, copies, moves and removes slides. Clicking a slide in the strip opens its card.
+**Write it all at once** turns pasted writing into slides, a paragraph each.
 
 ## The systems
 
@@ -55,6 +65,11 @@ The guides disagree on some limits (Threads, Instagram's 3:4); the help text say
 
 ## How it was checked
 
+- Version 0.2 (slide cards): every slide rendered at three moments of its loop with its own
+  motion; an image added from the toolbar, three more making a slide each, each placement tried
+  (whole slide, top half, left half, free); dragging and scrolling on the stage moved and resized
+  the image; All slides and the LinkedIn PDF saved.
+
 - Every preset's slides were rendered and looked at. That caught three problems, now fixed:
   Tide's gradient faded into the text colour, Zine and Notebook left their text small at the
   top, and Zine's list numbers broke across lines.
@@ -65,6 +80,6 @@ The guides disagree on some limits (Threads, Instagram's 3:4); the help text say
 
 ## What it can't do yet
 
-- Two images on one slide, or text over a full-bleed picture.
-- Per-slide colours or systems.
+- Two images on one slide.
+- Keyframes within one slide's card (keyframes act on the carousel's settings).
 - Saving a brand to reuse. For now, Save in the Patch bay or Download .json keeps it.

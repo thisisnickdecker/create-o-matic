@@ -1,6 +1,6 @@
 {
   "instrument": "carousel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "seed": 1,
   "name": "Swiss",
   "params": {
@@ -13,6 +13,6 @@
     "ink": "#111111",
     "accent": "#FF4D1F",
     "texture": "none",
-    "motion": "rise"
+    "motion": "slide"
   }
 }

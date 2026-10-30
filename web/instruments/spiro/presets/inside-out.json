@@ -1,0 +1,27 @@
+{
+  "instrument": "spiro",
+  "version": "0.1.0",
+  "name": "Inside out",
+  "seed": 1,
+  "params": {
+    "content": "INK",
+    "font": "Archivo Black",
+    "weight": 400,
+    "tracking": 0.06,
+    "side": "inside",
+    "wheel": 0.045,
+    "pen": 0.8,
+    "laps": 6,
+    "drift": 1,
+    "pens": 1,
+    "palette": [
+      "#FFE800"
+    ],
+    "line": 1.2,
+    "letters": 1,
+    "letterInk": "#121211",
+    "background": "#FFE800",
+    "motion": "draw",
+    "duration": 8
+  }
+}

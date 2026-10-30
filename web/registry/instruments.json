@@ -624,6 +624,104 @@
       ]
     },
     {
+      "id": "spiro",
+      "name": "Spirotype",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "typography",
+        "motion",
+        "generative"
+      ],
+      "description": "A spirograph that rolls round your letters. Type a word or drop in an SVG logo, and a wheel rolls along every outline, outside, inside or both, with pens that trace loops, waves and rosettes. Every outline gets a whole number of wheel turns, so every pattern closes. Draw it on, spin it, breathe it; export video, stills or plotter-ready SVG.",
+      "path": "/spiro/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "verified",
+        "gif": "verified",
+        "svg": "verified",
+        "mov": "untested",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "content",
+        "font",
+        "fontSource",
+        "adobeKit",
+        "weight",
+        "tracking",
+        "soften",
+        "letters",
+        "letterInk",
+        "side",
+        "wheel",
+        "pen",
+        "laps",
+        "drift",
+        "lobes",
+        "wobble",
+        "pens",
+        "spread",
+        "palette",
+        "line",
+        "opacity",
+        "glow",
+        "format",
+        "width",
+        "height",
+        "duration",
+        "fps",
+        "margin",
+        "background",
+        "transparent",
+        "motion",
+        "amount",
+        "cycles",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "loop.json",
+          "name": "Loop"
+        },
+        {
+          "file": "neon-sign.json",
+          "name": "Neon sign"
+        },
+        {
+          "file": "inside-out.json",
+          "name": "Inside out"
+        },
+        {
+          "file": "rosette.json",
+          "name": "Rosette"
+        },
+        {
+          "file": "lace.json",
+          "name": "Lace"
+        },
+        {
+          "file": "gearbox.json",
+          "name": "Gearbox"
+        }
+      ]
+    },
+    {
       "id": "texture",
       "name": "Texture lab",
       "version": "0.1.0",

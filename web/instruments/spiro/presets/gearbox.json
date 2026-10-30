@@ -1,0 +1,30 @@
+{
+  "instrument": "spiro",
+  "version": "0.1.0",
+  "name": "Gearbox",
+  "seed": 1,
+  "params": {
+    "content": "GEAR\nBOX",
+    "font": "Archivo Black",
+    "weight": 400,
+    "side": "outside",
+    "wheel": 0.06,
+    "pen": 0.7,
+    "laps": 3,
+    "drift": -1,
+    "lobes": 5,
+    "wobble": 0.3,
+    "pens": 2,
+    "spread": 0.2,
+    "palette": [
+      "#FF4D1F",
+      "#121211"
+    ],
+    "line": 1.3,
+    "letters": 0.08,
+    "background": "#ECECE8",
+    "motion": "spin",
+    "cycles": 1,
+    "duration": 8
+  }
+}

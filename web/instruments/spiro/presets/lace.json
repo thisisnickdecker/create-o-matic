@@ -1,0 +1,27 @@
+{
+  "instrument": "spiro",
+  "version": "0.1.0",
+  "name": "Lace",
+  "seed": 1,
+  "params": {
+    "content": "lace",
+    "font": "Fraunces",
+    "weight": 900,
+    "side": "outside",
+    "wheel": 0.03,
+    "pen": 1.6,
+    "laps": 2,
+    "drift": 1,
+    "pens": 1,
+    "palette": [
+      "#FFFFFF"
+    ],
+    "line": 1.1,
+    "opacity": 0.85,
+    "letters": 0,
+    "background": "#1530FF",
+    "motion": "crawl",
+    "cycles": 1,
+    "duration": 10
+  }
+}

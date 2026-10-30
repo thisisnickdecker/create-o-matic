@@ -1,0 +1,27 @@
+{
+  "instrument": "spiro",
+  "version": "0.1.0",
+  "name": "Loop",
+  "seed": 1,
+  "params": {
+    "content": "Loop",
+    "font": "Archivo Black",
+    "weight": 400,
+    "side": "outside",
+    "wheel": 0.1,
+    "pen": 0.85,
+    "laps": 4,
+    "drift": 1,
+    "pens": 2,
+    "spread": 0.3,
+    "palette": [
+      "#1530FF",
+      "#FF4D1F"
+    ],
+    "line": 1.6,
+    "letters": 0.06,
+    "background": "#F4F4F1",
+    "motion": "draw",
+    "duration": 8
+  }
+}

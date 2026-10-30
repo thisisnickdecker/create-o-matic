@@ -1,0 +1,31 @@
+{
+  "instrument": "spiro",
+  "version": "0.1.0",
+  "name": "Rosette",
+  "seed": 1,
+  "params": {
+    "content": "O",
+    "font": "Archivo Black",
+    "weight": 400,
+    "side": "outside",
+    "wheel": 0.07,
+    "pen": 1.25,
+    "laps": 6,
+    "drift": 1,
+    "lobes": 0,
+    "pens": 3,
+    "spread": 0.35,
+    "palette": [
+      "#E4372B",
+      "#1E2A4A",
+      "#0E6E6E"
+    ],
+    "line": 1.1,
+    "letters": 0,
+    "background": "#F2EFE6",
+    "motion": "breathe",
+    "amount": 0.25,
+    "cycles": 1,
+    "duration": 10
+  }
+}

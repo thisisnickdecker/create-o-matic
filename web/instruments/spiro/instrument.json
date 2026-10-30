@@ -1,0 +1,594 @@
+{
+  "id": "spiro",
+  "name": "Spirotype",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "typography",
+    "motion",
+    "generative"
+  ],
+  "description": "A spirograph that rolls round your letters. Type a word or drop in an SVG logo, and a wheel rolls along every outline, outside, inside or both, with pens that trace loops, waves and rosettes. Every outline gets a whole number of wheel turns, so every pattern closes. Draw it on, spin it, breathe it; export video, stills or plotter-ready SVG.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "spiro.js",
+    "app": "app.js"
+  },
+  "page": "/spiro/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "verified",
+    "gif": "verified",
+    "svg": "verified",
+    "mov": "untested",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch, same font file and the same browser give the same lines; browsers rasterise glyphs slightly differently, which can move the track by a fraction of a pixel.",
+  "references": [
+    {
+      "title": "Spirographer (Playspace)",
+      "note": "The prompt: a spirograph with a wheel, a pen, oscillation and draw-on. Nothing borrowed but those ideas; rolling round type and logos is original."
+    },
+    {
+      "title": "Denys Fisher, Spirograph (1965)",
+      "note": "The toy: a wheel rolling round a ring, a pen through one of its holes."
+    }
+  ],
+  "groups": [
+    {
+      "id": "track",
+      "label": "Track",
+      "hint": "the word or logo it rolls round"
+    },
+    {
+      "id": "wheel",
+      "label": "Wheel",
+      "hint": "size, pen and how it rolls"
+    },
+    {
+      "id": "pens",
+      "label": "Pens",
+      "hint": "how many, what ink"
+    },
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size, time and paper"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "motion and keyframes"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "content",
+      "group": "track",
+      "label": "Word",
+      "type": "text",
+      "default": "Loop",
+      "help": "The word or words the wheel rolls round. New lines start new lines. A line like @logo uses an SVG you've dropped on the page instead."
+    },
+    {
+      "key": "font",
+      "group": "track",
+      "label": "Font",
+      "type": "font",
+      "default": "Archivo Black",
+      "help": "Browse 2,000+ open fonts, your Adobe Fonts project, installed fonts or your own files. Heavy faces make the best tracks."
+    },
+    {
+      "key": "fontSource",
+      "group": "track",
+      "label": "Source",
+      "type": "select",
+      "default": "open",
+      "hidden": true,
+      "options": [
+        [
+          "open",
+          "Font library"
+        ],
+        [
+          "google",
+          "Google Fonts"
+        ],
+        [
+          "adobe",
+          "Adobe Fonts"
+        ],
+        [
+          "system",
+          "Installed"
+        ],
+        [
+          "file",
+          "My fonts"
+        ]
+      ]
+    },
+    {
+      "key": "adobeKit",
+      "group": "track",
+      "label": "Adobe project",
+      "type": "string",
+      "default": "",
+      "help": "Your Adobe Fonts web project ID, from fonts.adobe.com › Web Projects. Its families appear in the font browser."
+    },
+    {
+      "key": "weight",
+      "group": "track",
+      "label": "Weight",
+      "type": "int",
+      "default": 400,
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "animate": false
+    },
+    {
+      "key": "tracking",
+      "group": "track",
+      "label": "Tracking",
+      "type": "number",
+      "default": 0.02,
+      "min": -0.1,
+      "max": 0.6,
+      "step": 0.005,
+      "unit": "em",
+      "animate": false
+    },
+    {
+      "key": "soften",
+      "group": "track",
+      "label": "Round corners",
+      "type": "number",
+      "default": 0.35,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "animate": false,
+      "help": "Smooths the track's corners, so the wheel takes them in a curve rather than a kink."
+    },
+    {
+      "key": "letters",
+      "group": "track",
+      "label": "Show letters",
+      "type": "number",
+      "default": 0.06,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "The letters themselves, faintly, under the lines. Nought hides them."
+    },
+    {
+      "key": "letterInk",
+      "group": "track",
+      "label": "Letter ink",
+      "type": "color",
+      "default": "#121211",
+      "when": {
+        "letters": {
+          "not": 0
+        }
+      }
+    },
+    {
+      "key": "side",
+      "group": "wheel",
+      "label": "Rolls",
+      "type": "select",
+      "default": "outside",
+      "ui": "segmented",
+      "options": [
+        [
+          "outside",
+          "Outside"
+        ],
+        [
+          "inside",
+          "Inside"
+        ],
+        [
+          "both",
+          "Both"
+        ]
+      ],
+      "help": "Outside: round the letters. Inside: within their strokes and counters. Both: one wheel each way."
+    },
+    {
+      "key": "wheel",
+      "group": "wheel",
+      "label": "Wheel size",
+      "type": "number",
+      "default": 0.12,
+      "min": 0.01,
+      "max": 0.6,
+      "step": 0.005,
+      "help": "The wheel's radius, as a share of the letters' height. Each outline gets a whole number of turns, so every pattern closes."
+    },
+    {
+      "key": "pen",
+      "group": "wheel",
+      "label": "Pen",
+      "type": "number",
+      "default": 0.85,
+      "min": 0,
+      "max": 2.5,
+      "step": 0.01,
+      "help": "How far the pen sits from the wheel's centre, in wheel radii. Under 1 makes waves; over 1, loops."
+    },
+    {
+      "key": "laps",
+      "group": "wheel",
+      "label": "Laps",
+      "type": "int",
+      "default": 4,
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "animate": false,
+      "help": "How many times the wheel goes round each outline."
+    },
+    {
+      "key": "drift",
+      "group": "wheel",
+      "label": "Drift",
+      "type": "int",
+      "default": 1,
+      "min": -8,
+      "max": 8,
+      "step": 1,
+      "animate": false,
+      "help": "Extra wheel turns spread over all the laps, so each lap lands a little further on and the lines fan out. Nought retraces the same line."
+    },
+    {
+      "key": "lobes",
+      "group": "wheel",
+      "label": "Lobes",
+      "type": "int",
+      "default": 0,
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "animate": false,
+      "help": "A wheel that isn't round: the pen swings in and out this many times a turn."
+    },
+    {
+      "key": "wobble",
+      "group": "wheel",
+      "label": "Lobe depth",
+      "type": "number",
+      "default": 0.3,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "when": {
+        "lobes": {
+          "not": 0
+        }
+      }
+    },
+    {
+      "key": "pens",
+      "group": "pens",
+      "label": "Pens",
+      "type": "int",
+      "default": 2,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "animate": false,
+      "help": "Several pens on one wheel, each with the next ink."
+    },
+    {
+      "key": "spread",
+      "group": "pens",
+      "label": "Spread",
+      "type": "number",
+      "default": 0.25,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "when": {
+        "pens": {
+          "not": 1
+        }
+      },
+      "help": "How differently the pens sit: further in, and round the wheel."
+    },
+    {
+      "key": "palette",
+      "group": "pens",
+      "label": "Inks",
+      "type": "palette",
+      "default": [
+        "#1530FF",
+        "#FF4D1F"
+      ]
+    },
+    {
+      "key": "line",
+      "group": "pens",
+      "label": "Line",
+      "type": "number",
+      "default": 1.6,
+      "min": 0.2,
+      "max": 12,
+      "step": 0.05,
+      "unit": "px",
+      "help": "Line width, on a 1080-pixel frame."
+    },
+    {
+      "key": "opacity",
+      "group": "pens",
+      "label": "Opacity",
+      "type": "number",
+      "default": 0.9,
+      "min": 0.05,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "glow",
+      "group": "pens",
+      "label": "Glow",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "A soft halo under the lines. Best on dark paper."
+    },
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "landscape",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "format",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "format",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 0.5,
+      "max": 60,
+      "step": 0.5,
+      "default": 8,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "margin",
+      "group": "format",
+      "label": "Margin",
+      "type": "int",
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "default": 140,
+      "unit": "px"
+    },
+    {
+      "key": "background",
+      "group": "format",
+      "label": "Paper",
+      "type": "color",
+      "default": "#F4F4F1",
+      "clear": "transparent"
+    },
+    {
+      "key": "transparent",
+      "group": "format",
+      "label": "See-through",
+      "type": "bool",
+      "default": false,
+      "hidden": true,
+      "help": "No background, for laying over anything. MOV, PNG, GIF, WebM and SVG keep it see-through; MP4 gets the paper colour."
+    },
+    {
+      "key": "motion",
+      "group": "motion",
+      "label": "Motion",
+      "type": "select",
+      "default": "draw",
+      "options": [
+        [
+          "draw",
+          "Draw on, then off"
+        ],
+        [
+          "spin",
+          "Spin the pen"
+        ],
+        [
+          "breathe",
+          "Breathe"
+        ],
+        [
+          "crawl",
+          "Crawl"
+        ],
+        [
+          "still",
+          "Still"
+        ]
+      ],
+      "help": "Draw on, then off: the pens draw the pattern and then lift it away. Spin the pen: the pen turns on its wheel, so the pattern shifts and morphs. Breathe: the pen moves in and out. Crawl: the pattern slides along the letters."
+    },
+    {
+      "key": "amount",
+      "group": "motion",
+      "label": "Amount",
+      "type": "number",
+      "default": 0.3,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "when": {
+        "motion": "breathe"
+      }
+    },
+    {
+      "key": "cycles",
+      "group": "motion",
+      "label": "Times a loop",
+      "type": "int",
+      "default": 1,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "when": {
+        "motion": [
+          "spin",
+          "breathe",
+          "crawl"
+        ]
+      }
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

@@ -25,7 +25,12 @@ export const frameCount = (patch) => Math.max(1, Math.round(patch.params.duratio
 
 const lines = (p) => p.content.split("\n").map((l) => l.trim()).filter(Boolean)
 const markOf = (p) => { const l = lines(p); return l.length === 1 && /^@[a-z0-9-]+$/.test(l[0]) ? l[0].slice(1) : null }
-export const fontRequest = (patch) => ({ source: patch.params.fontSource, family: patch.params.font, kit: patch.params.adobeKit, weights: [patch.params.weight], sample: [...new Set(patch.params.content)].join("") })
+// Every weight the loop passes through, when Weight is keyframed, so each frame's track is true.
+export function fontRequest(patch) {
+  const keyed = patch.keys?.weight?.map((k) => k.v) ?? []
+  const weights = keyed.length ? [...new Set([patch.params.weight, ...keyed, Math.min(...keyed), Math.max(...keyed)])] : [patch.params.weight]
+  return { source: patch.params.fontSource, family: patch.params.font, kit: patch.params.adobeKit, weights, sample: [...new Set(patch.params.content)].join("") }
+}
 
 // ---- the track: outlines of the letters ----
 const MASK = 1600 // the mask's long side, in pixels
@@ -133,14 +138,14 @@ function soften(v, r) {
   return v
 }
 
-let cached = { key: "", shape: null }
+const cache = new Map() // recent tracks by what they depend on
 // The track for this patch and frame size, traced once and kept until something it depends on
 // changes. In frame pixels: loops with even spacing, tangents and outward normals, and a unit
 // (the height of a line of letters) that sizes the wheel.
 function track(p, W, H, marks, version) {
   const name = markOf(p)
-  const key = JSON.stringify([p.content, p.font, p.fontSource, p.weight, p.tracking, p.soften, p.margin, W, H, name && marks?.get(name) ? name + marks.get(name).bounds.w : "", version])
-  if (cached.key === key) return cached.shape
+  const key = JSON.stringify([p.content, p.font, p.fontSource, Math.round(p.weight), Math.round(p.tracking * 1000) / 1000, Math.round(p.soften * 100) / 100, p.margin, W, H, name && marks?.get(name) ? name + marks.get(name).bounds.w : "", version])
+  if (cache.has(key)) return cache.get(key)
   const m = Math.min(p.margin, W / 2 - 8, H / 2 - 8), bw = W - 2 * m, bh = H - 2 * m
   const mk = mask(p, bw, bh, marks)
   let shape = null
@@ -181,7 +186,8 @@ function track(p, W, H, marks, version) {
       shape = { loops, unit }
     }
   }
-  cached = { key, shape }
+  cache.set(key, shape)
+  if (cache.size > 60) cache.delete(cache.keys().next().value)
   return shape
 }
 

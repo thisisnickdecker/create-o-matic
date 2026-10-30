@@ -1,0 +1,19 @@
+{
+  "instrument": "carousel",
+  "version": "0.1.0",
+  "seed": 1,
+  "name": "Editorial",
+  "params": {
+    "system": "editorial",
+    "display": "Instrument Serif",
+    "displayWeight": 400,
+    "body": "Inter Tight",
+    "bodyWeight": 400,
+    "ground": "#F2EEE4",
+    "ink": "#141414",
+    "accent": "#D94A2B",
+    "texture": "paper",
+    "textureAmount": 0.5,
+    "motion": "rise"
+  }
+}

@@ -1,0 +1,570 @@
+{
+  "id": "carousel",
+  "name": "Carousel creator",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "social",
+    "typography",
+    "layout",
+    "motion"
+  ],
+  "description": "Carousels from what you're trying to say. Write it, one paragraph a slide; pick a layout system (Editorial, Poster, Tide, Zine, Notebook, Swiss) and bring your own fonts, colours and images. Every slide comes out at the platform's size: PNGs, a LinkedIn PDF, a moving slide, or the whole carousel as one video.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "carousel.js",
+    "app": "app.js"
+  },
+  "page": "/carousel/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "png-set": "verified",
+    "pdf": "verified",
+    "mp4": "verified",
+    "webm": "untested",
+    "gif": "untested",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch, fonts and images give the same slides; browsers rasterise glyphs slightly differently.",
+  "references": [
+    {
+      "title": "A study of saved Instagram carousels",
+      "note": "Six layout languages drawn out as principles (pacing, type pairing, frames, continuity), not copied: editorial serif frameworks, wood-type posters, full-bleed tide pieces, zines, notebooks and Swiss grids."
+    }
+  ],
+  "groups": [
+    {
+      "id": "words",
+      "label": "Words",
+      "hint": "what you're saying"
+    },
+    {
+      "id": "system",
+      "label": "System",
+      "hint": "the layout language"
+    },
+    {
+      "id": "type",
+      "label": "Type",
+      "hint": "your fonts"
+    },
+    {
+      "id": "colour",
+      "label": "Colour",
+      "hint": "paper, ink, accent, texture"
+    },
+    {
+      "id": "platform",
+      "label": "Platform",
+      "hint": "sizes and slides"
+    },
+    {
+      "id": "motion",
+      "label": "Motion",
+      "hint": "how slides move"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "text",
+      "group": "words",
+      "label": "What you're saying",
+      "type": "text",
+      "default": "The soul is a pattern *only you* can live\n\nPersonality is what happened to you.\n\n- Upbringing\n- Culture\n- Biology\n- Circumstance\n- Experience\n\nAll of it real. *None of it the whole story.*\n\n> The soul is the pattern underneath: what you are called to realise, through the life you actually have.\n\nSame world. A different pattern in *everyone.*\n\n-> Save this for the days you forget",
+      "animate": false,
+      "help": "One slide per paragraph: leave a blank line between slides. The first is the cover. Lines starting - or 1. make a list; > makes a quote; a short line alone becomes a big word; [image] places your next image; -> makes the closing card. *Stars* mark emphasis."
+    },
+    {
+      "key": "kicker",
+      "group": "words",
+      "label": "Series",
+      "type": "string",
+      "default": "Field notes",
+      "help": "A small line at the top of every slide: the series or the subject."
+    },
+    {
+      "key": "footer",
+      "group": "words",
+      "label": "Signature",
+      "type": "string",
+      "default": "nickdecker.net",
+      "help": "A small line at the foot of every slide: your name, handle or site."
+    },
+    {
+      "key": "numbers",
+      "group": "words",
+      "label": "Slide numbers",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "key": "images",
+      "group": "words",
+      "label": "Images",
+      "type": "list",
+      "default": [],
+      "hidden": true,
+      "max": 20,
+      "itemName": "an image",
+      "item": [
+        {
+          "key": "src",
+          "label": "Image",
+          "type": "media",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "system",
+      "group": "system",
+      "label": "System",
+      "type": "select",
+      "default": "editorial",
+      "options": [
+        [
+          "editorial",
+          "Editorial"
+        ],
+        [
+          "poster",
+          "Poster"
+        ],
+        [
+          "tide",
+          "Tide"
+        ],
+        [
+          "zine",
+          "Zine"
+        ],
+        [
+          "notebook",
+          "Notebook"
+        ],
+        [
+          "swiss",
+          "Swiss"
+        ]
+      ],
+      "help": "Editorial: a serif with italic emphasis, thin diagrams, numbered points. Poster: stacked capitals, each line set to the full width, like wood type. Tide: full-bleed colour and a drifting shape, words broken across the slide. Zine: typewriter text in label boxes. Notebook: lowercase serif, small photographs, lots of air. Swiss: a strict grid, big numbers and blocks."
+    },
+    {
+      "key": "panorama",
+      "group": "system",
+      "label": "Panorama",
+      "type": "bool",
+      "default": false,
+      "help": "One background runs across every slide, so the carousel joins up as you swipe."
+    },
+    {
+      "key": "density",
+      "group": "system",
+      "label": "Type size",
+      "type": "number",
+      "default": 1,
+      "min": 0.6,
+      "max": 1.6,
+      "step": 0.01,
+      "animate": false,
+      "help": "Larger or smaller type throughout."
+    },
+    {
+      "key": "display",
+      "group": "type",
+      "label": "Headline font",
+      "type": "font",
+      "default": "Instrument Serif"
+    },
+    {
+      "key": "displaySource",
+      "group": "type",
+      "label": "Source",
+      "type": "select",
+      "default": "open",
+      "hidden": true,
+      "options": [
+        [
+          "open",
+          "Font library"
+        ],
+        [
+          "google",
+          "Google Fonts"
+        ],
+        [
+          "adobe",
+          "Adobe Fonts"
+        ],
+        [
+          "system",
+          "Installed"
+        ],
+        [
+          "file",
+          "My fonts"
+        ]
+      ]
+    },
+    {
+      "key": "displayWeight",
+      "group": "type",
+      "label": "Headline weight",
+      "type": "int",
+      "default": 400,
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "animate": false
+    },
+    {
+      "key": "body",
+      "group": "type",
+      "label": "Text font",
+      "type": "font",
+      "default": "Inter Tight"
+    },
+    {
+      "key": "bodySource",
+      "group": "type",
+      "label": "Source",
+      "type": "select",
+      "default": "open",
+      "hidden": true,
+      "options": [
+        [
+          "open",
+          "Font library"
+        ],
+        [
+          "google",
+          "Google Fonts"
+        ],
+        [
+          "adobe",
+          "Adobe Fonts"
+        ],
+        [
+          "system",
+          "Installed"
+        ],
+        [
+          "file",
+          "My fonts"
+        ]
+      ]
+    },
+    {
+      "key": "bodyWeight",
+      "group": "type",
+      "label": "Text weight",
+      "type": "int",
+      "default": 400,
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "animate": false
+    },
+    {
+      "key": "adobeKit",
+      "group": "type",
+      "label": "Adobe project",
+      "type": "string",
+      "default": "",
+      "help": "Your Adobe Fonts web project ID. Its families appear in the font browser."
+    },
+    {
+      "key": "ground",
+      "group": "colour",
+      "label": "Paper",
+      "type": "color",
+      "default": "#F2EEE4"
+    },
+    {
+      "key": "ink",
+      "group": "colour",
+      "label": "Ink",
+      "type": "color",
+      "default": "#141414"
+    },
+    {
+      "key": "accent",
+      "group": "colour",
+      "label": "Accent",
+      "type": "color",
+      "default": "#D94A2B"
+    },
+    {
+      "key": "texture",
+      "group": "colour",
+      "label": "Texture",
+      "type": "select",
+      "default": "paper",
+      "options": [
+        [
+          "none",
+          "None"
+        ],
+        [
+          "paper",
+          "Paper"
+        ],
+        [
+          "grain",
+          "Film grain"
+        ],
+        [
+          "riso",
+          "Riso dots"
+        ]
+      ]
+    },
+    {
+      "key": "textureAmount",
+      "group": "colour",
+      "label": "Texture amount",
+      "type": "number",
+      "default": 0.5,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "when": {
+        "texture": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "key": "platform",
+      "group": "platform",
+      "label": "Platform",
+      "type": "select",
+      "default": "instagram",
+      "options": [
+        [
+          "instagram",
+          "Instagram · 4:5 · 1080×1350"
+        ],
+        [
+          "instagram34",
+          "Instagram · 3:4 · 1080×1440 (new grid)"
+        ],
+        [
+          "square",
+          "Square · 1080×1080 (Facebook, LinkedIn)"
+        ],
+        [
+          "linkedin",
+          "LinkedIn document · 4:5 (PDF)"
+        ],
+        [
+          "tiktok",
+          "TikTok photo mode · 9:16 · 1080×1920"
+        ],
+        [
+          "threads",
+          "Threads · 4:5 · 1080×1350"
+        ],
+        [
+          "substack",
+          "Substack cover · 1456×1048"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ],
+      "help": "Instagram: up to 20 slides, the first sets the shape for all. LinkedIn: upload the PDF from the Print shop. TikTok photo mode: up to 35. Facebook: 2 to 10. Threads: up to 10 or 20 (accounts differ)."
+    },
+    {
+      "key": "width",
+      "group": "platform",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "platform": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "platform",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1350,
+      "when": {
+        "platform": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "slide",
+      "group": "platform",
+      "label": "Slide",
+      "type": "int",
+      "default": 1,
+      "min": 1,
+      "max": 35,
+      "step": 1,
+      "animate": false,
+      "help": "The slide on the stage, and the one PNG, MP4 and GIF export. Click a thumbnail to choose."
+    },
+    {
+      "key": "view",
+      "group": "platform",
+      "label": "Stage shows",
+      "type": "select",
+      "default": "slide",
+      "ui": "segmented",
+      "options": [
+        [
+          "slide",
+          "One slide"
+        ],
+        [
+          "sequence",
+          "The whole carousel"
+        ]
+      ],
+      "help": "The whole carousel plays every slide in turn: export it as one video for Reels, TikTok or Stories."
+    },
+    {
+      "key": "perSlide",
+      "group": "platform",
+      "label": "Seconds a slide",
+      "type": "number",
+      "default": 4,
+      "min": 1,
+      "max": 20,
+      "step": 0.5,
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "platform",
+      "label": "Loop length",
+      "type": "number",
+      "default": 4,
+      "min": 0.5,
+      "max": 600,
+      "step": 0.5,
+      "hidden": true,
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "platform",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "transparent",
+      "group": "colour",
+      "label": "See-through",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "motion",
+      "group": "motion",
+      "label": "Motion",
+      "type": "select",
+      "default": "rise",
+      "options": [
+        [
+          "still",
+          "Still"
+        ],
+        [
+          "rise",
+          "Rise in"
+        ],
+        [
+          "type",
+          "Type on"
+        ],
+        [
+          "drift",
+          "Drift"
+        ],
+        [
+          "marquee",
+          "Marquee"
+        ]
+      ]
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0.6,
+      "animate": false,
+      "help": "Where in each slide's loop a PNG or PDF is taken. Past halfway, everything is in."
+    }
+  ]
+}

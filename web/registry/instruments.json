@@ -135,6 +135,102 @@
       ]
     },
     {
+      "id": "carousel",
+      "name": "Carousel creator",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "social",
+        "typography",
+        "layout",
+        "motion"
+      ],
+      "description": "Carousels from what you're trying to say. Write it, one paragraph a slide; pick a layout system (Editorial, Poster, Tide, Zine, Notebook, Swiss) and bring your own fonts, colours and images. Every slide comes out at the platform's size: PNGs, a LinkedIn PDF, a moving slide, or the whole carousel as one video.",
+      "path": "/carousel/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "png-set": "verified",
+        "pdf": "verified",
+        "mp4": "verified",
+        "webm": "untested",
+        "gif": "untested",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "text",
+        "kicker",
+        "footer",
+        "numbers",
+        "images",
+        "system",
+        "panorama",
+        "density",
+        "display",
+        "displaySource",
+        "displayWeight",
+        "body",
+        "bodySource",
+        "bodyWeight",
+        "adobeKit",
+        "ground",
+        "ink",
+        "accent",
+        "texture",
+        "textureAmount",
+        "platform",
+        "width",
+        "height",
+        "slide",
+        "view",
+        "perSlide",
+        "duration",
+        "fps",
+        "transparent",
+        "motion",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "editorial.json",
+          "name": "Editorial"
+        },
+        {
+          "file": "poster.json",
+          "name": "Poster"
+        },
+        {
+          "file": "tide.json",
+          "name": "Tide"
+        },
+        {
+          "file": "zine.json",
+          "name": "Zine"
+        },
+        {
+          "file": "notebook.json",
+          "name": "Notebook"
+        },
+        {
+          "file": "swiss.json",
+          "name": "Swiss"
+        }
+      ]
+    },
+    {
       "id": "colour",
       "name": "Colour lab",
       "version": "0.1.0",
@@ -626,7 +722,7 @@
     {
       "id": "spiro",
       "name": "Spirotype",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "status": "experimental",
       "category": [
         "typography",

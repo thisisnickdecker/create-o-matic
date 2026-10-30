@@ -1,7 +1,7 @@
 {
   "id": "spiro",
   "name": "Spirotype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "status": "experimental",
   "category": [
     "typography",
@@ -138,8 +138,7 @@
       "default": 400,
       "min": 100,
       "max": 1000,
-      "step": 10,
-      "animate": false
+      "step": 10
     },
     {
       "key": "tracking",
@@ -150,8 +149,7 @@
       "min": -0.1,
       "max": 0.6,
       "step": 0.005,
-      "unit": "em",
-      "animate": false
+      "unit": "em"
     },
     {
       "key": "soften",
@@ -162,7 +160,6 @@
       "min": 0,
       "max": 1,
       "step": 0.01,
-      "animate": false,
       "help": "Smooths the track's corners, so the wheel takes them in a curve rather than a kink."
     },
     {
@@ -242,7 +239,6 @@
       "min": 1,
       "max": 16,
       "step": 1,
-      "animate": false,
       "help": "How many times the wheel goes round each outline."
     },
     {
@@ -254,7 +250,6 @@
       "min": -8,
       "max": 8,
       "step": 1,
-      "animate": false,
       "help": "Extra wheel turns spread over all the laps, so each lap lands a little further on and the lines fan out. Nought retraces the same line."
     },
     {
@@ -266,7 +261,6 @@
       "min": 0,
       "max": 12,
       "step": 1,
-      "animate": false,
       "help": "A wheel that isn't round: the pen swings in and out this many times a turn."
     },
     {

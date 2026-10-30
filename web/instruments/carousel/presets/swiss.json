@@ -1,0 +1,18 @@
+{
+  "instrument": "carousel",
+  "version": "0.1.0",
+  "seed": 1,
+  "name": "Swiss",
+  "params": {
+    "system": "swiss",
+    "display": "Inter Tight",
+    "displayWeight": 800,
+    "body": "Inter Tight",
+    "bodyWeight": 400,
+    "ground": "#ECECE8",
+    "ink": "#111111",
+    "accent": "#FF4D1F",
+    "texture": "none",
+    "motion": "rise"
+  }
+}

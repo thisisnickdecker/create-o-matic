@@ -1,0 +1,19 @@
+{
+  "instrument": "carousel",
+  "version": "0.1.0",
+  "seed": 1,
+  "name": "Poster",
+  "params": {
+    "system": "poster",
+    "display": "Anton",
+    "displayWeight": 400,
+    "body": "Inter Tight",
+    "bodyWeight": 500,
+    "ground": "#F5C518",
+    "ink": "#1B1B1B",
+    "accent": "#D7263D",
+    "texture": "riso",
+    "textureAmount": 0.5,
+    "motion": "rise"
+  }
+}

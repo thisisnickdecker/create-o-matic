@@ -309,3 +309,12 @@ body.dragging .drop { display: grid; }
 .shelf .thumb-x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: rgba(18, 18, 17, .72); color: var(--white); font: inherit; font-size: 13px; line-height: 20px; cursor: pointer; opacity: 0; transition: opacity .15s var(--ease); }
 .shelf .thumb:hover .thumb-x, .shelf .thumb-x:focus-visible { opacity: 1; }
 @media (pointer: coarse) { .shelf .thumb-x { opacity: 1; } }
+
+/* The Carousel creator's strip of slides under the stage. */
+.stage .slides { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 6px; scrollbar-width: thin; }
+.stage .slides:empty { display: none; }
+.slide-thumb { position: relative; flex: none; padding: 0; border: 0; border-radius: 6px; background: none; cursor: pointer; outline: 2px solid transparent; outline-offset: 2px; transition: outline-color .15s var(--ease); }
+.slide-thumb canvas { display: block; height: 132px; width: auto; border-radius: 6px; box-shadow: 0 1px 3px rgba(18, 18, 17, .16); }
+.slide-thumb span { position: absolute; left: 6px; bottom: 6px; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: rgba(18, 18, 17, .7); color: var(--white); font-size: 11px; font-variant-numeric: tabular-nums; }
+.slide-thumb.on { outline-color: var(--ink); }
+@media (max-width: 700px) { .slide-thumb canvas { height: 96px; } }

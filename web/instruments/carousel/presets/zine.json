@@ -1,0 +1,19 @@
+{
+  "instrument": "carousel",
+  "version": "0.1.0",
+  "seed": 1,
+  "name": "Zine",
+  "params": {
+    "system": "zine",
+    "display": "Instrument Serif",
+    "displayWeight": 400,
+    "body": "Courier Prime",
+    "bodyWeight": 400,
+    "ground": "#2FBF8A",
+    "ink": "#141414",
+    "accent": "#FFE14D",
+    "texture": "grain",
+    "textureAmount": 0.4,
+    "motion": "type"
+  }
+}

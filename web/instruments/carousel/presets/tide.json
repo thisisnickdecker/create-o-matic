@@ -1,0 +1,20 @@
+{
+  "instrument": "carousel",
+  "version": "0.1.0",
+  "seed": 1,
+  "name": "Tide",
+  "params": {
+    "system": "tide",
+    "display": "Anton",
+    "displayWeight": 400,
+    "body": "Fraunces",
+    "bodyWeight": 500,
+    "ground": "#8BE07A",
+    "ink": "#3B0A2A",
+    "accent": "#1F3BFF",
+    "texture": "grain",
+    "textureAmount": 0.6,
+    "motion": "drift",
+    "panorama": true
+  }
+}

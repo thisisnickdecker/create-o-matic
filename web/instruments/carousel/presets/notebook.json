@@ -1,0 +1,19 @@
+{
+  "instrument": "carousel",
+  "version": "0.1.0",
+  "seed": 1,
+  "name": "Notebook",
+  "params": {
+    "system": "notebook",
+    "display": "Newsreader",
+    "displayWeight": 400,
+    "body": "Inter Tight",
+    "bodyWeight": 400,
+    "ground": "#F4F2EE",
+    "ink": "#141414",
+    "accent": "#2F4BD8",
+    "texture": "paper",
+    "textureAmount": 0.7,
+    "motion": "rise"
+  }
+}

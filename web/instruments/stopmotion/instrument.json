@@ -1,0 +1,546 @@
+{
+  "id": "stopmotion",
+  "name": "Stop motion",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "motion",
+    "image",
+    "print"
+  ],
+  "description": "Stop-motion loops from your own photos and drawings: frames in order or there and back, on ones, twos or threes, a little boil, laid on paper, grain, riso dots or your own scan with a blend mode. A planner tells you how many frames a loop takes and writes a brief to plan them with an AI. Export video, GIF, or every frame as a carousel.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "stopmotion.js",
+    "app": "app.js"
+  },
+  "page": "/stopmotion/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "png-set": "verified",
+    "mp4": "verified",
+    "webm": "untested",
+    "gif": "untested",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch and the same frames give the same loop.",
+  "references": [
+    {
+      "title": "Block-printed series posted as carousels",
+      "note": "A set of printed variations, one a slide, that swipes like an animation. The idea of frames as a carousel came from there; the sample frames are original."
+    }
+  ],
+  "groups": [
+    {
+      "id": "frames",
+      "label": "Frames",
+      "hint": "your drawings and photos, in order"
+    },
+    {
+      "id": "plan",
+      "label": "Planner",
+      "hint": "how many frames a loop needs"
+    },
+    {
+      "id": "look",
+      "label": "Print",
+      "hint": "fit, boil and blend"
+    },
+    {
+      "id": "paper",
+      "label": "Paper",
+      "hint": "colour and texture"
+    },
+    {
+      "id": "output",
+      "label": "Size",
+      "hint": "format and export rate"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "keyframes"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "frames",
+      "group": "frames",
+      "label": "Frames",
+      "type": "list",
+      "default": [],
+      "hidden": true,
+      "max": 120,
+      "itemName": "a frame",
+      "item": [
+        {
+          "key": "src",
+          "label": "Frame",
+          "type": "media",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "rate",
+      "group": "frames",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "12",
+      "ui": "segmented",
+      "options": [
+        [
+          "8",
+          "8"
+        ],
+        [
+          "12",
+          "12"
+        ],
+        [
+          "15",
+          "15"
+        ],
+        [
+          "24",
+          "24"
+        ]
+      ],
+      "animate": false,
+      "help": "Drawings a second, before holds. Twelve is the classic stop-motion rate."
+    },
+    {
+      "key": "hold",
+      "group": "frames",
+      "label": "Hold each",
+      "type": "select",
+      "default": "1",
+      "ui": "segmented",
+      "options": [
+        [
+          "1",
+          "On ones"
+        ],
+        [
+          "2",
+          "On twos"
+        ],
+        [
+          "3",
+          "On threes"
+        ]
+      ],
+      "animate": false,
+      "help": "How many beats each frame stays: on twos, every drawing shows twice, which reads as handmade."
+    },
+    {
+      "key": "play",
+      "group": "frames",
+      "label": "Play",
+      "type": "select",
+      "default": "loop",
+      "ui": "segmented",
+      "options": [
+        [
+          "loop",
+          "Loop"
+        ],
+        [
+          "pingpong",
+          "There and back"
+        ]
+      ],
+      "animate": false,
+      "help": "There and back plays the frames forward then backward, so a loop closes with half the drawings."
+    },
+    {
+      "key": "duration",
+      "group": "frames",
+      "label": "Loop length",
+      "type": "number",
+      "default": 1.5,
+      "min": 0.1,
+      "max": 600,
+      "step": 0.05,
+      "hidden": true,
+      "animate": false
+    },
+    {
+      "key": "fit",
+      "group": "look",
+      "label": "Fit",
+      "type": "select",
+      "default": "contain",
+      "ui": "segmented",
+      "options": [
+        [
+          "contain",
+          "Whole frame"
+        ],
+        [
+          "cover",
+          "Fill"
+        ]
+      ]
+    },
+    {
+      "key": "scale",
+      "group": "look",
+      "label": "Size",
+      "type": "number",
+      "default": 0.86,
+      "min": 0.1,
+      "max": 2,
+      "step": 0.01
+    },
+    {
+      "key": "boil",
+      "group": "look",
+      "label": "Boil",
+      "type": "number",
+      "default": 0.25,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "help": "A little shake from frame to frame, as hand-registered work has. Reroll for another shake."
+    },
+    {
+      "key": "blend",
+      "group": "look",
+      "label": "Blend",
+      "type": "select",
+      "default": "multiply",
+      "options": [
+        [
+          "normal",
+          "Normal"
+        ],
+        [
+          "multiply",
+          "Multiply (white paper drops out)"
+        ],
+        [
+          "screen",
+          "Screen (black drops out)"
+        ],
+        [
+          "overlay",
+          "Overlay"
+        ],
+        [
+          "darken",
+          "Darken"
+        ],
+        [
+          "lighten",
+          "Lighten"
+        ],
+        [
+          "difference",
+          "Difference"
+        ],
+        [
+          "luminosity",
+          "Luminosity"
+        ],
+        [
+          "color-burn",
+          "Colour burn"
+        ]
+      ],
+      "help": "How the frames sit on the paper. Multiply lets white paper in your photos disappear into the texture below."
+    },
+    {
+      "key": "tint",
+      "group": "look",
+      "label": "Print in one ink",
+      "type": "bool",
+      "default": false,
+      "help": "Every frame printed in the ink colour, as one colour of a block or a screen print."
+    },
+    {
+      "key": "ink",
+      "group": "look",
+      "label": "Ink",
+      "type": "color",
+      "default": "#2A1F1D",
+      "when": {
+        "tint": true
+      }
+    },
+    {
+      "key": "background",
+      "group": "paper",
+      "label": "Paper",
+      "type": "color",
+      "default": "#D9C2BB",
+      "clear": "transparent"
+    },
+    {
+      "key": "transparent",
+      "group": "paper",
+      "label": "See-through",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "texture",
+      "group": "paper",
+      "label": "Texture",
+      "type": "select",
+      "default": "paper",
+      "options": [
+        [
+          "none",
+          "None"
+        ],
+        [
+          "paper",
+          "Paper"
+        ],
+        [
+          "grain",
+          "Film grain"
+        ],
+        [
+          "riso",
+          "Riso dots"
+        ],
+        [
+          "image",
+          "Your scan"
+        ]
+      ]
+    },
+    {
+      "key": "textureImage",
+      "group": "paper",
+      "label": "Scan",
+      "type": "media",
+      "default": "",
+      "when": {
+        "texture": "image"
+      },
+      "help": "A photo or scan of paper, card, fabric or a wall: it becomes the ground."
+    },
+    {
+      "key": "textureAmount",
+      "group": "paper",
+      "label": "Texture amount",
+      "type": "number",
+      "default": 0.6,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "when": {
+        "texture": {
+          "not": "none"
+        }
+      }
+    },
+    {
+      "key": "textureBlend",
+      "group": "paper",
+      "label": "Texture blend",
+      "type": "select",
+      "default": "multiply",
+      "options": [
+        [
+          "multiply",
+          "Multiply"
+        ],
+        [
+          "overlay",
+          "Overlay"
+        ],
+        [
+          "soft-light",
+          "Soft light"
+        ],
+        [
+          "screen",
+          "Screen"
+        ],
+        [
+          "normal",
+          "Normal"
+        ]
+      ],
+      "when": {
+        "texture": "image"
+      }
+    },
+    {
+      "key": "format",
+      "group": "output",
+      "label": "Format",
+      "type": "select",
+      "default": "portrait",
+      "options": [
+        [
+          "story",
+          "9:16 · 1080×1920"
+        ],
+        [
+          "landscape",
+          "16:9 · 1920×1080"
+        ],
+        [
+          "square",
+          "1:1 · 1080×1080"
+        ],
+        [
+          "portrait",
+          "4:5 · 1080×1350"
+        ],
+        [
+          "poster",
+          "3:4 · 1080×1440"
+        ],
+        [
+          "link",
+          "Link card · 1200×630"
+        ],
+        [
+          "scope",
+          "Scope 2.39:1 · 2048×858"
+        ],
+        [
+          "a4",
+          "A4 · 300 dpi"
+        ],
+        [
+          "a3",
+          "A3 · 300 dpi"
+        ],
+        [
+          "custom",
+          "Custom"
+        ]
+      ]
+    },
+    {
+      "key": "width",
+      "group": "output",
+      "label": "Width",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1920,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "height",
+      "group": "output",
+      "label": "Height",
+      "type": "int",
+      "min": 16,
+      "max": 8000,
+      "step": 2,
+      "default": 1080,
+      "when": {
+        "format": "custom"
+      },
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "output",
+      "label": "Video frame rate",
+      "type": "select",
+      "default": "24",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ],
+      "help": "The export's frame rate; your drawings keep their own rate and holds."
+    },
+    {
+      "key": "loopFor",
+      "group": "plan",
+      "label": "Loop length",
+      "type": "number",
+      "default": 2,
+      "min": 0.25,
+      "max": 30,
+      "step": 0.25,
+      "unit": "s",
+      "animate": false,
+      "help": "The loop you're planning. The planner says how many drawings it takes."
+    },
+    {
+      "key": "idea",
+      "group": "plan",
+      "label": "What moves",
+      "type": "text",
+      "default": "a horse galloping, side on",
+      "animate": false,
+      "help": "Say what you want to animate. The planner writes a brief you can paste into Claude or ChatGPT to plan every frame."
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused."
+    }
+  ]
+}

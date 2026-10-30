@@ -1,0 +1,19 @@
+{
+  "instrument": "stopmotion",
+  "version": "0.1.0",
+  "seed": 3,
+  "name": "Clean",
+  "params": {
+    "rate": "12",
+    "hold": "1",
+    "play": "loop",
+    "blend": "normal",
+    "boil": 0,
+    "background": "#FFFFFF",
+    "texture": "none",
+    "tint": false,
+    "format": "portrait",
+    "fit": "cover",
+    "scale": 1
+  }
+}

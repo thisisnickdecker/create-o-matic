@@ -1,0 +1,20 @@
+{
+  "instrument": "stopmotion",
+  "version": "0.1.0",
+  "seed": 3,
+  "name": "Flipbook",
+  "params": {
+    "rate": "12",
+    "hold": "2",
+    "play": "pingpong",
+    "blend": "multiply",
+    "boil": 0.6,
+    "background": "#F4F1EA",
+    "texture": "grain",
+    "textureAmount": 0.6,
+    "tint": false,
+    "format": "square",
+    "fit": "contain",
+    "scale": 0.95
+  }
+}

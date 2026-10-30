@@ -1,0 +1,20 @@
+{
+  "instrument": "stopmotion",
+  "version": "0.1.0",
+  "seed": 3,
+  "name": "Block print",
+  "params": {
+    "rate": "8",
+    "hold": "1",
+    "play": "loop",
+    "blend": "multiply",
+    "boil": 0.3,
+    "background": "#D9C2BB",
+    "texture": "paper",
+    "textureAmount": 0.7,
+    "tint": false,
+    "format": "portrait",
+    "fit": "contain",
+    "scale": 0.9
+  }
+}

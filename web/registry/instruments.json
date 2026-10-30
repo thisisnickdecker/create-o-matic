@@ -818,6 +818,85 @@
       ]
     },
     {
+      "id": "stopmotion",
+      "name": "Stop motion",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "motion",
+        "image",
+        "print"
+      ],
+      "description": "Stop-motion loops from your own photos and drawings: frames in order or there and back, on ones, twos or threes, a little boil, laid on paper, grain, riso dots or your own scan with a blend mode. A planner tells you how many frames a loop takes and writes a brief to plan them with an AI. Export video, GIF, or every frame as a carousel.",
+      "path": "/stopmotion/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "png-set": "verified",
+        "mp4": "verified",
+        "webm": "untested",
+        "gif": "untested",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "frames",
+        "rate",
+        "hold",
+        "play",
+        "duration",
+        "fit",
+        "scale",
+        "boil",
+        "blend",
+        "tint",
+        "ink",
+        "background",
+        "transparent",
+        "texture",
+        "textureImage",
+        "textureAmount",
+        "textureBlend",
+        "format",
+        "width",
+        "height",
+        "fps",
+        "loopFor",
+        "idea",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "block-print.json",
+          "name": "Block print"
+        },
+        {
+          "file": "riso.json",
+          "name": "Riso"
+        },
+        {
+          "file": "flipbook.json",
+          "name": "Flipbook"
+        },
+        {
+          "file": "clean.json",
+          "name": "Clean"
+        }
+      ]
+    },
+    {
       "id": "texture",
       "name": "Texture lab",
       "version": "0.1.0",

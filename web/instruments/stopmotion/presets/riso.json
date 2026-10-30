@@ -1,0 +1,21 @@
+{
+  "instrument": "stopmotion",
+  "version": "0.1.0",
+  "seed": 3,
+  "name": "Riso",
+  "params": {
+    "rate": "12",
+    "hold": "2",
+    "play": "loop",
+    "blend": "multiply",
+    "boil": 0.45,
+    "background": "#F7D7DE",
+    "texture": "riso",
+    "textureAmount": 0.8,
+    "tint": true,
+    "ink": "#2F4BD8",
+    "format": "portrait",
+    "fit": "contain",
+    "scale": 0.9
+  }
+}

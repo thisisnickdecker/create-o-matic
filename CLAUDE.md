@@ -5,7 +5,9 @@ direction into instruments that are reusable, reproducible and beautifully made.
 
 ## Layout
 
-`web/` is the published site and nothing else: Cloudflare Pages serves it as static files.
+`web/` is the published site and nothing else: Cloudflare Pages serves it as static files. The one
+server part is `functions/api/read.js` (a Pages Function behind the Site reader): it reads other
+websites, which a browser can't. Test it with `npx wrangler@3 pages dev web`; `npm run dev` doesn't run it.
 Every instrument runs in the shared shell (`web/packages/core/shell.js`): its app passes the
 engine and a few hooks to `createMachine`. Effects are shared by all instruments, either as a fixed
 chain (Motion's Darkroom) or as a stack of layers (the Texture lab), see `effects/index.js`.

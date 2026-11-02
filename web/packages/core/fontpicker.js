@@ -105,7 +105,7 @@ export function openFontPicker({ anchor, current, kit, onPick }) {
     list.replaceChildren(...all.slice(0, shown).map((e) => {
       const row = el("button", { type: "button", className: "fp-row", role: "option" },
         el("span", { className: "fp-name", textContent: e.family }),
-        el("span", { className: "fp-meta", textContent: [e.variable ? "variable" : null, e.source === "open" ? (e.google ? "Google" : "open source") : { adobe: "Adobe kit", system: "installed", file: "my font" }[e.source]].filter(Boolean).join(" · ") }))
+        el("span", { className: "fp-meta", textContent: [e.variable ? "variable" : null, e.source === "open" ? (e.foundry ?? (e.google ? "Google" : "open source")) : { adobe: "Adobe kit", system: "installed", file: "my font" }[e.source]].filter(Boolean).join(" · ") }))
       row._entry = e
       if (e.family === current?.family && e.source === current?.source) row.classList.add("on")
       row.onclick = () => { onPick(e); close() }

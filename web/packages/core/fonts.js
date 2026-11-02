@@ -14,11 +14,28 @@ export const fontString = (weight, size, family) => `${weight} ${size}px ${quote
 
 // ---- the catalogues the font picker lists ----
 
+// Vercel's Geist faces that Fontsource doesn't carry (Geist, Geist Mono and Geist Pixel it does):
+// Geist Serif and each shape of Geist Pixel, from Vercel's own package (OFL), one weight each.
+// They sit in the open catalogue, so every instrument can use them.
+const GEIST = "https://cdn.jsdelivr.net/npm/geist@1.9.0/dist/fonts"
+const HOUSE = Object.fromEntries([
+  ["Geist Serif", "serif", "geist-serif/GeistSerif-Regular"],
+  ["Geist Serif Square", "serif", "geist-serif/GeistSerif-Square"],
+  ["Geist Serif Triangle", "serif", "geist-serif/GeistSerif-Triangle"],
+  ["Geist Serif Heart", "serif", "geist-serif/GeistSerif-Heart"],
+  ["Geist Pixel Square", "display", "geist-pixel/GeistPixel-Square"],
+  ["Geist Pixel Circle", "display", "geist-pixel/GeistPixel-Circle"],
+  ["Geist Pixel Grid", "display", "geist-pixel/GeistPixel-Grid"],
+  ["Geist Pixel Triangle", "display", "geist-pixel/GeistPixel-Triangle"],
+  ["Geist Pixel Line", "display", "geist-pixel/GeistPixel-Line"],
+].map(([family, category, file]) => [family, { family, source: "open", id: file, category, variable: false, weights: [400], styles: ["normal"], latin: true, google: false, license: "OFL-1.1", foundry: "Vercel", url: `${GEIST}/${file}.woff2` }]))
+
 let catalogue
 export function openCatalogue() {
   catalogue ??= fetch("https://api.fontsource.org/v1/fonts").then((r) => r.json())
     .then((list) => list.map((f) => ({ family: f.family, source: "open", id: f.id, category: f.category, variable: f.variable, weights: f.weights, styles: f.styles, subsets: f.subsets, latin: f.defSubset === "latin", google: f.type === "google", license: f.license })))
     .catch(() => [])
+    .then((list) => [...Object.values(HOUSE), ...list])
   return catalogue
 }
 
@@ -92,6 +109,7 @@ const fontsourceMeta = (id) => {
 // Fontsource serves one file per weight and style (or one variable file per style); register what
 // the patch needs.
 async function fontsourceFaces(family, weights, italic = false) {
+  if (HOUSE[family]) return houseFace(HOUSE[family])
   const id = family.toLowerCase().replace(/[^a-z0-9]+/g, "-")
   const m = await fontsourceMeta(id)
   if (!m) return false
@@ -119,6 +137,12 @@ async function fontsourceFaces(family, weights, italic = false) {
     try { await face.load(); document.fonts.add(face); registered.add(`open|${family}|${w}`) } catch {}
   }))
   return true
+}
+
+async function houseFace({ family, url }) {
+  if (registered.has(`open|${family}`)) return true
+  const face = new FontFace(family, `url(${url})`, { weight: "400" })
+  try { await face.load(); document.fonts.add(face); registered.add(`open|${family}`); return true } catch { return false }
 }
 
 async function fileFace(family) {
@@ -165,7 +189,7 @@ export function previewFont(entry) {
     previews.set(key, (async () => {
       if (entry.source === "open") {
         const w = entry.weights?.includes(400) ? 400 : entry.weights?.[0] ?? 400
-        const face = new FontFace(`preview ${entry.family}`, `url(https://cdn.jsdelivr.net/fontsource/fonts/${entry.id}@latest/latin-${w}-normal.woff2)`)
+        const face = new FontFace(`preview ${entry.family}`, `url(${entry.url ?? `https://cdn.jsdelivr.net/fontsource/fonts/${entry.id}@latest/latin-${w}-normal.woff2`})`)
         await face.load(); document.fonts.add(face)
         return `preview ${entry.family}`
       }

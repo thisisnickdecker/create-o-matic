@@ -1,0 +1,62 @@
+{
+  "name": "Lights down",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 21,
+  "params": {
+    "mood": "club",
+    "layout": "badge",
+    "layoutSeed": 4470,
+    "align": "center",
+    "scale": 0.96,
+    "tilt": 0,
+    "leading": 0.94,
+    "ctaShape": "circle",
+    "logoPlace": "corner",
+    "display": "Monoton",
+    "displaySource": "open",
+    "displayWeight": 400,
+    "text": "Geist Mono",
+    "textSource": "open",
+    "textWeight": 500,
+    "case": "upper",
+    "tracking": 0.02,
+    "colourUse": "night",
+    "colourway": 61,
+    "motion": "flash",
+    "stuffMotion": "orbit",
+    "energy": 0.97,
+    "beats": 5,
+    "stuffCount": 12,
+    "stuffSize": 0.13,
+    "stuffDepth": "mixed",
+    "stuffTreat": "plain",
+    "stuffSeed": 2309,
+    "stickers": "bolt",
+    "layers": [
+      {
+        "id": "film-23hc",
+        "effect": "film",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "filmHalation": 0.45,
+          "filmFade": 0.18,
+          "filmVignette": 0.3
+        }
+      },
+      {
+        "id": "grain-23hc",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.18,
+          "grainBoil": true
+        }
+      }
+    ]
+  }
+}

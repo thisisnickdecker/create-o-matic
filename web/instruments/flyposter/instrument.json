@@ -1,0 +1,1078 @@
+{
+  "id": "flyposter",
+  "name": "Flyposter",
+  "version": "0.1.0",
+  "status": "experimental",
+  "category": [
+    "social",
+    "motion",
+    "typography",
+    "layout"
+  ],
+  "description": "Social posts for small businesses that aren't dull. Put in your logo and colours, say what you're promoting, pick a mood and hit Vary until it's fun and a bit weird: type, colour, layouts, emoji, stickers, cutouts and texture, moving. Rewrite your line through a copy lens. Export at story, feed, square or landscape size.",
+  "author": "Nick Decker",
+  "license": "MIT",
+  "runtime": {
+    "language": "javascript",
+    "environment": "browser",
+    "renderer": "canvas-2d",
+    "build": "none"
+  },
+  "entry": {
+    "engine": "flyposter.js",
+    "app": "app.js"
+  },
+  "page": "/flyposter/",
+  "interfaces": {
+    "gui": true,
+    "api": "window.instrument",
+    "cli": false,
+    "embed": false
+  },
+  "outputs": {
+    "png": "verified",
+    "mp4": "verified",
+    "webm": "untested",
+    "gif": "untested",
+    "mov": "untested",
+    "patch-json": "verified"
+  },
+  "reproducibility": "Same patch, fonts and pictures give the same frames; the emoji are vendored files, so they don't depend on the system's emoji font. Browsers rasterise glyphs slightly differently.",
+  "references": [
+    {
+      "title": "Fly-posting, gig posters, zines, club flyers and hand-painted shop signs",
+      "note": "Moods drawn from those traditions as ranges of layout, type, colour and motion; no posters or artwork copied."
+    },
+    {
+      "title": "Noto Emoji (Google)",
+      "note": "A set of 131 emoji, vendored unmodified as SVG under the Apache licence."
+    }
+  ],
+  "groups": [
+    {
+      "id": "brand",
+      "label": "Brand pocket",
+      "hint": "logo and colours, remembered"
+    },
+    {
+      "id": "words",
+      "label": "Message",
+      "hint": "what you're saying"
+    },
+    {
+      "id": "feel",
+      "label": "Mood board",
+      "hint": "the feel, and Vary"
+    },
+    {
+      "id": "layout",
+      "label": "Paste-up",
+      "hint": "layout"
+    },
+    {
+      "id": "type",
+      "label": "Type case",
+      "hint": "fonts"
+    },
+    {
+      "id": "colour",
+      "label": "Ink well",
+      "hint": "colour"
+    },
+    {
+      "id": "stuff",
+      "label": "Junk drawer",
+      "hint": "pictures, emoji, stickers"
+    },
+    {
+      "id": "motion",
+      "label": "Clockwork",
+      "hint": "motion"
+    },
+    {
+      "id": "format",
+      "label": "Paper",
+      "hint": "size and time"
+    },
+    {
+      "id": "texture",
+      "label": "Darkroom",
+      "hint": "texture"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "brandName",
+      "group": "brand",
+      "label": "Name",
+      "type": "string",
+      "default": "Bar Nove",
+      "help": "Your business's name. It signs the post when there's no logo."
+    },
+    {
+      "key": "logo",
+      "group": "brand",
+      "label": "Logo",
+      "type": "mark",
+      "default": "",
+      "help": "Drop an SVG, PNG or JPEG anywhere on the page. It's kept in this browser with your inks, for next time."
+    },
+    {
+      "key": "logoColour",
+      "group": "brand",
+      "label": "Logo colour",
+      "type": "select",
+      "default": "original",
+      "options": [
+        [
+          "original",
+          "As drawn"
+        ],
+        [
+          "ink",
+          "In the type colour"
+        ],
+        [
+          "auto",
+          "Black or paper, whichever reads"
+        ]
+      ]
+    },
+    {
+      "key": "inks",
+      "group": "brand",
+      "label": "Brand colours",
+      "type": "palette",
+      "default": [
+        "#F2542D",
+        "#2340D8",
+        "#F6D743"
+      ],
+      "help": "Your colours. The mood decides which is the ground, which the type and which the accent."
+    },
+    {
+      "key": "paper",
+      "group": "brand",
+      "label": "Paper",
+      "type": "color",
+      "default": "#F5F0E6",
+      "help": "The light neutral: what a light post is printed on."
+    },
+    {
+      "key": "black",
+      "group": "brand",
+      "label": "Black",
+      "type": "color",
+      "default": "#151412",
+      "help": "The dark neutral: type on paper, the ground at night."
+    },
+    {
+      "key": "headline",
+      "group": "words",
+      "label": "Headline",
+      "type": "text",
+      "default": "Happy hour",
+      "animate": false,
+      "help": "What you're promoting, in your words. A line break sets where it breaks."
+    },
+    {
+      "key": "details",
+      "group": "words",
+      "label": "Details",
+      "type": "string",
+      "default": "5 to 7 · Thursdays",
+      "help": "When, how much, what's on. Separate bits with · or commas."
+    },
+    {
+      "key": "where",
+      "group": "words",
+      "label": "Where",
+      "type": "string",
+      "default": "Bar Nove, 12 Mill Lane"
+    },
+    {
+      "key": "cta",
+      "group": "words",
+      "label": "Call to action",
+      "type": "string",
+      "default": "Bring a friend"
+    },
+    {
+      "key": "lens",
+      "group": "words",
+      "label": "Copy lens",
+      "type": "select",
+      "default": "any",
+      "options": [
+        [
+          "any",
+          "Any voice"
+        ],
+        [
+          "copywriter",
+          "The copywriter"
+        ],
+        [
+          "punk",
+          "The punk"
+        ],
+        [
+          "swiss",
+          "The Swiss designer"
+        ],
+        [
+          "deadpan",
+          "The deadpan"
+        ],
+        [
+          "shopkeeper",
+          "The shopkeeper"
+        ],
+        [
+          "mc",
+          "The MC"
+        ]
+      ],
+      "help": "Whose voice Rewrite uses. Archetypes, not real people."
+    },
+    {
+      "key": "take",
+      "group": "words",
+      "label": "Rewrite",
+      "type": "int",
+      "min": 0,
+      "max": 99,
+      "step": 1,
+      "default": 0,
+      "animate": false,
+      "help": "0 is your headline as written. Each step is another rewrite through the lens."
+    },
+    {
+      "key": "mood",
+      "group": "feel",
+      "label": "Mood",
+      "type": "select",
+      "default": "loud",
+      "options": [
+        [
+          "loud",
+          "Loud"
+        ],
+        [
+          "deadpan",
+          "Deadpan"
+        ],
+        [
+          "swiss",
+          "Swiss"
+        ],
+        [
+          "zine",
+          "Zine"
+        ],
+        [
+          "club",
+          "Club flyer"
+        ],
+        [
+          "gallery",
+          "Gallery"
+        ],
+        [
+          "shop",
+          "Corner shop"
+        ]
+      ],
+      "help": "Each mood deals layouts, type, colour, motion, stuff and texture from its own ranges. Changing it deals a new post; Vary deals another."
+    },
+    {
+      "key": "lockLayout",
+      "group": "feel",
+      "label": "Keep layout",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "lockType",
+      "group": "feel",
+      "label": "Keep type",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "lockColour",
+      "group": "feel",
+      "label": "Keep colour",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "lockMotion",
+      "group": "feel",
+      "label": "Keep motion",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "lockStuff",
+      "group": "feel",
+      "label": "Keep stuff",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "lockTexture",
+      "group": "feel",
+      "label": "Keep texture",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "layout",
+      "group": "layout",
+      "label": "Layout",
+      "type": "select",
+      "default": "stack",
+      "options": [
+        [
+          "stack",
+          "Stacked"
+        ],
+        [
+          "number",
+          "Giant number"
+        ],
+        [
+          "ticker",
+          "Ticker"
+        ],
+        [
+          "grid",
+          "Grid"
+        ],
+        [
+          "scatter",
+          "Sticker scatter"
+        ],
+        [
+          "poster",
+          "Poster"
+        ],
+        [
+          "badge",
+          "Badge"
+        ]
+      ],
+      "help": "Stacked fills the width a line at a time. Giant number finds the number in your words. Ticker runs it in bands. Grid sets the facts Swiss-style. Sticker scatter makes each word a sticker. Poster is a gig poster. Badge sets it round a circle."
+    },
+    {
+      "key": "layoutSeed",
+      "group": "layout",
+      "label": "Variant",
+      "type": "int",
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "default": 17,
+      "animate": false,
+      "help": "Small decisions inside the layout: which side, which corner, how the stickers fall."
+    },
+    {
+      "key": "align",
+      "group": "layout",
+      "label": "Align",
+      "type": "select",
+      "default": "left",
+      "options": [
+        [
+          "left",
+          "Left"
+        ],
+        [
+          "center",
+          "Centre"
+        ],
+        [
+          "right",
+          "Right"
+        ]
+      ]
+    },
+    {
+      "key": "scale",
+      "group": "layout",
+      "label": "Type size",
+      "type": "number",
+      "min": 0.4,
+      "max": 1.3,
+      "step": 0.01,
+      "default": 1
+    },
+    {
+      "key": "tilt",
+      "group": "layout",
+      "label": "Tilt",
+      "type": "number",
+      "min": -20,
+      "max": 20,
+      "step": 1,
+      "default": 0,
+      "unit": "°"
+    },
+    {
+      "key": "leading",
+      "group": "layout",
+      "label": "Leading",
+      "type": "number",
+      "min": 0.7,
+      "max": 1.4,
+      "step": 0.01,
+      "default": 0.9
+    },
+    {
+      "key": "margin",
+      "group": "layout",
+      "label": "Margin",
+      "type": "int",
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "key": "ctaShape",
+      "group": "layout",
+      "label": "Call to action on",
+      "type": "select",
+      "default": "burst",
+      "options": [
+        [
+          "burst",
+          "A burst"
+        ],
+        [
+          "circle",
+          "A dot"
+        ],
+        [
+          "pill",
+          "A pill"
+        ],
+        [
+          "box",
+          "A box"
+        ],
+        [
+          "tag",
+          "A tag"
+        ],
+        [
+          "underline",
+          "An underline"
+        ],
+        [
+          "plain",
+          "Nothing"
+        ]
+      ]
+    },
+    {
+      "key": "logoPlace",
+      "group": "layout",
+      "label": "Logo",
+      "type": "select",
+      "default": "corner",
+      "options": [
+        [
+          "corner",
+          "In a corner"
+        ],
+        [
+          "top",
+          "Top, centred"
+        ],
+        [
+          "bottom",
+          "Bottom, centred"
+        ],
+        [
+          "sticker",
+          "On a sticker"
+        ],
+        [
+          "huge",
+          "Huge, behind"
+        ],
+        [
+          "none",
+          "Left out"
+        ]
+      ]
+    },
+    {
+      "key": "logoSize",
+      "group": "layout",
+      "label": "Logo size",
+      "type": "number",
+      "min": 0.04,
+      "max": 0.5,
+      "step": 0.01,
+      "default": 0.14
+    },
+    {
+      "key": "display",
+      "group": "type",
+      "label": "Headline font",
+      "type": "font",
+      "default": "Anton"
+    },
+    {
+      "key": "displaySource",
+      "group": "type",
+      "label": "Headline font source",
+      "type": "string",
+      "default": "open",
+      "hidden": true
+    },
+    {
+      "key": "displayWeight",
+      "group": "type",
+      "label": "Headline weight",
+      "type": "int",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 400
+    },
+    {
+      "key": "text",
+      "group": "type",
+      "label": "Text font",
+      "type": "font",
+      "default": "Inter Tight"
+    },
+    {
+      "key": "textSource",
+      "group": "type",
+      "label": "Text font source",
+      "type": "string",
+      "default": "open",
+      "hidden": true
+    },
+    {
+      "key": "textWeight",
+      "group": "type",
+      "label": "Text weight",
+      "type": "int",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 600
+    },
+    {
+      "key": "case",
+      "group": "type",
+      "label": "Case",
+      "type": "select",
+      "default": "upper",
+      "options": [
+        [
+          "as",
+          "As written"
+        ],
+        [
+          "upper",
+          "UPPER"
+        ],
+        [
+          "lower",
+          "lower"
+        ],
+        [
+          "title",
+          "Title Case"
+        ]
+      ]
+    },
+    {
+      "key": "tracking",
+      "group": "type",
+      "label": "Tracking",
+      "type": "number",
+      "min": -0.1,
+      "max": 0.4,
+      "step": 0.005,
+      "default": 0,
+      "unit": "em"
+    },
+    {
+      "key": "adobeKit",
+      "group": "type",
+      "label": "Adobe Fonts project",
+      "type": "string",
+      "default": "",
+      "help": "Your Adobe Fonts web project ID, to use your own faces in Browse."
+    },
+    {
+      "key": "colourUse",
+      "group": "colour",
+      "label": "Colour use",
+      "type": "select",
+      "default": "flood",
+      "options": [
+        [
+          "flood",
+          "Flood: a brand colour fills it"
+        ],
+        [
+          "paper",
+          "Paper: on the light neutral"
+        ],
+        [
+          "night",
+          "Night: on the dark neutral"
+        ],
+        [
+          "duo",
+          "Duotone: two colours only"
+        ],
+        [
+          "riot",
+          "Riot: every colour at once"
+        ]
+      ]
+    },
+    {
+      "key": "colourway",
+      "group": "colour",
+      "label": "Colourway",
+      "type": "int",
+      "min": 0,
+      "max": 99,
+      "step": 1,
+      "default": 0,
+      "animate": false,
+      "help": "Which of your colours plays which part. Step through them."
+    },
+    {
+      "key": "transparent",
+      "group": "colour",
+      "label": "No ground",
+      "type": "bool",
+      "default": false,
+      "help": "Leave the ground out, for a see-through MOV or a sticker PNG."
+    },
+    {
+      "key": "image",
+      "group": "stuff",
+      "label": "Picture",
+      "type": "media",
+      "default": "",
+      "help": "A cutout PNG (a drink, a burger, your face) or a photo. Drop it anywhere on the page. A PNG with a see-through background makes the best cutout."
+    },
+    {
+      "key": "imageRole",
+      "group": "stuff",
+      "label": "Picture as",
+      "type": "select",
+      "default": "hero",
+      "options": [
+        [
+          "hero",
+          "The star, in the middle"
+        ],
+        [
+          "backdrop",
+          "The whole background"
+        ],
+        [
+          "scatter",
+          "Thrown in with the stuff"
+        ]
+      ],
+      "when": {
+        "image": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "imageTreat",
+      "group": "stuff",
+      "label": "Picture finish",
+      "type": "select",
+      "default": "sticker",
+      "options": [
+        [
+          "as",
+          "As it is"
+        ],
+        [
+          "sticker",
+          "Die-cut sticker"
+        ],
+        [
+          "shadow",
+          "Hard shadow"
+        ],
+        [
+          "ink",
+          "Silhouette in an ink"
+        ]
+      ],
+      "when": {
+        "image": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "imageSize",
+      "group": "stuff",
+      "label": "Picture size",
+      "type": "number",
+      "min": 0.1,
+      "max": 1.5,
+      "step": 0.01,
+      "default": 0.6,
+      "when": {
+        "image": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "imageX",
+      "group": "stuff",
+      "label": "Picture across",
+      "type": "number",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "default": 0,
+      "when": {
+        "image": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "imageY",
+      "group": "stuff",
+      "label": "Picture up and down",
+      "type": "number",
+      "min": -1,
+      "max": 1,
+      "step": 0.01,
+      "default": 0,
+      "when": {
+        "image": {
+          "not": ""
+        }
+      }
+    },
+    {
+      "key": "emoji",
+      "group": "stuff",
+      "label": "Emoji",
+      "type": "string",
+      "default": "🍸 🍋 ✨",
+      "help": "Emoji to throw in, from the Noto set (Choose… shows them all). Your choice stays when you Vary."
+    },
+    {
+      "key": "stickers",
+      "group": "stuff",
+      "label": "Stickers",
+      "type": "string",
+      "default": "burst star",
+      "help": "Shapes to throw in: burst, star, heart, flower, asterisk, arrow, bolt, smile, blob, circle, squiggle, sparkle, eye, pill."
+    },
+    {
+      "key": "stuffCount",
+      "group": "stuff",
+      "label": "How many",
+      "type": "int",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 10,
+      "animate": false
+    },
+    {
+      "key": "stuffSize",
+      "group": "stuff",
+      "label": "Size",
+      "type": "number",
+      "min": 0.03,
+      "max": 0.45,
+      "step": 0.01,
+      "default": 0.13
+    },
+    {
+      "key": "stuffDepth",
+      "group": "stuff",
+      "label": "Where",
+      "type": "select",
+      "default": "mixed",
+      "options": [
+        [
+          "behind",
+          "Behind the words"
+        ],
+        [
+          "mixed",
+          "Behind and in front"
+        ],
+        [
+          "front",
+          "In front, round the edges"
+        ]
+      ]
+    },
+    {
+      "key": "stuffTreat",
+      "group": "stuff",
+      "label": "Finish",
+      "type": "select",
+      "default": "sticker",
+      "options": [
+        [
+          "plain",
+          "Plain"
+        ],
+        [
+          "sticker",
+          "Die-cut sticker"
+        ],
+        [
+          "shadow",
+          "Hard shadow"
+        ]
+      ]
+    },
+    {
+      "key": "stuffSeed",
+      "group": "stuff",
+      "label": "Throw",
+      "type": "int",
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "default": 3,
+      "animate": false,
+      "help": "Where everything lands. Step it to throw again."
+    },
+    {
+      "key": "motion",
+      "group": "motion",
+      "label": "Motion",
+      "type": "select",
+      "default": "pop",
+      "options": [
+        [
+          "pop",
+          "Pop: in with a bounce"
+        ],
+        [
+          "slide",
+          "Slide: in from the sides"
+        ],
+        [
+          "stamp",
+          "Stamp: slammed down on the beat"
+        ],
+        [
+          "type",
+          "Typewriter"
+        ],
+        [
+          "wobble",
+          "Wobble: never still"
+        ],
+        [
+          "jitter",
+          "Boil: hand-drawn jitter"
+        ],
+        [
+          "flash",
+          "Flash: colours swap on the beat"
+        ],
+        [
+          "still",
+          "Still"
+        ]
+      ],
+      "help": "How the words and shapes move. Pop, Slide, Stamp and Typewriter build up, hold, then clear before the loop starts again."
+    },
+    {
+      "key": "stuffMotion",
+      "group": "motion",
+      "label": "Stuff moves",
+      "type": "select",
+      "default": "float",
+      "options": [
+        [
+          "float",
+          "Float"
+        ],
+        [
+          "orbit",
+          "Orbit the picture"
+        ],
+        [
+          "drift",
+          "Drift across"
+        ],
+        [
+          "rain",
+          "Rain down"
+        ],
+        [
+          "spin",
+          "Spin"
+        ],
+        [
+          "jitter",
+          "Boil"
+        ],
+        [
+          "still",
+          "Stay put"
+        ]
+      ]
+    },
+    {
+      "key": "energy",
+      "group": "motion",
+      "label": "Energy",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "default": 0.7
+    },
+    {
+      "key": "beats",
+      "group": "motion",
+      "label": "Beats per loop",
+      "type": "int",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "animate": false,
+      "help": "Wobbles, flashes, spins and stamps land on these. Later, music will too."
+    },
+    {
+      "key": "format",
+      "group": "format",
+      "label": "Format",
+      "type": "select",
+      "default": "portrait",
+      "options": [
+        [
+          "story",
+          "Story 9:16 · 1080×1920"
+        ],
+        [
+          "portrait",
+          "Feed 4:5 · 1080×1350"
+        ],
+        [
+          "square",
+          "Square 1:1 · 1080×1080"
+        ],
+        [
+          "landscape",
+          "Landscape 16:9 · 1920×1080"
+        ]
+      ],
+      "animate": false
+    },
+    {
+      "key": "duration",
+      "group": "format",
+      "label": "Loop length",
+      "type": "number",
+      "min": 2,
+      "max": 20,
+      "step": 0.5,
+      "default": 6,
+      "unit": "s",
+      "animate": false
+    },
+    {
+      "key": "fps",
+      "group": "format",
+      "label": "Frame rate",
+      "type": "select",
+      "default": "30",
+      "options": [
+        [
+          "24",
+          "24 fps"
+        ],
+        [
+          "25",
+          "25 fps"
+        ],
+        [
+          "30",
+          "30 fps"
+        ],
+        [
+          "60",
+          "60 fps"
+        ]
+      ]
+    },
+    {
+      "key": "layers",
+      "group": "texture",
+      "label": "Layers",
+      "type": "stack",
+      "default": [],
+      "help": "Applied top to bottom. Each mood deals its own; add or change any."
+    },
+    {
+      "key": "keyMode",
+      "group": "motion",
+      "label": "Keyframes play",
+      "type": "select",
+      "default": "boomerang",
+      "options": [
+        [
+          "boomerang",
+          "Boomerang: there and back"
+        ],
+        [
+          "wrap",
+          "Loop, easing back to the start"
+        ],
+        [
+          "cycle",
+          "Loop, jumping back to the start"
+        ]
+      ]
+    },
+    {
+      "key": "phase",
+      "group": "motion",
+      "label": "Freeze frame",
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "step": 0.001,
+      "default": 0.5,
+      "animate": false,
+      "help": "Where in the loop a PNG is taken, and where the preview rests when paused. The middle is when everything is in."
+    }
+  ]
+}

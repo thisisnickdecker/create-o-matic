@@ -141,6 +141,7 @@ function sendTo(p) {
   const logoLine = marks.has(P.logo) ? `@${P.logo}` : P.brandName.toUpperCase()
   return {
     motion: `/make/#${toHash({ instrument: "elastic", seed: p.seed, marks: p.marks[P.logo] ? { [P.logo]: p.marks[P.logo] } : {}, params: { content: `${logoLine}\n${P.brandName.toUpperCase()}`, mode: "sequence", font: head.font, fontSource: head.fontSource, adobeKit: P.adobeKit, palette: P.inks, background: P.background } })}`,
+    post: `/flyposter/#${toHash({ instrument: "flyposter", seed: p.seed, marks: p.marks[P.logo] ? { [P.logo]: p.marks[P.logo] } : {}, params: { brandName: P.brandName, logo: marks.has(P.logo) ? P.logo : "", logoColour: P.logoColour === "auto" ? "auto" : "original", inks: P.inks, paper: P.background, headline: P.tagline || P.brandName, display: head.font, displaySource: head.fontSource, displayWeight: head.weight, text: body.font, textSource: body.fontSource, textWeight: body.weight, adobeKit: P.adobeKit, lockType: true } })}`,
     colour: `/colour/#${toHash({ instrument: "colour", params: { inks: P.inks, background: P.background, study: "card" } })}`,
     type: `/type/#${toHash({ instrument: "type", params: { adobeKit: P.adobeKit, background: P.background, rows: [
       { text: P.brandName, font: head.font, fontSource: head.fontSource, weight: head.weight, tracking: head.tracking, fit: "width" },
@@ -163,7 +164,7 @@ function kitStrip(machine) {
   )
   const sendRow = Object.assign(document.createElement("div"), { className: "strip" })
   const go = (text, key) => button(text, "Opens with this brand's logo, inks and faces", () => { location.href = sendTo(machine.patch)[key] })
-  sendRow.append(go("Animate in Motion", "motion"), go("Study in the Colour lab", "colour"), go("Set in the Type tester", "type"))
+  sendRow.append(go("Animate in Motion", "motion"), go("Study in the Colour lab", "colour"), go("Set in the Type tester", "type"), go("Make a post", "post"))
   shop.querySelector(".progress").before(kitRow, sendRow)
   shop.append(note)
 }

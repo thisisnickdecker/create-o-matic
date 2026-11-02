@@ -1,0 +1,62 @@
+{
+  "name": "Straight face",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 4,
+  "params": {
+    "mood": "deadpan",
+    "layout": "poster",
+    "layoutSeed": 3330,
+    "align": "left",
+    "scale": 0.62,
+    "tilt": 0,
+    "leading": 1.08,
+    "ctaShape": "plain",
+    "logoPlace": "bottom",
+    "display": "Geist Mono",
+    "displaySource": "open",
+    "displayWeight": 400,
+    "text": "Geist",
+    "textSource": "open",
+    "textWeight": 400,
+    "case": "as",
+    "tracking": 0,
+    "colourUse": "paper",
+    "colourway": 73,
+    "motion": "jitter",
+    "stuffMotion": "float",
+    "energy": 0.42,
+    "beats": 1,
+    "stuffCount": 2,
+    "stuffSize": 0.25,
+    "stuffDepth": "mixed",
+    "stuffTreat": "shadow",
+    "stuffSeed": 4713,
+    "stickers": "eye",
+    "layers": [
+      {
+        "id": "film-5rsw",
+        "effect": "film",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "filmHalation": 0.45,
+          "filmFade": 0.18,
+          "filmVignette": 0.3
+        }
+      },
+      {
+        "id": "grain-5rsw",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.18,
+          "grainBoil": true
+        }
+      }
+    ]
+  }
+}

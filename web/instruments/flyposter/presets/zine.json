@@ -1,0 +1,50 @@
+{
+  "name": "Cut and paste",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 3,
+  "params": {
+    "mood": "zine",
+    "layout": "stack",
+    "layoutSeed": 386,
+    "align": "left",
+    "scale": 0.86,
+    "tilt": 6,
+    "leading": 0.92,
+    "ctaShape": "box",
+    "logoPlace": "sticker",
+    "display": "Rubik Dirt",
+    "displaySource": "open",
+    "displayWeight": 400,
+    "text": "Space Mono",
+    "textSource": "open",
+    "textWeight": 400,
+    "case": "as",
+    "tracking": 0,
+    "colourUse": "paper",
+    "colourway": 71,
+    "motion": "jitter",
+    "stuffMotion": "still",
+    "energy": 0.84,
+    "beats": 3,
+    "stuffCount": 11,
+    "stuffSize": 0.13,
+    "stuffDepth": "mixed",
+    "stuffTreat": "sticker",
+    "stuffSeed": 8317,
+    "stickers": "eye squiggle",
+    "layers": [
+      {
+        "id": "photocopy-isyy",
+        "effect": "photocopy",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "copier": 0.5,
+          "boil": true
+        }
+      }
+    ]
+  }
+}

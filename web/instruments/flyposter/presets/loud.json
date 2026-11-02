@@ -1,0 +1,52 @@
+{
+  "name": "Shout it",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 11,
+  "params": {
+    "mood": "loud",
+    "layout": "scatter",
+    "layoutSeed": 5299,
+    "align": "center",
+    "scale": 1.04,
+    "tilt": 5,
+    "leading": 0.87,
+    "ctaShape": "burst",
+    "logoPlace": "sticker",
+    "display": "Bagel Fat One",
+    "displaySource": "open",
+    "displayWeight": 400,
+    "text": "Geist",
+    "textSource": "open",
+    "textWeight": 600,
+    "case": "upper",
+    "tracking": 0,
+    "colourUse": "duo",
+    "colourway": 41,
+    "motion": "wobble",
+    "stuffMotion": "drift",
+    "energy": 0.66,
+    "beats": 2,
+    "stuffCount": 11,
+    "stuffSize": 0.13,
+    "stuffDepth": "mixed",
+    "stuffTreat": "shadow",
+    "stuffSeed": 1274,
+    "stickers": "bolt burst",
+    "layers": [
+      {
+        "id": "halftone-8yup",
+        "effect": "halftone",
+        "on": true,
+        "opacity": 0.5,
+        "blend": "multiply",
+        "params": {
+          "halftone": 7,
+          "halftoneAngle": 15,
+          "halftoneShape": "round",
+          "halftoneGain": 1.15
+        }
+      }
+    ]
+  }
+}

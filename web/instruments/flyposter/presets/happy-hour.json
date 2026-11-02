@@ -1,0 +1,7 @@
+{
+  "name": "Happy hour",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 1,
+  "params": { "mood": "loud", "layout": "stack", "motion": "pop" }
+}

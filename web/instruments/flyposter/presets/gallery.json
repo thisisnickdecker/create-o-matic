@@ -1,0 +1,61 @@
+{
+  "name": "Private view",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 5,
+  "params": {
+    "mood": "gallery",
+    "layout": "poster",
+    "layoutSeed": 7727,
+    "align": "left",
+    "scale": 0.71,
+    "tilt": 0,
+    "leading": 1.04,
+    "ctaShape": "pill",
+    "logoPlace": "corner",
+    "display": "Gloock",
+    "displaySource": "open",
+    "displayWeight": 400,
+    "text": "Geist",
+    "textSource": "open",
+    "textWeight": 400,
+    "case": "as",
+    "tracking": 0,
+    "colourUse": "night",
+    "colourway": 66,
+    "motion": "slide",
+    "stuffMotion": "still",
+    "energy": 0.23,
+    "beats": 1,
+    "stuffCount": 1,
+    "stuffSize": 0.35,
+    "stuffDepth": "behind",
+    "stuffTreat": "plain",
+    "stuffSeed": 190,
+    "stickers": "",
+    "layers": [
+      {
+        "id": "paper-5ucr",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.55,
+          "paperKind": "paper"
+        }
+      },
+      {
+        "id": "grain-5ucr",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.12,
+          "grainBoil": false
+        }
+      }
+    ]
+  }
+}

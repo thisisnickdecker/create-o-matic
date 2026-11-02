@@ -137,7 +137,7 @@
     {
       "id": "carousel",
       "name": "Carousel creator",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "status": "experimental",
       "category": [
         "social",
@@ -171,10 +171,10 @@
       "effects": [],
       "parameters": [
         "text",
+        "slides",
         "kicker",
         "footer",
         "numbers",
-        "images",
         "system",
         "panorama",
         "density",
@@ -599,6 +599,141 @@
         {
           "file": "wordmark-halftone.json",
           "name": "Wordmark in halftone"
+        }
+      ]
+    },
+    {
+      "id": "flyposter",
+      "name": "Flyposter",
+      "version": "0.1.0",
+      "status": "experimental",
+      "category": [
+        "social",
+        "motion",
+        "typography",
+        "layout"
+      ],
+      "description": "Social posts for small businesses that aren't dull. Put in your logo and colours, say what you're promoting, pick a mood and hit Vary until it's fun and a bit weird: type, colour, layouts, emoji, stickers, cutouts and texture, moving. Rewrite your line through a copy lens. Export at story, feed, square or landscape size.",
+      "path": "/flyposter/",
+      "runtime": {
+        "language": "javascript",
+        "environment": "browser",
+        "renderer": "canvas-2d",
+        "build": "none"
+      },
+      "interfaces": {
+        "gui": true,
+        "api": "window.instrument",
+        "cli": false,
+        "embed": false
+      },
+      "outputs": {
+        "png": "verified",
+        "mp4": "verified",
+        "webm": "untested",
+        "gif": "untested",
+        "mov": "untested",
+        "patch-json": "verified"
+      },
+      "effects": [],
+      "parameters": [
+        "brandName",
+        "logo",
+        "logoColour",
+        "inks",
+        "paper",
+        "black",
+        "headline",
+        "details",
+        "where",
+        "cta",
+        "lens",
+        "take",
+        "mood",
+        "lockLayout",
+        "lockType",
+        "lockColour",
+        "lockMotion",
+        "lockStuff",
+        "lockTexture",
+        "layout",
+        "layoutSeed",
+        "align",
+        "scale",
+        "tilt",
+        "leading",
+        "margin",
+        "ctaShape",
+        "logoPlace",
+        "logoSize",
+        "display",
+        "displaySource",
+        "displayWeight",
+        "text",
+        "textSource",
+        "textWeight",
+        "case",
+        "tracking",
+        "adobeKit",
+        "colourUse",
+        "colourway",
+        "transparent",
+        "image",
+        "imageRole",
+        "imageTreat",
+        "imageSize",
+        "imageX",
+        "imageY",
+        "emoji",
+        "stickers",
+        "stuffCount",
+        "stuffSize",
+        "stuffDepth",
+        "stuffTreat",
+        "stuffSeed",
+        "motion",
+        "stuffMotion",
+        "energy",
+        "beats",
+        "format",
+        "duration",
+        "fps",
+        "layers",
+        "keyMode",
+        "phase"
+      ],
+      "presets": [
+        {
+          "file": "happy-hour.json",
+          "name": "Happy hour"
+        },
+        {
+          "file": "loud.json",
+          "name": "Shout it"
+        },
+        {
+          "file": "deadpan.json",
+          "name": "Straight face"
+        },
+        {
+          "file": "swiss.json",
+          "name": "Facts only"
+        },
+        {
+          "file": "zine.json",
+          "name": "Cut and paste"
+        },
+        {
+          "file": "club.json",
+          "name": "Lights down"
+        },
+        {
+          "file": "gallery.json",
+          "name": "Private view"
+        },
+        {
+          "file": "shop.json",
+          "name": "Open all hours"
         }
       ]
     },

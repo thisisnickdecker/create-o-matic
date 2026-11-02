@@ -26,9 +26,9 @@ export function loadMedia(name) {
       await new Promise((resolve, reject) => { v.onloadeddata = resolve; v.onerror = reject })
       return { kind: "video", el: v, duration: v.duration }
     }
+    // onload rather than decode(): decode() can wait indefinitely in a page that isn't painting.
     const img = new Image()
-    img.src = url
-    await img.decode()
+    await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; img.src = url })
     return { kind: "image", el: img, duration: 0 }
   })().catch(() => null))
   return cache.get(name)

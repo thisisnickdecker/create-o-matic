@@ -1,0 +1,61 @@
+{
+  "name": "Open all hours",
+  "instrument": "flyposter",
+  "version": "0.1.0",
+  "seed": 9,
+  "params": {
+    "mood": "shop",
+    "layout": "badge",
+    "layoutSeed": 8512,
+    "align": "center",
+    "scale": 1.02,
+    "tilt": 3,
+    "leading": 0.96,
+    "ctaShape": "tag",
+    "logoPlace": "corner",
+    "display": "Titan One",
+    "displaySource": "open",
+    "displayWeight": 400,
+    "text": "Rubik",
+    "textSource": "open",
+    "textWeight": 500,
+    "case": "upper",
+    "tracking": 0.02,
+    "colourUse": "paper",
+    "colourway": 28,
+    "motion": "stamp",
+    "stuffMotion": "float",
+    "energy": 0.69,
+    "beats": 2,
+    "stuffCount": 6,
+    "stuffSize": 0.14,
+    "stuffDepth": "mixed",
+    "stuffTreat": "plain",
+    "stuffSeed": 4553,
+    "stickers": "burst heart",
+    "layers": [
+      {
+        "id": "paper-eile",
+        "effect": "paper",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "paper": 0.55,
+          "paperKind": "paper"
+        }
+      },
+      {
+        "id": "grain-eile",
+        "effect": "grain",
+        "on": true,
+        "opacity": 1,
+        "blend": "source-over",
+        "params": {
+          "grain": 0.12,
+          "grainBoil": false
+        }
+      }
+    ]
+  }
+}

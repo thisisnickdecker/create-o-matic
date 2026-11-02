@@ -90,12 +90,32 @@ export function parseSvg(text) {
   const vb = svg.viewBox?.baseVal
   const box = vb && vb.width ? { x: vb.x, y: vb.y, w: vb.width, h: vb.height }
     : { x: 0, y: 0, w: parseFloat(svg.getAttribute("width")) || 100, h: parseFloat(svg.getAttribute("height")) || 100 }
-  const mark = { kind: "svg", shapes, box }
+  const mark = { kind: "svg", shapes, box, ink: knockout(shapes, box) }
   mark.bounds = inkBounds(box, (c, k) => {
     c.setTransform(k, 0, 0, k, -box.x * k, -box.y * k)
     for (const s of shapes) c.fill(s.path, s.rule)
   }) || box
   return mark
+}
+
+// A plate: a first shape that fills most of the frame, with the rest painted on it in other colours,
+// as in a word set in a coloured box. In one ink those would merge into a solid block, so the shapes
+// on top cut through the plate instead. Returns the one path to fill, or null for an ordinary mark.
+function knockout(shapes, box) {
+  const [plate, ...rest] = shapes
+  if (!rest.length || !plate.fill || rest.some((s) => !s.fill || s.fill === plate.fill)) return null
+  const k = 160 / Math.max(box.w, box.h)
+  const W = Math.max(1, Math.ceil(box.w * k)), H = Math.max(1, Math.ceil(box.h * k))
+  const c = cpuCanvas(W, H)
+  c.setTransform(k, 0, 0, k, -box.x * k, -box.y * k)
+  c.fill(plate.path, plate.rule)
+  const { data } = c.getImageData(0, 0, W, H)
+  let solid = 0
+  for (let i = 3; i < data.length; i += 4) if (data[i] > 128) solid++
+  if (solid < W * H * 0.6) return null
+  const path = new Path2D()
+  for (const s of shapes) path.addPath(s.path)
+  return { path, rule: "evenodd" }
 }
 
 // The tight box around what's actually drawn, found by rasterising once. In the mark's own units.
@@ -221,7 +241,8 @@ export function drawMark(ctx, mark, x, y, w, h, ink, { fit = "stretch", colour =
   }
   if (mark.kind === "svg") {
     ctx.setTransform(scale * sx, 0, 0, scale * sy, scale * (x - b.x * sx), scale * (y - b.y * sy))
-    for (const s of mark.shapes) {
+    if (colour !== "original" && mark.ink) { ctx.fillStyle = ink; ctx.fill(mark.ink.path, mark.ink.rule) }
+    else for (const s of mark.shapes) {
       ctx.fillStyle = colour === "original" && s.fill ? s.fill : ink
       ctx.fill(s.path, s.rule)
     }

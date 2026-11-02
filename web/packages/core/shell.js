@@ -153,7 +153,9 @@ export async function createMachine(host, engine, hooks = {}) {
   const panel = createPanel(ref.controls, manifest, { onChange: set, onStopwatch: stopwatch, ...hooks.panel })
   const timeline = createTimeline(q(".timeline"), manifest, {
     patch: () => patch,
-    frames: () => frameCount(patch),
+    // The timeline's own length: with Boomerang it plays once each way, so it lasts half the loop.
+    frames: () => Math.max(1, Math.round(frameCount(patch) * (patch.params.keyMode === "boomerang" ? 0.5 : 1))),
+    seconds: () => patch.params.duration * (patch.params.keyMode === "boomerang" ? 0.5 : 1),
     onEdit: () => { dirty = true; persist(); syncPanel() },
     onSeek: (pos) => seekTo(patch.params.keyMode === "boomerang" ? pos / 2 : pos),
     onUnanimate: (key) => { patch.params[key] = now()[key]; delete patch.keys[key]; changed() },
@@ -357,7 +359,7 @@ export async function createMachine(host, engine, hooks = {}) {
     syncPanel(); persist(); dirty = true
   }
   playBtn.onclick = () => setPlaying(!playing)
-  scrub.oninput = () => seekTo(+scrub.value)
+  scrub.oninput = () => { const n = frameCount(patch); seekTo(Math.min(n - 1, Math.round(+scrub.value * n)) / n) }
   addEventListener("keydown", (e) => {
     if (e.target.closest("input, textarea, select, .fp-pop, .sw-pop")) return
     const n = frameCount(patch)
@@ -376,10 +378,10 @@ export async function createMachine(host, engine, hooks = {}) {
     if (dirty && !exporting) {
       const n = frameCount(patch)
       hooks.sync?.(t, playing)
-      render(ctx, patch, t, { scale, frame: Math.floor(t * n), ...hooks.options?.() })
+      render(ctx, patch, t, { scale, frame: Math.floor(t * n + 1e-6), ...hooks.options?.() })
       scrub.value = t
       fillRange(scrub)
-      clock.textContent = `${(t * patch.params.duration).toFixed(2)} / ${patch.params.duration.toFixed(2)} s · frame ${Math.floor(t * n)}`
+      clock.textContent = `${(t * patch.params.duration).toFixed(2)} / ${patch.params.duration.toFixed(2)} s · frame ${Math.floor(t * n + 1e-6)}`
       timeline.playhead(u())
       if (playing && Object.keys(patch.keys).length && tickCount++ % 3 === 0) panel.syncAnimated(now(), patch.keys, u())
       dirty = playing

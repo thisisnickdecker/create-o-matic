@@ -348,7 +348,27 @@ body.dragging .drop { display: grid; }
 .fly-emoji button:hover { background: var(--g100); }
 .fly-emoji button.on { background: var(--g100); box-shadow: inset 0 0 0 2px var(--ink); }
 .fly-said { min-height: 1.4em; }
+.fly-deck { position: absolute; inset: 0; z-index: 5; display: grid; grid-template-rows: auto 1fr; gap: 12px; padding: 16px clamp(16px, 2vw, 24px) 20px; background: var(--g100); outline: none; }
+.fly-deck-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.fly-deck-title { margin: 0; font-family: var(--display); font-size: 20px; }
+.fly-deck-hint { flex: 1; color: var(--g600); font-size: 13px; }
+.fly-deck-head .btn { min-height: 0; padding: 7px 14px; font-size: 13px; }
+.fly-deck-grid { display: grid; justify-content: center; align-content: safe center; gap: 12px; min-height: 0; overflow: auto; }
+.fly-card { display: grid; gap: 4px; }
+.fly-card-use { display: block; width: 100%; padding: 0; border: 0; border-radius: 4px; background: var(--g200); box-shadow: var(--shadow); cursor: pointer; overflow: hidden; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+.fly-card-use:disabled { cursor: progress; animation: fly-wait 1.2s ease-in-out infinite alternate; }
+.fly-card-use:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 0 0 2px var(--ink), var(--shadow); }
+.fly-card-use:focus-visible { box-shadow: 0 0 0 3px var(--ink); }
+.fly-card-use canvas { display: block; width: 100%; height: 100%; }
+.fly-card-more { justify-self: start; min-height: 26px; padding: 0 2px; border: 0; background: none; color: var(--g600); font: inherit; font-size: 12px; cursor: pointer; }
+.fly-card-more:hover { color: var(--ink); text-decoration: underline; }
+@keyframes fly-wait { to { opacity: .55; } }
 @media (max-width: 760px) {
   .fly-chip { min-height: 40px; padding: 0 14px; }
+  .fly-deck { position: fixed; z-index: 50; overflow: auto; grid-template-rows: auto auto; }
+  .fly-deck-grid { overflow: visible; align-content: start; }
+  .fly-deck-hint { display: none; }
+  .fly-deck-title { flex: 1; }
+  .fly-card-more { min-height: 36px; }
   .fly-emoji-set { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); }
 }

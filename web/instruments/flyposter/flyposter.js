@@ -110,16 +110,67 @@ function cap(k) {
 // The size at which text is exactly width wide, up to most.
 const fitWidth = (text, k, width, most = Infinity) => Math.min(most, (width / Math.max(1, measure(text, k, 100))) * 100)
 
-// Break text into lines no wider than max at px.
+// Widths at 100px, kept while composing: a width grows in step with the size, so each word is
+// measured once however many sizes are tried.
+let widths = new Map()
+const w100 = (s, k) => {
+  const key = `${k}|${s}`
+  if (!widths.has(key)) widths.set(key, measure(s, k, 100))
+  return widths.get(key)
+}
+// The words of a paragraph and what joins them: spaces, or nothing for Chinese, Japanese and
+// Korean set without spaces, which break between characters.
+const CJK = /[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uff00-\uffef]/
+function tokens(text) {
+  const ws = text.split(/\s+/).filter(Boolean)
+  return ws.length === 1 && CJK.test(text) && [...text].length > 3 ? { ws: [...text], sep: "" } : { ws, sep: " " }
+}
+// Words a line shouldn't end on, and marks a line shouldn't start with.
+const STOP = new Set("a an the and & + or of to in on at for by with from your our my is no every each this that all".split(" "))
+const NO_START = /^[、。，．・：；！？）」』ーゃゅょっ!?,.;:)\]]/
+// The best place to break words into n lines: each line as near the average width as can be,
+// none wider than max (at 100px), no line ending on a little word, and no lonely last word.
+function breakLines(ws, sep, k, n, max = Infinity) {
+  const N = ws.length
+  n = Math.max(1, Math.min(n, N))
+  if (n === 1) return [ws.join(sep)]
+  const ww = ws.map((s) => w100(s, k)), gap = sep ? w100(" ", k) : 0
+  const span = (i, j) => { let s = gap * (j - i - 1); for (let x = i; x < j; x++) s += ww[x]; return s }
+  const target = span(0, N) / n
+  const cost = Array.from({ length: n + 1 }, () => new Array(N + 1).fill(Infinity))
+  const from = Array.from({ length: n + 1 }, () => new Array(N + 1).fill(0))
+  cost[0][0] = 0
+  for (let l = 1; l <= n; l++) {
+    for (let j = l; j <= N - (n - l); j++) {
+      for (let i = l - 1; i < j; i++) {
+        if (cost[l - 1][i] === Infinity) continue
+        const w = span(i, j)
+        if (w > max && j - i > 1) continue
+        let c = ((w - target) / target) ** 2 + (w > max ? 100 : 0)
+        if (j < N && STOP.has(ws[j - 1].toLowerCase().replace(/[^\p{L}&+]/gu, ""))) c += 0.5
+        if (j < N && NO_START.test(ws[j])) c += 2
+        if (j === N && j - i === 1 && w < target * 0.5) c += 0.8
+        if (cost[l - 1][i] + c < cost[l][j]) { cost[l][j] = cost[l - 1][i] + c; from[l][j] = i }
+      }
+    }
+  }
+  if (cost[n][N] === Infinity) return null
+  const out = []
+  for (let l = n, j = N; l > 0; l--) { const i = from[l][j]; out.unshift(ws.slice(i, j).join(sep)); j = i }
+  return out
+}
+
+// Break text into lines no wider than max at px: as few lines as fit, then evened out.
 function wrap(text, k, px, max) {
   const out = []
   for (const para of text.split("\n")) {
-    let line = ""
-    for (const w of para.split(/\s+/).filter(Boolean)) {
-      const next = line ? `${line} ${w}` : w
-      if (line && measure(next, k, px) > max) { out.push(line); line = w } else line = next
-    }
-    out.push(line)
+    const { ws, sep } = tokens(para)
+    let n = 1, line = 0
+    ws.forEach((w, j) => {
+      const add = w100(w, k) * px / 100 + (j && sep ? w100(" ", k) * px / 100 : 0)
+      if (j && line + add > max) { n++; line = w100(w, k) * px / 100 } else line += add
+    })
+    out.push(...(breakLines(ws, sep, k, n, (max * 100) / px) ?? [ws.join(sep)]))
   }
   return out.filter((l, i) => l || i < out.length - 1)
 }
@@ -134,21 +185,23 @@ function fitBox(text, k, w, h, lead, most) {
   return best ?? { px: lo, lines: wrap(text, k, lo, w) }
 }
 // Lines for a headline that fills the width a line at a time: your breaks, or words grouped into a
-// few lines of about even length.
-function balance(text) {
+// few lines of about even width.
+function balance(text, k = "d") {
   if (text.includes("\n")) return text.split("\n").map((l) => l.trim()).filter(Boolean)
-  const ws = text.split(/\s+/).filter(Boolean)
-  const chars = ws.join("").length
-  const n = Math.max(Math.min(2, ws.length), Math.min(ws.length, 5, Math.round(chars / 7)))
-  const target = chars / n, out = []
-  let line = []
-  for (const w of ws) {
-    const len = line.join("").length
-    if (line.length && out.length < n - 1 && len + w.length / 2 > target) { out.push(line.join(" ")); line = [] }
-    line.push(w)
+  const { ws, sep } = tokens(text)
+  const chars = ws.join("").length * (sep ? 1 : 2)
+  const ideal = Math.max(Math.min(2, ws.length), Math.min(ws.length, 5, Math.round(chars / 7)))
+  // Each line is sized to fill the width, so lines of very different widths end up at very
+  // different sizes: take the count nearest the ideal that keeps them even.
+  let best = [text], bestCost = Infinity
+  for (let n = 1; n <= Math.min(ws.length, 6); n++) {
+    const list = breakLines(ws, sep, k, n)
+    if (!list) continue
+    const ww = list.map((l) => w100(l, k))
+    const cost = Math.log(Math.max(...ww) / Math.max(1, Math.min(...ww))) * 3 + Math.abs(n - ideal) * 0.5
+    if (cost < bestCost) { bestCost = cost; best = list }
   }
-  out.push(line.join(" "))
-  return out
+  return best
 }
 // The biggest thing to say: a price, a percentage, a time or a number in your words.
 export function bigThing(w) {
@@ -172,7 +225,10 @@ function lines(list, k, x, top, width, align, lead, ink, sizes) {
   let y = top
   list.forEach((l, j) => {
     const px = sizes[j], h = px * cap(k)
-    const lx = align === "center" ? x + width / 2 : align === "right" ? x + width : x
+    // Quotes and stops hang outside the edge, so the letters line up.
+    const hangL = align === "left" && /^[“‘"'(«]/.test(l) ? measure(l[0], k, px) : 0
+    const hangR = align === "right" && /[.,”’"')»]$/.test(l) ? measure(l.at(-1), k, px) : 0
+    const lx = align === "center" ? x + width / 2 : align === "right" ? x + width + hangR : x - hangL
     out.push(text(l, k, px, lx, y + h / 2, typeof ink === "function" ? ink(j) : ink, { align, line: j }))
     y += j < list.length - 1 ? px * lead : h
   })
@@ -185,18 +241,23 @@ function ctaItem(s, x, y, size, c, p, r, extra = {}) {
   const k = "tb", shapeId = p.ctaShape
   if (shapeId === "plain" || shapeId === "underline") {
     const px = Math.min(size * 0.22, fitWidth(s, k, size * 1.6))
-    const it = text(s, k, px, x, y, "type", { align: "center", ...extra })
-    return shapeId === "underline" ? [it, shape("rule", x, y + it.h / 2 + px * 0.28, it.w, Math.max(2, px * 0.09), "accent", { i: it.i })] : [it]
+    const it = text(s, k, px, x, y, "type", { align: "center", cta: true, ...extra })
+    return shapeId === "underline" ? [it, shape("rule", x, y + it.h / 2 + px * 0.28, it.w, Math.max(2, px * 0.09), "accent", { i: it.i, follows: it })] : [it]
   }
   const round = shapeId === "burst" || shapeId === "circle"
-  const words = s.split(/\s+/)
-  const label = round && words.length > 1 ? balance(s).slice(0, 3) : [s]
   const inner = round ? size * 0.62 : size * 1.5
-  const px = Math.min(size * (round ? 0.24 : 0.2), ...label.map((l) => fitWidth(l, k, inner)))
+  // In a round sticker, the words take as many lines (up to three) as sets them clearly bigger.
+  const { ws, sep } = tokens(s)
+  let label = [s], px = Math.min(size * (round ? 0.24 : 0.2), fitWidth(s, k, inner))
+  if (round) for (let n = 2; n <= Math.min(3, ws.length); n++) {
+    const list = breakLines(ws, sep, k, n)
+    const size2 = list && Math.min(size * 0.24, inner / (n * 1.15), ...list.map((l) => fitWidth(l, k, inner)))
+    if (size2 > px * 1.2) { label = list; px = size2 }
+  }
   const w = round ? size : Math.max(...label.map((l) => measure(l, k, px))) + px * 1.6
   const h = round ? size : px * (label.length * 1.15 + 0.9)
   const id = shapeId === "box" || shapeId === "tag" ? "box" : shapeId
-  return [shape(id, x, y, w, h, "accent", { rot: ((r() - 0.5) * 0.4), label, labelPx: px, labelK: k, labelInk: "onAccent", tag: shapeId === "tag", ...extra })]
+  return [shape(id, x, y, w, h, "accent", { rot: ((r() - 0.5) * 0.4), label, labelPx: px, labelK: k, labelInk: "onAccent", tag: shapeId === "tag", cta: true, ...extra })]
 }
 
 // Each layout: (p, w, c, frame, r) -> { items, hero: { x, y, size } }. frame: { W, H, m, u, land }.
@@ -210,7 +271,8 @@ const LAYOUTS = {
     const avail = H - 2 * m - footH - f.logoRoom
     let sizes = list.map((l) => fitWidth(l, "d", W - 2 * m, (H - 2 * m) * 0.34) * p.scale)
     const total = sizes.reduce((a, b, j) => a + b * (j < sizes.length - 1 ? p.leading : cap("d")), 0)
-    const room = avail * (0.62 + 0.3 * Math.min(1, p.scale))
+    // With a picture to show, the headline leaves it room.
+    const room = Math.min(avail * (0.62 + 0.3 * Math.min(1, p.scale)), f.star && !f.land ? Math.max(avail * 0.55, avail - Math.min(W, H) * 0.45) : Infinity)
     if (total > room) sizes = sizes.map((s) => (s * room) / total)
     const height = sizes.reduce((a, b, j) => a + b * (j < sizes.length - 1 ? p.leading : cap("d")), 0)
     const y0 = top ? m + f.logoRoom : H - m - footH - height
@@ -234,7 +296,11 @@ const LAYOUTS = {
       return { items, hero: { x: W - m - room / 2, y: (block.items[0].y + block.bottom) / 2, size: Math.min(room * 0.9, min * 0.6) } }
     }
     // No room for the picture: it comes forward, stuck over a corner of the headline.
-    if (free[1] - free[0] < min * 0.42) return { items, hero: { x: W * (r() < 0.5 ? 0.26 : 0.7), y: top ? block.bottom - min * 0.05 : y0 + min * 0.05, size: min * 0.4, front: true } }
+    if (free[1] - free[0] < min * 0.42) {
+      const size = min * 0.32, gap = block.items[Math.max(0, Math.floor(block.items.length / 2) - 1)]
+      const left = p.align === "right" || (p.align === "center" && r() < 0.5)
+      return { items, hero: { x: left ? size * 0.42 : W - size * 0.42, y: gap.y + gap.h / 2 + (block.items.length > 1 ? gap.px * (p.leading - cap("d")) / 2 : 0), size, front: true } }
+    }
     return { items, hero: { x: W * (0.5 + (r() - 0.5) * 0.3), y: (free[0] + free[1]) / 2, size: clamp(free[1] - free[0], min * 0.3, min * 0.62) } }
   },
 
@@ -243,12 +309,15 @@ const LAYOUTS = {
     const big = bigThing(w)
     const right = r() < 0.5
     // The headline first, at the foot (or beside the number, in landscape)...
-    const headline = w.headline.replace(big, "").replace(/\s{2,}/g, " ").trim() || w.headline
-    const box = { w: land ? W * 0.46 : W - 2 * m, h: (land ? H - 2 * m : H * 0.3) * p.scale }
+    const headline = /\d/.test(big) ? w.headline.replace(big, "").replace(/\s{2,}/g, " ").trim() || w.headline : w.headline
+    const tpx = 32 * u, info = [w.details, w.where].filter(Boolean).length
+    const infoH = info ? tpx * (1.5 + 1.3 * (info - 1)) + tpx : 0
+    const lTop = m + f.logoRoom, lBottom = H - m - infoH
+    const box = { w: land ? W * 0.46 : W - 2 * m, h: (land ? lBottom - lTop : H * 0.3) * p.scale }
     const fit = fitBox(headline, "d", box.w, box.h, p.leading, 260 * u)
     const hx = land ? (right ? m : W - m - box.w) : m
     const hh = fit.px * ((fit.lines.length - 1) * p.leading + cap("d"))
-    const hTop = land ? (H - hh) / 2 : H - m - hh - (w.details ? 90 * u : 0)
+    const hTop = land ? lTop + (lBottom - lTop - hh) / 2 : H - m - hh - (w.details ? 90 * u : 0)
     const block = lines(fit.lines, "d", hx, hTop, box.w, land ? "left" : p.align, p.leading, "type", fit.lines.map(() => fit.px))
     // ...then the number, as big as the room above it. In the same colour as the type it's an
     // outline, and keeps clear; in another colour it can run behind the headline.
@@ -260,12 +329,11 @@ const LAYOUTS = {
     const bx = right ? W - bw / 2 + bw * 0.08 : bw / 2 - bw * 0.08
     items.push(text(big, "d", px, bx, land ? H / 2 : top + bh / 2, same ? "type" : "accent", { align: "center", big: true, stroke: same ? Math.max(3, px * 0.012) : 0 }))
     items.push(...block.items)
-    const tpx = 32 * u
     ;[w.details, w.where].filter(Boolean).forEach((s, j) => items.push(text(s, j ? "t" : "tb", tpx, land ? hx : m, (land ? block.bottom + tpx * 1.5 : H - m - tpx * 0.5 - (w.where && w.details && !j ? tpx * 1.3 : 0)) + (land ? j * tpx * 1.3 : 0), "type", { align: "left" })))
     const cs = Math.min(W, H) * 0.25
     const side = right ? 0.27 : 0.73
     items.push(...ctaItem(w.cta, land ? (right ? W - m - cs * 0.6 : m + cs * 0.6) : W * side + (right ? -1 : 1) * cs * 0.15, land ? H - m - cs * 0.6 : hTop - cs * 0.6, cs, c, p, r))
-    return { items, hero: { x: land ? (right ? W * 0.3 : W * 0.7) : W * side, y: land ? H * 0.3 : top + (hTop - top) * 0.4, size: Math.min(W, H) * 0.38 } }
+    return { items, hero: { x: land ? (right ? W * 0.74 : W * 0.26) : W * side, y: land ? H * 0.3 : top + (hTop - top) * 0.4, size: Math.min(W, H) * 0.38 } }
   },
 
   ticker(p, w, c, f, r) {
@@ -332,7 +400,7 @@ const LAYOUTS = {
   scatter(p, w, c, f, r) {
     const { W, H, m, u } = f, items = []
     const ws = w.headline.split(/\s+/).filter(Boolean)
-    const box = { w: W - 2 * m, h: (H - 2 * m) * 0.62 * p.scale }
+    const box = { w: W - 2 * m, h: (H - 2 * m) * (w.cta ? 0.54 : 0.62) * p.scale }
     // A size at which the words, each on its own sticker, flow into the box.
     const flow = (px) => {
       const rows = [[]]
@@ -368,8 +436,10 @@ const LAYOUTS = {
       const pw = measure(s, "tb", tpx) + tpx * 1.4
       items.push(shape("box", m + pw / 2 + j * tpx * 1.2, H - m - tpx * 1.4 - (info.length - 1 - j) * tpx * 2.2, pw, tpx * 1.9, j ? "ground" : "type", { rot: (r() - 0.5) * 0.12, label: [s], labelPx: tpx, labelK: "tb", labelInk: j ? "type" : "onType", outline: true }))
     })
-    const cs = Math.min(W, H) * 0.26
-    items.push(...ctaItem(w.cta, W - m - cs * 0.55, m + cs * 0.55 + f.logoRoom * 0.5, cs, c, p, r))
+    // The call to action where there's most room: above the words, or below them on the right.
+    const above = top - m - f.logoRoom, below = H - m - (top + rows.length * rh)
+    const cs = Math.min(Math.min(W, H) * 0.26, Math.max(above, below) * 1.05)
+    items.push(...ctaItem(w.cta, W - m - cs * 0.55, above > below ? top - cs * 0.5 : top + rows.length * rh + cs * 0.5, cs, c, p, r))
     // Each sticker has its own tilt, so the whole doesn't turn as well.
     return { items, hero: { x: W / 2, y: H / 2, size: Math.min(W, H) * 0.55 }, groupTilt: 0 }
   },
@@ -387,7 +457,7 @@ const LAYOUTS = {
     const barY = H - inset - lw / 2 - barH / 2 - m * 0.2
     if (w.cta) {
       items.push(shape("box", W / 2, barY, W - 2 * m, barH, "type", { flat: true }))
-      items.push(text(w.cta, "d", Math.min(barH * 0.55 / cap("d"), fitWidth(w.cta, "d", W - 3 * m)), W / 2, barY, "onType", { align: "center" }))
+      items.push(text(w.cta, "d", Math.min(barH * 0.55 / cap("d"), fitWidth(w.cta, "d", W - 3 * m)), W / 2, barY, "onType", { align: "center", on: "type" }))
     }
     const cols = w.details.split(/\s*(?:·|•|\||,)\s*/).filter(Boolean).slice(0, land ? 4 : 3)
     const colY = barY - barH / 2 - tpx * 1.6
@@ -460,7 +530,8 @@ function throwStuff(p, f, hero, heroToken, items) {
       let d = Infinity
       for (const o of out) d = Math.min(d, Math.hypot(o.x - x, o.y - y) - (o.s + s) * 0.4)
       const edge = Math.min(x, W - x, y, H - y) / min
-      const score = d - (front ? edge * min * 2 + covers(x, y, s) * min * 80 : covers(x, y, s) * min * 0.5)
+      // Behind the words still matters: a lemon behind yellow words swallows them.
+      const score = d - (front ? edge * min * 2 + covers(x, y, s) * min * 80 : covers(x, y, s) * min * 12)
       if (score > bestScore) { bestScore = score; best = [x, y] }
     }
     const angle = (i / p.stuffCount) * TAU + r() * 0.6
@@ -480,28 +551,68 @@ function compose(g, p, W, H, opts) {
   const key = JSON.stringify([W, H, opts.fontGen ?? 0, opts.image ? [opts.image.w, opts.image.h] : 0, opts.marks?.has(p.logo) ?? false, Object.entries(p).filter(([k]) => !MOTION_KEYS.has(k))])
   if (kept.key === key) return kept.scene
   if (kept.fontGen !== opts.fontGen) capOf.clear()
+  widths = new Map()
   G = g
   F = { d: p.display, dw: p.displayWeight, t: p.text, tw: p.textWeight, track: p.tracking }
   const u = Math.min(W, H) / 1080, land = W > H * 1.2
   const m = p.margin * u
-  const logoRoom = ["corner", "top", "sticker"].includes(p.logoPlace) && p.layout !== "ticker" ? Math.min(W, H) * Math.min(p.logoSize, 0.2) * 0.75 + 12 * u : 0
+  const logoRoom = ["corner", "top", "sticker"].includes(p.logoPlace) && p.layout !== "ticker" ? Math.min(W, H) * Math.min(p.logoSize, 0.2) * 0.9 + 16 * u : 0
   const logoFoot = p.logoPlace === "bottom" ? Math.min(W, H) * Math.min(p.logoSize, 0.2) * 0.9 + 16 * u : 0
   const f = { W, H: H - logoFoot, m, u, land, logoRoom }
   const c = palette(p), w = words(p)
   const r = mulberry32(p.layoutSeed * 2654435761 + 7)
-  const built = (LAYOUTS[p.layout] ?? LAYOUTS.stack)(p, w, c, f, r)
   // The star of the post: your picture, or else the first emoji.
   const first = emojiOf(p.emoji)[0]
   const heroToken = p.image && p.imageRole === "hero" ? { type: "image" } : first ? { type: "emoji", hex: first.hex } : null
+  f.star = !!heroToken
+  const built = (LAYOUTS[p.layout] ?? LAYOUTS.stack)(p, w, c, f, r)
   const hero = built.hero
   const items = built.items
   items.forEach((it, i) => { it.i ??= i })
   // Stickers holding words stay inside the frame.
-  for (const it of items) if (it.kind === "shape" && it.label && it.w < W - 2 * m) it.x = clamp(it.x, m + it.w / 2, W - m - it.w / 2)
+  const spot = LOGO_SPOTS(p, { ...f, H })
+  const inFrame = (it) => {
+    if (it.w < W - 2 * m) it.x = clamp(it.x, m + it.w / 2, W - m - it.w / 2)
+    if (it.h < f.H - 2 * m) it.y = clamp(it.y, m + it.h / 2, f.H - m - it.h / 2)
+  }
+  // How much of the words and the logo a box at x, y covers.
+  const hit = (a, b) => Math.max(0, Math.min(a.x + a.w / 2, b.x + b.w / 2) - Math.max(a.x - a.w / 2, b.x - b.w / 2)) * Math.max(0, Math.min(a.y + a.h / 2, b.y + b.h / 2) - Math.max(a.y - a.h / 2, b.y - b.h / 2))
+  const others = (it) => [...items.filter((o) => o !== it && (o.kind === "text" || o.label) && !o.big), ...(spot && !spot.huge ? [{ x: spot.x, y: spot.y, w: spot.s, h: spot.s * 0.8 }] : [])]
+  for (const it of items) {
+    if (it.kind === "shape" && it.label) inFrame(it)
+    if (!it.cta) continue
+    // The call to action takes the clearest of where the layout put it, the other side, below the
+    // logo or one of the frame's corners and edges.
+    const tries = [[it.x, it.y], [W - it.x, it.y]]
+    if (spot && !spot.huge) tries.push([spot.x, spot.y + spot.s * 0.45 + it.h / 2 + m * 0.3], [W - spot.x, spot.y])
+    for (const x of [0, W / 2, W]) for (const y of [0, f.H]) tries.push([x, y])
+    let best = null, least = Infinity
+    for (const [x, y] of tries) {
+      const at = { ...it, x, y }
+      inFrame(at)
+      const cost = others(it).reduce((a, o) => a + hit(at, o), 0) + Math.hypot(at.x - it.x, at.y - it.y) * 0.01
+      if (cost < least) { least = cost; best = at }
+    }
+    // An underline goes with its words.
+    for (const o of items) if (o.follows === it) { o.x += best.x - it.x; o.y += best.y - it.y }
+    it.x = best.x; it.y = best.y
+  }
   f.H = H
   const stuff = throwStuff(p, f, hero, heroToken, items)
-  kept = { key, fontGen: opts.fontGen, scene: { items, stuff, hero, heroToken, groupTilt: built.groupTilt ?? (p.tilt * Math.PI) / 180, f, c } }
+  // Where the logo and the star end up, for the judge (score.js).
+  const logo = spot && (opts.marks?.has(p.logo) || p.brandName.trim()) ? spot : null
+  const hs = hero.size * (p.imageSize / 0.6), aspect = heroToken?.type === "image" && opts.image ? opts.image.w / opts.image.h : 1
+  const star = heroToken ? { x: hero.x + (p.imageX * W) / 2, y: hero.y - (p.imageY * H) / 2, w: aspect >= 1 ? hs : hs * aspect, h: aspect >= 1 ? hs / aspect : hs, front: !!hero.front } : null
+  kept = { key, fontGen: opts.fontGen, scene: { p, items, stuff, hero, heroToken, star, logo, groupTilt: built.groupTilt ?? (p.tilt * Math.PI) / 180, f, c } }
   return kept.scene
+}
+
+// The post composed but not drawn, at its freeze frame: for the judge (score.js) and the tests.
+// ctx only measures, so anything with measureText will do.
+export function scene(ctx, patch, opts = {}) {
+  const p = resolve(manifest, patch, patch.params.phase ?? 0.5)
+  const { w: W, h: H } = size(patch)
+  return compose(ctx, p, W, H, opts)
 }
 
 // ---- motion ----
@@ -624,10 +735,10 @@ function drawSticker(g, id, w, h, fill, finish, colours, seed) {
   g.restore()
 }
 
-const ink = (c, role) => {
+export const ink = (c, role) => {
   if (role?.startsWith("riot")) { const j = +role.slice(4); return c.riot[j % c.riot.length] }
   if (role?.startsWith("on:")) { const bg = ink(c, role.slice(3)); return [c.ground, c.type, c.onAccent, c.onType].reduce((a, b) => (contrast(b, bg) > contrast(a, bg) ? b : a)) }
-  if (role === "accentText") return contrast(c.accent, c.ground) >= 2 ? c.accent : c.type
+  if (role === "accentText") return contrast(c.accent, c.ground) >= 3 ? c.accent : c.type
   return c[role] ?? role
 }
 

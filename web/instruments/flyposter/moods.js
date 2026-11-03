@@ -152,3 +152,16 @@ export function vary(params, r) {
 }
 
 export const moodTexture = texture
+
+// A near relation, for More like this: one or two facets dealt again, the rest kept as they are.
+export function nudge(params, r) {
+  const keys = Object.keys(LOCKS).map((f) => `lock${f[0].toUpperCase()}${f.slice(1)}`)
+  const mine = keys.map((k) => params[k])
+  const free = keys.filter((k) => !params[k])
+  const change = new Set()
+  for (let n = 1 + (r() < 0.4 ? 1 : 0); n > 0 && free.length; n--) change.add(free.splice(Math.floor(r() * free.length), 1)[0])
+  for (const k of keys) params[k] = !change.has(k)
+  vary(params, r)
+  keys.forEach((k, i) => { params[k] = mine[i] })
+  return params
+}

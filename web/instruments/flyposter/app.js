@@ -1,8 +1,10 @@
 // Flyposter: the engine in the shared shell, plus what only it needs: fonts, the picture, the
-// emoji, the logo; the brand pocket, remembered in this browser; Vary with locks, front and centre;
-// Rewrite, which steps your headline through the copy lenses; and pickers for emoji and stickers.
+// emoji, the logo; the brand pocket, remembered in this browser; Vary with locks, front and centre,
+// which deals many posts, has the judge (score.js) score them and shows the best nine; Rewrite,
+// which steps your headline through the copy lenses; and pickers for emoji and stickers.
 import * as engine from "./flyposter.js"
-import { MOODS, LOCKS, vary } from "./moods.js"
+import { MOODS, LOCKS, vary, nudge } from "./moods.js"
+import { judge, choose, washout } from "./score.js"
 import { LENSES, rewrites, lensOf } from "./copy.js"
 import { STICKERS, stickersOf } from "./stickers.js"
 import { createMachine } from "../../packages/core/shell.js"
@@ -13,6 +15,7 @@ import { prepareMarks, addMarkFile, listImageMarks } from "../../packages/core/m
 import { EMOJI, EMOJI_GROUPS, emojiOf, loadEmoji } from "../../packages/core/emoji.js"
 import { effectById } from "../../packages/core/effects/index.js"
 import { mulberry32, newSeed } from "../../packages/core/rng.js"
+import { formatSize } from "../../packages/core/formats.js"
 
 let m
 let fontGen = 0
@@ -110,12 +113,105 @@ pictureInput.onchange = async () => { const f = pictureInput.files[0]; pictureIn
 const logoInput = Object.assign(document.createElement("input"), { type: "file", accept: ".svg,image/svg+xml,image/png,image/jpeg,image/webp", hidden: true })
 logoInput.onchange = async () => { const f = logoInput.files[0]; logoInput.value = ""; if (f) await useLogo(f).catch((e) => m.note(e.message, true)) }
 
-// ---- Vary ----
-// A new post from the mood, keeping what's locked. Words, brand, pictures and size always stay.
-function deal(machine, r = mulberry32(newSeed())) {
-  vary(machine.patch.params, r)
-  machine.patch.seed = newSeed()
-  machine.changed({ reload: true })
+// ---- Vary: many dealt, judged, the best nine shown ----
+// A canvas only for measuring: the judge needs the words laid out, not drawn.
+const ruler = document.createElement("canvas").getContext("2d")
+async function judged(patch) {
+  await Promise.all(engine.fontRequests(patch).map((r) => ensureFont(r).catch(() => null)))
+  const { score, faults } = judge(engine.scene(ruler, patch, { fontGen, image, marks }))
+  // The judge reads the layout; whether a texture drowns it takes pixels: a tiny render with and
+  // without the Darkroom layers.
+  if (patch.params.layers.some((l) => l.on)) {
+    const cost = washout(pixels({ ...patch, params: { ...patch.params, layers: [] } }), pixels(patch), SMALL)
+    if (cost > 0.05) return { patch, score: Math.max(0, Math.round(score - cost)), faults: [...faults, { id: "washed-out", cost: +cost.toFixed(1), note: "The texture drowns the post." }] }
+  }
+  return { patch, score, faults }
+}
+const SMALL = 64
+const small = Object.assign(document.createElement("canvas"), { width: SMALL, height: SMALL })
+const smallCtx = small.getContext("2d", { willReadFrequently: true })
+function pixels(patch) {
+  const { w: W, h: H } = formatSize(patch.params), k = SMALL / Math.max(W, H)
+  small.height = Math.round(H * k); small.width = SMALL
+  engine.render(smallCtx, patch, patch.params.phase ?? 0.5, { scale: k, frame: 0, fontGen, image, emoji, marks })
+  return smallCtx.getImageData(0, 0, SMALL, small.height).data
+}
+// from: "fresh" deals from the mood; "like" grows near relations of the post you're on. Each
+// candidate has its own seed from the round's, so a round can be dealt again exactly.
+async function dealMany({ from = "fresh", count = from === "fresh" ? 27 : 18, keep = 9, seed = newSeed() } = {}) {
+  const base = m.patch, out = []
+  for (let i = 0; i < count; i++) {
+    const r = mulberry32(seed * 31 + i * 7919)
+    const params = structuredClone(base.params)
+    if (from === "like") nudge(params, r)
+    else vary(params, r)
+    out.push(await judged({ ...structuredClone(base), params, seed: Math.floor(r() * 1e9) }))
+  }
+  return choose(out.sort((a, b) => b.score - a.score), keep)
+}
+// One post, the best of a dozen: what Vary does for an agent, and when the deck can't be shown.
+async function dealOne(machine) {
+  const [best] = await dealMany({ count: 12, keep: 1 })
+  machine.setPatch(best.patch)
+  return best
+}
+
+// The deck: nine over the stage. Click one to use it, or ask for more like it.
+let deck = null
+function openDeck(machine, from = "fresh") {
+  const stage = machine.host.querySelector(".stage")
+  deck?.remove()
+  const mood = MOODS[machine.patch.params.mood]?.label ?? "this mood"
+  const head = el("p", { className: "fly-deck-title", textContent: from === "like" ? "Nine more like that one." : `Nine from ${mood}.` })
+  const grid = el("div", { className: "fly-deck-grid" })
+  const again = button("Deal again", "Nine new ones from the mood", () => openDeck(machine), "btn")
+  const close = button("Close", "Back to your post (Esc)", () => shut(), "btn")
+  deck = el("div", { className: "fly-deck", role: "dialog", ariaLabel: "Nine posts to choose from", tabIndex: -1 },
+    el("div", { className: "fly-deck-head" }, head, el("span", { className: "fly-deck-hint", textContent: "Pick one, or More like this." }), again, close), grid)
+  stage.append(deck)
+  const shut = () => { deck?.remove(); deck = null; removeEventListener("keydown", keys) }
+  const keys = (e) => {
+    if (e.key === "Escape") shut()
+    else if (/^[1-9]$/.test(e.key) && !e.target.closest("input, textarea, select")) grid.children[+e.key - 1]?.querySelector(".fly-card-use")?.click()
+  }
+  addEventListener("keydown", keys)
+  const { w: W, h: H } = formatSize(machine.patch.params)
+  // Nine cells, as big as the stage allows.
+  const fit = () => {
+    const gap = 12, more = 34, aw = grid.clientWidth, ah = grid.clientHeight
+    const cols = aw < 520 ? 2 : 3, rows = Math.ceil(9 / cols)
+    const cw = Math.floor(Math.max(60, Math.min((aw - gap * (cols - 1)) / cols, aw < 520 ? Infinity : ((ah - gap * (rows - 1)) / rows - more) * (W / H))))
+    grid.style.gridTemplateColumns = `repeat(${cols}, ${cw}px)`
+    return cw
+  }
+  const cells = Array.from({ length: 9 }, (_, i) => {
+    const canvas = el("canvas", { ariaHidden: "true" })
+    const use = el("button", { type: "button", className: "fly-card-use", disabled: true, ariaLabel: `Post ${i + 1}, dealing…` }, canvas)
+    use.style.aspectRatio = `${W} / ${H}`
+    const cell = el("div", { className: "fly-card" }, use, button("More like this", "Nine near relations of this one", () => {}, "fly-card-more"))
+    grid.append(cell)
+    return cell
+  })
+  deck.focus()
+  fit()
+  const round = deck
+  dealMany({ from }).then((nine) => {
+    if (deck !== round) return
+    const cw = fit()
+    nine.forEach((x, i) => {
+      const cell = cells[i], use = cell.querySelector(".fly-card-use"), canvas = cell.querySelector("canvas")
+      const k = (cw * Math.min(devicePixelRatio || 1, 2)) / W
+      canvas.width = Math.round(W * k); canvas.height = Math.round(H * k)
+      engine.render(canvas.getContext("2d"), x.patch, x.patch.params.phase ?? 0.5, { scale: k, frame: 0, fontGen, image, emoji, marks })
+      const p = x.patch.params
+      use.disabled = false
+      use.ariaLabel = `Post ${i + 1}: ${p.layout} layout, ${p.display}`
+      use.title = x.faults.length ? `Judged ${x.score}: ${x.faults.map((f) => f.note).join(" ")}` : `Judged ${x.score}`
+      use.onclick = () => { machine.setPatch(x.patch); shut() }
+      cell.querySelector(".fly-card-more").onclick = () => { machine.setPatch(x.patch); openDeck(machine, "like") }
+    })
+    cells.slice(nine.length).forEach((c) => c.remove())
+  }).catch((e) => { machine.note(e.message, true); shut() })
 }
 
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids.filter((k) => k != null)); return n }
@@ -124,7 +220,7 @@ const button = (text, title, run, cls = "btn") => el("button", { type: "button",
 function varyBar(machine) {
   const body = machine.host.querySelector('[data-group="feel"] .group-body')
   const blurb = el("p", { className: "note fly-blurb" })
-  const go = button("Vary", "A new post from this mood; locked things stay", () => deal(machine), "btn solid fly-vary")
+  const go = button("Vary", "Nine new posts from this mood, the best of many; locked things stay", () => openDeck(machine), "btn solid fly-vary")
   const locks = el("div", { className: "fly-chips", role: "group", ariaLabel: "Keep while varying" })
   const chips = Object.keys(LOCKS).map((facet) => {
     const key = `lock${facet[0].toUpperCase()}${facet.slice(1)}`
@@ -236,6 +332,11 @@ function brandBar(machine) {
   ))
 }
 
+// { layout: true, … } keeps those facets while dealing; leave it out to go by the Keep chips.
+function setLocks(keep) {
+  if (keep) for (const facet of Object.keys(LOCKS)) m.patch.params[`lock${facet[0].toUpperCase()}${facet.slice(1)}`] = !!keep[facet]
+}
+
 // ---- the machine ----
 let syncers = []
 const syncAll = () => syncers.forEach((s) => s())
@@ -245,8 +346,8 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
   dropHint: "Drop a picture, a logo (on the Brand pocket, or any SVG) or a patch",
 
   load(patch, key) {
-    // A new mood deals a new post from it straight away.
-    if (key === "mood") { vary(patch.params, mulberry32(newSeed())); patch.seed = newSeed() }
+    // A new mood deals a new post from it straight away, and nine to choose from.
+    if (key === "mood") { vary(patch.params, mulberry32(newSeed())); patch.seed = newSeed(); queueMicrotask(() => openDeck(m)) }
     if (!key || key === "logo") loadLogo(patch)
     loadFonts(patch)
     loadImage(patch)
@@ -292,17 +393,24 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     m = machine
     machine.host.append(pictureInput, logoInput)
     const vary = machine.host.querySelector('[data-ref="vary"]')
-    if (vary) vary.title = "A new post from this mood; locked things stay"
+    if (vary) Object.assign(vary, { title: "Nine new posts from this mood; locked things stay", onclick: () => openDeck(machine) })
     brandBar(machine)
     syncers = [varyBar(machine), rewriteBar(machine), stuffPickers(machine)]
   },
   api: {
     // vary(): a new post from the mood; locks as in the rack, or { layout: true, … } to keep those.
-    vary: (keep) => {
-      if (keep) for (const facet of Object.keys(LOCKS)) m.patch.params[`lock${facet[0].toUpperCase()}${facet.slice(1)}`] = !!keep[facet]
-      deal(m)
-      return structuredClone(m.patch)
+    // vary(): the best of a dozen new posts from the mood, put on the stage. keep as below.
+    vary: async (keep) => {
+      setLocks(keep)
+      const best = await dealOne(m)
+      return { patch: structuredClone(m.patch), score: best.score, faults: best.faults }
     },
+    // deal(): nine judged posts, best first, without changing anything. from "fresh" or "like".
+    deal: async ({ from = "fresh", keep, seed } = {}) => { setLocks(keep); return (await dealMany({ from, seed })).map((x) => structuredClone(x)) },
+    // judge(): the score of the post on the stage, and its faults.
+    judge: async () => { const { score, faults } = await judged(m.patch); return { score, faults } },
+    // open(): show the deck of nine, as Vary does.
+    open: (from = "fresh") => openDeck(m, from),
     rewrites: () => rewrites(m.patch.params, m.patch.params.lens),
     lenses: () => LENSES.map(([id, name, blurb]) => ({ id, name, blurb })),
     moods: () => Object.entries(MOODS).map(([id, x]) => ({ id, name: x.label, blurb: x.blurb })),

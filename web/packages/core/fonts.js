@@ -125,9 +125,11 @@ async function fontsourceFaces(family, weights, italic = false) {
       registered.add(key)
     }
   }
-  if (m.variable && !registered.has(`open|${family}|vf`)) {
+  // Some variable faces vary something other than weight (Climate Crisis varies by year): no
+  // weight file, so remember that and go by the static weights.
+  if (m.variable && !registered.has(`open|${family}|vf`) && !registered.has(`open|${family}|novf`)) {
     const face = new FontFace(family, `url(${cdn}/${id}:vf@latest/${subset}-wght-normal.woff2)`, { weight: "100 900" })
-    try { await face.load(); document.fonts.add(face); registered.add(`open|${family}|vf`); return true } catch {}
+    try { await face.load(); document.fonts.add(face); registered.add(`open|${family}|vf`); return true } catch { registered.add(`open|${family}|novf`) }
   }
   if (registered.has(`open|${family}|vf`)) return true
   const nearest = (w) => m.weights.reduce((a, b) => (Math.abs(b - w) < Math.abs(a - w) ? b : a))

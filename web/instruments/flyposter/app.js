@@ -9,6 +9,10 @@ import { judge, choose, washout } from "./score.js"
 import { LENSES, rewrites, lensOf } from "./copy.js"
 import { STICKERS, stickersOf } from "./stickers.js"
 import { stageEditing } from "./stage.js"
+import { myBrand, keepBrand, forgetBrand } from "../../packages/core/brand.js"
+import { campaign } from "./campaign.js"
+import { zip } from "../../packages/core/zip.js"
+import { download } from "../../packages/core/export.js"
 import { createMachine } from "../../packages/core/shell.js"
 import { ensureFont } from "../../packages/core/fonts.js"
 import { openFontPicker } from "../../packages/core/fontpicker.js"
@@ -64,7 +68,8 @@ let markToken = 0, marksReady = Promise.resolve()
 function loadLogo(patch) {
   const token = ++markToken
   marksReady = (async () => {
-    const ready = patch.params.logo ? await prepareMarks({ params: { content: `@${patch.params.logo}` }, marks: patch.marks }) : new Map()
+    const names = [patch.params.logo, patch.params.logoMark].filter(Boolean)
+    const ready = names.length ? await prepareMarks({ params: { content: names.map((n) => `@${n}`).join("\n") }, marks: patch.marks }) : new Map()
     if (token !== markToken) return
     marks = ready
     markNames = [...new Set([...Object.keys(patch.marks), ...(await listImageMarks()).map((r) => r.name)])]
@@ -74,36 +79,44 @@ function loadLogo(patch) {
 }
 const ready = (patch) => Promise.all([loadFonts(patch), loadImage(patch), loadEmojis(patch), marksReady])
 
-// ---- the brand pocket, remembered in this browser ----
-const POCKET = "flyposter.brand"
-const BRAND_KEYS = ["brandName", "logo", "logoColour", "inks", "paper", "black"]
+// ---- the brand pocket: my brand (core/brand.js), shared with the Brand bench ----
+const BRAND_KEYS = ["brandName", "logo", "logoMark", "logoColour", "inks", "paper", "black"]
+const svgOf = (patch, name) => (name ? patch.marks[name] ?? null : null)
 function rememberBrand(patch) {
-  const p = patch.params, brand = Object.fromEntries(BRAND_KEYS.map((k) => [k, p[k]]))
-  brand.mark = patch.marks[p.logo] ?? null
-  try { localStorage.setItem(POCKET, JSON.stringify(brand)) } catch {}
+  const p = patch.params
+  keepBrand({
+    name: p.brandName, inks: p.inks, paper: p.paper, black: p.black, logoColour: p.logoColour,
+    logo: p.logo ? { name: p.logo, svg: svgOf(patch, p.logo) } : null, mark: p.logoMark ? { name: p.logoMark, svg: svgOf(patch, p.logoMark) } : null,
+  })
 }
-function recalledBrand() {
-  try { return JSON.parse(localStorage.getItem(POCKET)) } catch { return null }
-}
-// A patch with the remembered brand in it.
-function withBrand(patch, brand = recalledBrand()) {
+// A patch with the brand in it: names, colours, logos, and the faces and voice when the brand has them.
+function withBrand(patch, brand) {
   if (!brand) return patch
-  const params = { ...patch.params }
-  for (const k of BRAND_KEYS) if (brand[k] !== undefined) params[k] = brand[k]
+  const params = { ...patch.params, brandName: brand.name || patch.params.brandName, paper: brand.paper, black: brand.black, logoColour: brand.logoColour }
+  if (brand.inks.length) params.inks = brand.inks
   const marks = { ...(patch.marks || {}) }
-  if (brand.mark && brand.logo) marks[brand.logo] = brand.mark
+  for (const [key, l] of [["logo", brand.logo], ["logoMark", brand.mark]]) {
+    params[key] = l?.name ?? ""
+    if (l?.svg) marks[l.name] = l.svg
+  }
+  const { headline, body } = brand.faces
+  if (headline) Object.assign(params, { display: headline.family, displaySource: headline.source, displayWeight: headline.weight, lockType: true })
+  if (body) Object.assign(params, { text: body.family, textSource: body.source, textWeight: body.weight })
+  if (brand.adobeKit) params.adobeKit = brand.adobeKit
+  if (brand.voice && brand.voice !== "any") params.lens = brand.voice
   return { ...patch, params, marks }
 }
 
 // ---- the logo, the picture ----
-async function useLogo(f) {
+// key: "logo" for the full lockup, "logoMark" for the mark alone.
+async function useLogo(f, key = "logo") {
   const { name, svg } = await addMarkFile(f)
   if (svg) m.patch.marks[name] = svg
-  m.patch.params.logo = name
+  m.patch.params[key] = name
   await loadLogo(m.patch)
   m.changed()
   rememberBrand(m.patch)
-  m.note(`${f.name} is the logo. It's kept in your brand pocket in this browser.`)
+  m.note(`${f.name} is the ${key === "logo" ? "logo" : "mark alone"}. It's kept as your brand in this browser, for every instrument.`)
 }
 async function usePicture(f) {
   const name = await addMedia(f)
@@ -113,7 +126,8 @@ async function usePicture(f) {
 const pictureInput = Object.assign(document.createElement("input"), { type: "file", accept: "image/*", hidden: true })
 pictureInput.onchange = async () => { const f = pictureInput.files[0]; pictureInput.value = ""; if (f) await usePicture(f).catch((e) => m.note(e.message, true)) }
 const logoInput = Object.assign(document.createElement("input"), { type: "file", accept: ".svg,image/svg+xml,image/png,image/jpeg,image/webp", hidden: true })
-logoInput.onchange = async () => { const f = logoInput.files[0]; logoInput.value = ""; if (f) await useLogo(f).catch((e) => m.note(e.message, true)) }
+let logoKey = "logo"
+logoInput.onchange = async () => { const f = logoInput.files[0]; logoInput.value = ""; if (f) await useLogo(f, logoKey).catch((e) => m.note(e.message, true)) }
 
 // ---- Vary: many dealt, judged, the best nine shown ----
 // A canvas only for measuring: the judge needs the words laid out, not drawn.
@@ -231,7 +245,8 @@ function varyBar(machine) {
     return b
   })
   locks.append(el("span", { className: "fly-chips-label", textContent: "Keep" }), ...chips)
-  body.append(el("div", { className: "strip" }, go), locks, blurb)
+  const set = button("The whole set", "Every size and a carousel, from this post", () => openCampaign(machine), "btn fly-set-open")
+  body.append(el("div", { className: "strip" }, go, set), locks, blurb)
   return () => {
     const p = machine.patch.params
     for (const b of chips) { const on = p[b.dataset.key]; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on) }
@@ -325,9 +340,11 @@ function stuffPickers(machine) {
 function brandBar(machine) {
   const body = machine.host.querySelector('[data-group="brand"] .group-body')
   body.prepend(el("div", { className: "strip" },
-    button("Add your logo", "An SVG, PNG or JPEG; it's remembered in this browser", () => logoInput.click(), "btn solid"),
-    button("Forget", "Take the logo off and forget the remembered brand", () => {
-      try { localStorage.removeItem(POCKET) } catch {}
+    button("Add your logo", "An SVG, PNG or JPEG; it's remembered in this browser", () => { logoKey = "logo"; logoInput.click() }, "btn solid"),
+    button("Add the mark alone", "The mark without the name, for round stickers", () => { logoKey = "logoMark"; logoInput.click() }),
+    button("Forget", "Take the logos off and forget the brand kept in this browser (for every instrument)", () => {
+      forgetBrand()
+      machine.patch.params.logoMark = ""
       machine.set("logo", "")
       machine.note("Forgotten. The brand pocket starts empty next time.")
     }),
@@ -337,6 +354,96 @@ function brandBar(machine) {
 // { layout: true, … } keeps those facets while dealing; leave it out to go by the Keep chips.
 function setLocks(keep) {
   if (keep) for (const facet of Object.keys(LOCKS)) m.patch.params[`lock${facet[0].toUpperCase()}${facet.slice(1)}`] = !!keep[facet]
+}
+
+// ---- the campaign: every size and a carousel, live, and exported as one .zip ----
+let sheet = null, setTimer = 0
+let exportingSet = false
+const refreshSet = () => { if (!sheet || exportingSet) return; clearTimeout(setTimer); setTimer = setTimeout(() => sheet?.refresh(), 200) }
+const sizeText = (patch) => { const { w, h } = formatSize(patch.params); return `${w}×${h}` }
+function openCampaign(machine) {
+  sheet?.remove()
+  const grid = el("div", { className: "fly-set-grid" })
+  const note = el("p", { className: "fly-deck-hint" })
+  const head = el("div", { className: "fly-deck-head" },
+    el("p", { className: "fly-deck-title", textContent: "The whole set" }), note,
+    button("Export PNGs", "Every size and slide as a PNG, in one .zip", () => exportSet(machine, { video: false }), "btn solid"),
+    button("PNGs and MP4s", "And each one moving: about half a minute", () => exportSet(machine, { video: true }), "btn"),
+    button("Close", "Back to the post (Esc)", () => shut(), "btn"))
+  sheet = el("div", { className: "fly-deck fly-set", role: "dialog", ariaLabel: "The whole set", tabIndex: -1 }, head, grid)
+  machine.host.querySelector(".stage").append(sheet)
+  const shut = () => { sheet?.remove(); sheet = null; removeEventListener("keydown", keys) }
+  const keys = (e) => { if (e.key === "Escape" && !e.target.closest("input, textarea, select")) shut() }
+  addEventListener("keydown", keys)
+  sheet.focus()
+  sheet.refresh = () => drawSet(machine, grid, note)
+  sheet.refresh()
+}
+// Each tile drawn at its freeze frame, with what the judge made of it. A size opens on the stage;
+// a slide is drawn from the post, so it's changed by changing the post.
+let setToken = 0
+async function drawSet(machine, grid, note) {
+  const token = ++setToken, set = campaign(machine.patch)
+  const rowH = Math.max(150, Math.min(260, (grid.clientHeight || 600) / 2 - 60))
+  const tiles = set.map((x) => {
+    const { w, h } = formatSize(x.patch.params), canvas = el("canvas")
+    const k = (rowH * Math.min(devicePixelRatio || 1, 2)) / h
+    canvas.width = Math.round(w * k); canvas.height = Math.round(h * k)
+    canvas.style.height = `${rowH}px`; canvas.style.aspectRatio = `${w} / ${h}`
+    const score = el("span", { className: "fly-set-score" })
+    const face = x.group === "sizes"
+      ? el("button", { type: "button", className: "fly-card-use", title: `Work on the ${x.name.toLowerCase()} size`, onclick: () => { machine.set("format", x.id); sheet?.remove(); sheet = null } }, canvas)
+      : el("div", { className: "fly-set-slide" }, canvas)
+    return { x, k, canvas, score, tile: el("figure", { className: "fly-set-tile" }, face, el("figcaption", {}, el("b", { textContent: x.name }), ` ${x.note} · ${sizeText(x.patch)} `, score)) }
+  })
+  const section = (title, group) => el("section", { className: "fly-set-row" }, el("h3", { textContent: title }), el("div", { className: "fly-set-tiles" }, ...tiles.filter((t) => t.x.group === group).map((t) => t.tile)))
+  grid.replaceChildren(section("Sizes", "sizes"), ...(set.some((x) => x.group === "carousel") ? [section("Carousel", "carousel")] : []))
+  let weak = 0
+  for (const t of tiles) {
+    const j = await judged(t.x.patch)
+    if (token !== setToken) return
+    engine.render(t.canvas.getContext("2d"), t.x.patch, t.x.patch.params.phase ?? 0.5, { scale: t.k, frame: 0, fontGen, image, emoji, marks })
+    t.score.textContent = `· judged ${j.score}`
+    t.score.title = j.faults.map((f) => f.note).join(" ")
+    t.score.classList.toggle("weak", j.score < 70)
+    if (j.score < 70) weak++
+  }
+  note.textContent = weak ? `${weak} of these could be better: open one to move things there, or Vary.` : "All in good shape. Change the post and they all change."
+}
+
+// save: false gives back the .zip as a Blob without downloading it, as render() does.
+async function exportSet(machine, { video = false, save = true } = {}) {
+  const note = sheet?.querySelector(".fly-deck-hint")
+  const say = (t) => { if (note) note.textContent = t; machine.note(t) }
+  const name = slug(machine.patch), files = []
+  const set = campaign(machine.patch), home = structuredClone(machine.patch)
+  exportingSet = true
+  try {
+    for (const [i, x] of set.entries()) {
+      say(`Drawing ${x.name.toLowerCase()} (${i + 1} of ${set.length})…`)
+      await ready(x.patch)
+      const { w, h } = formatSize(x.patch.params)
+      const c = Object.assign(document.createElement("canvas"), { width: w, height: h })
+      engine.render(c.getContext("2d"), x.patch, x.patch.params.phase ?? 0.5, { scale: 1, frame: 0, fontGen, image, emoji, marks })
+      const base = `${name}-campaign/${x.group === "sizes" ? "" : "carousel/"}${x.id}-${w}x${h}`
+      files.push({ name: `${base}.png`, data: await new Promise((r) => c.toBlob(r, "image/png")) })
+      if (video) {
+        // Video goes through the shell's own exporter, so the post is swapped in for a moment.
+        history.restoring = true
+        machine.setPatch(x.patch)
+        await ready(machine.patch)
+        files.push({ name: `${base}.mp4`, data: await window.instrument.render("mp4") })
+      }
+    }
+  } finally {
+    if (video) { machine.setPatch(home); history.restoring = false }
+    exportingSet = false
+  }
+  const blob = await zip(files)
+  if (!save) { say(`Made ${name}-campaign.zip: ${files.length} files.`); return blob }
+  download(blob, `${name}-campaign.zip`)
+  say(`Saved ${name}-campaign.zip: ${files.length} files, every size${set.some((x) => x.group === "carousel") ? " and the carousel" : ""}.`)
+  return blob
 }
 
 // ---- undo ----
@@ -382,16 +489,17 @@ addEventListener("keydown", (e) => {
 function movesBar(machine) {
   const body = machine.host.querySelector('[data-group="layout"] .group-body')
   const said = el("p", { className: "note" })
-  const back = button("Put everything back", "Undo every move in this layout", () => {
+  const back = button("Put everything back", "Undo every move in this layout at this size", () => {
     const p = machine.patch.params
-    p.moves = p.moves.filter((mv) => !mv.id.startsWith(`${p.layout}:`))
+    const here = new Set(engine.movesHere(p))
+    p.moves = p.moves.filter((mv) => !here.has(mv))
     machine.changed(); record(); stage?.show()
   })
   body.prepend(el("div", { className: "strip" }, back), said)
   return () => {
-    const p = machine.patch.params, n = p.moves.filter((mv) => mv.id.startsWith(`${p.layout}:`)).length
+    const p = machine.patch.params, n = engine.movesHere(p).length
     back.hidden = !n
-    said.textContent = n ? `${n} part${n > 1 ? "s" : ""} moved by hand in this layout.` : "Click anything on the post to move it; double-click words to retype them."
+    said.textContent = n ? `${n} part${n > 1 ? "s" : ""} moved by hand in this layout at this size.` : "Click anything on the post to move it; double-click words to retype them."
   }
 }
 
@@ -407,12 +515,12 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
   load(patch, key) {
     // A new mood deals a new post from it straight away, and nine to choose from.
     if (key === "mood") { vary(patch.params, mulberry32(newSeed())); patch.seed = newSeed(); queueMicrotask(() => openDeck(m)) }
-    if (!key || key === "logo") loadLogo(patch)
+    if (!key || key === "logo" || key === "logoMark") loadLogo(patch)
     loadFonts(patch)
     loadImage(patch)
     loadEmojis(patch)
     if (BRAND_KEYS.includes(key)) rememberBrand(patch)
-    queueMicrotask(() => { syncAll(); record(true); stage?.show() })
+    queueMicrotask(() => { syncAll(); record(true); stage?.show(); refreshSet() })
   },
   playing: () => stage?.show(),
   options: () => ({ fontGen, image, emoji, marks }),
@@ -451,6 +559,8 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
   },
   setup(machine) {
     m = machine
+    const shop = machine.host.querySelector('[data-export="png"]')?.closest(".group-body")
+    shop?.prepend(el("div", { className: "strip" }, button("Export the whole set", "Every size and a carousel from this post, as one .zip", () => openCampaign(machine), "btn solid")))
     machine.host.append(pictureInput, logoInput)
     const vary = machine.host.querySelector('[data-ref="vary"]')
     if (vary) Object.assign(vary, { title: "Nine new posts from this mood; locked things stay", onclick: () => openDeck(machine) })
@@ -481,14 +591,22 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     open: (from = "fresh") => openDeck(m, from),
     // parts(): what's on the stage and where: [{ role, name, field, x, y, w, h, rot }] in output
     // pixels. move(role, { dx, dy, s, r, hide }) sets how a part is moved by hand (dx, dy as
-    // fractions of the frame); move(role, null) puts it back. undo() and redo() as Cmd-Z.
+    // fractions of the frame) at this size, or { everySize: true } as a third argument for all
+    // sizes; move(role, null) puts it back. undo() and redo() as Cmd-Z.
     parts: () => engine.parts(document.createElement("canvas").getContext("2d"), m.patch, { fontGen, image, emoji, marks }),
-    move: (role, mv) => {
-      const p = m.patch.params, id = `${p.layout}:${role}`
+    move: (role, mv, { everySize = false } = {}) => {
+      const p = m.patch.params, id = everySize ? `${p.layout}:${role}` : engine.moveId(p, role)
       const moves = [...p.moves.filter((x) => x.id !== id), ...(mv ? [{ ...mv, id }] : [])]
       m.setPatch({ ...m.patch, params: { ...p, moves, lockLayout: p.lockLayout || !!mv } }) // checked and clamped
       return structuredClone(m.patch.params.moves)
     },
+    // campaign(): every size and slide from this post, judged: [{ id, name, group, patch, score,
+    // faults }]. exportSet({ video, save }) makes the .zip and downloads it, or with save: false
+    // just resolves to the Blob.
+    // openSet() shows the set over the stage.
+    campaign: async () => Promise.all(campaign(m.patch).map(async (x) => ({ ...x, ...(await judged(x.patch)), patch: x.patch }))),
+    exportSet: (opts = {}) => exportSet(m, opts),
+    openSet: () => openCampaign(m),
     undo: () => undo(),
     redo: () => redo(),
     rewrites: () => rewrites(m.patch.params, m.patch.params.lens),
@@ -500,9 +618,10 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
   },
 })
 
-// With no patch in the link, the post opens with the brand you used last.
+// With no patch in the link, the post opens with your brand: the one the Brand bench keeps, or the
+// one you last used here.
 if (location.hash.length <= 1) {
-  const brand = recalledBrand()
+  const brand = myBrand()
   if (brand) m.setPatch(withBrand(m.patch, brand))
 } else if (m.patch.params.logo) rememberBrand(m.patch) // a link that brings a brand, as the Brand bench's does
 syncAll()

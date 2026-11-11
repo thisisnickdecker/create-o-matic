@@ -100,6 +100,52 @@
       "help": "Drop an SVG, PNG or JPEG anywhere on the page. SVG keeps its own colours; a PNG or JPEG on a light background loses the background."
     },
     {
+      "key": "logoMark",
+      "group": "brand",
+      "label": "Mark alone",
+      "type": "mark",
+      "default": "",
+      "help": "The mark without the name: an app icon, a stamp, a favicon. Flyposter uses it on round stickers. Optional."
+    },
+    {
+      "key": "voice",
+      "group": "brand",
+      "label": "Tone of voice",
+      "type": "select",
+      "default": "any",
+      "options": [
+        [
+          "any",
+          "Any voice"
+        ],
+        [
+          "copywriter",
+          "The copywriter"
+        ],
+        [
+          "punk",
+          "The punk"
+        ],
+        [
+          "swiss",
+          "The Swiss designer"
+        ],
+        [
+          "deadpan",
+          "The deadpan"
+        ],
+        [
+          "shopkeeper",
+          "The shopkeeper"
+        ],
+        [
+          "mc",
+          "The MC"
+        ]
+      ],
+      "help": "How the brand talks. Flyposter's Rewrite starts in this voice when it opens with your brand."
+    },
+    {
       "key": "logoColour",
       "group": "brand",
       "label": "Logo colour",

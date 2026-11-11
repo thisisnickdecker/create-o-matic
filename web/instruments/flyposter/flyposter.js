@@ -186,11 +186,13 @@ function fitBox(text, k, w, h, lead, most) {
 }
 // Lines for a headline that fills the width a line at a time: your breaks, or words grouped into a
 // few lines of about even width.
-function balance(text, k = "d") {
+// tall: the frame's height over its width; a tall frame wants more, bigger lines.
+function balance(text, k = "d", tall = 1.25) {
   if (text.includes("\n")) return text.split("\n").map((l) => l.trim()).filter(Boolean)
   const { ws, sep } = tokens(text)
   const chars = ws.join("").length * (sep ? 1 : 2)
-  const ideal = Math.max(Math.min(2, ws.length), Math.min(ws.length, 5, Math.round(chars / 7)))
+  const stretch = Math.max(1, tall / 1.25)
+  const ideal = Math.max(Math.min(2, ws.length), Math.min(ws.length, 5, Math.round((chars / 7) * stretch)))
   // Each line is sized to fill the width, so lines of very different widths end up at very
   // different sizes: take the count nearest the ideal that keeps them even.
   let best = [text], bestCost = Infinity
@@ -198,7 +200,7 @@ function balance(text, k = "d") {
     const list = breakLines(ws, sep, k, n)
     if (!list) continue
     const ww = list.map((l) => w100(l, k))
-    const cost = Math.log(Math.max(...ww) / Math.max(1, Math.min(...ww))) * 3 + Math.abs(n - ideal) * 0.5
+    const cost = Math.log(Math.max(...ww) / Math.max(1, Math.min(...ww))) * 3 + Math.abs(n - ideal) * 0.5 * stretch ** 2
     if (cost < bestCost) { bestCost = cost; best = list }
   }
   return best
@@ -264,7 +266,7 @@ function ctaItem(s, x, y, size, c, p, r, extra = {}) {
 const LAYOUTS = {
   stack(p, w, c, f, r) {
     const { W, H, m, u } = f, items = []
-    const list = balance(w.headline)
+    const list = balance(w.headline, "d", H / W)
     const top = r() < 0.6
     const tpx = 34 * u, foot = (w.details ? 1 : 0) + (w.where ? 1 : 0)
     const footH = foot ? tpx * (foot * 1.3 + 0.8) : 0
@@ -547,7 +549,8 @@ function throwStuff(p, f, hero, heroToken, items, spot) {
 // Every part of a post has a role, the same each time the layout is composed: line0, line1… for
 // the headline, word0… for scatter's stickers, details, where, cta, number, ring, band0…, picture,
 // logo, stuff0…, and shape0… or text0… for the rest. A move (patch.params.moves) is kept by
-// layout and role, so a post's own layout keeps what you placed by hand.
+// format, layout and role ("portrait/stack:cta"), since each size is composed afresh; a move with
+// no format ("stack:cta") counts in every size, and one for the size in hand wins over it.
 function roles(items, w) {
   const seen = {}
   // Parts that come in runs are always numbered (word0, word1…); the rest only from the second on.
@@ -569,9 +572,13 @@ function roles(items, w) {
 function grow(it, k) {
   for (const key of ["w", "h", "px", "labelPx", "r", "segW", "line", "stroke"]) if (typeof it[key] === "number") it[key] *= k
 }
+export const moveId = (p, role) => `${p.format}/${p.layout}:${role}`
+export const movesHere = (p) => (p.moves ?? []).filter((mv) => mv.id.startsWith(`${p.layout}:`) || mv.id.startsWith(`${p.format}/${p.layout}:`))
 function moved(p) {
   const out = new Map()
-  for (const mv of p.moves ?? []) if (mv.id.startsWith(`${p.layout}:`)) out.set(mv.id.slice(p.layout.length + 1), mv)
+  const role = (mv) => mv.id.slice(mv.id.indexOf(":") + 1)
+  for (const mv of movesHere(p)) if (!mv.id.includes("/")) out.set(role(mv), mv)
+  for (const mv of movesHere(p)) if (mv.id.includes("/")) out.set(role(mv), mv)
   return out
 }
 
@@ -579,7 +586,7 @@ function moved(p) {
 const MOTION_KEYS = new Set(["motion", "stuffMotion", "energy", "beats", "duration", "fps", "keyMode", "phase", "layers", "transparent", "lockLayout", "lockType", "lockColour", "lockMotion", "lockStuff", "lockTexture"])
 let kept = { key: "", scene: null }
 function compose(g, p, W, H, opts) {
-  const key = JSON.stringify([W, H, opts.fontGen ?? 0, opts.image ? [opts.image.w, opts.image.h] : 0, opts.marks?.has(p.logo) ?? false, Object.entries(p).filter(([k]) => !MOTION_KEYS.has(k))])
+  const key = JSON.stringify([W, H, opts.fontGen ?? 0, opts.image ? [opts.image.w, opts.image.h] : 0, opts.marks?.has(p.logo) ?? false, opts.marks?.has(p.logoMark) ?? false, Object.entries(p).filter(([k]) => !MOTION_KEYS.has(k))])
   if (kept.key === key) return kept.scene
   if (kept.fontGen !== opts.fontGen) capOf.clear()
   widths = new Map()
@@ -657,7 +664,7 @@ function compose(g, p, W, H, opts) {
     return true
   })
   // Where the logo and the star end up, for the judge (score.js).
-  const logo = mark && (opts.marks?.has(p.logo) || p.brandName.trim()) ? mark : null
+  const logo = mark && (opts.marks?.has(p.logo) || opts.marks?.has(p.logoMark) || p.brandName.trim()) ? mark : null
   const hs = hero.size * (p.imageSize / 0.6), aspect = heroToken?.type === "image" && opts.image ? opts.image.w / opts.image.h : 1
   const star = star0 ? { x: hero.x + (p.imageX * W) / 2, y: hero.y - (p.imageY * H) / 2, w: aspect >= 1 ? hs : hs * aspect, h: aspect >= 1 ? hs / aspect : hs, front: !!hero.front, rot: hero.rot ?? 0 } : null
   kept = { key, fontGen: opts.fontGen, scene: { p, items: shown, stuff, hero, heroToken: star0, star, logo, spot: mark, groupTilt: built.groupTilt ?? (p.tilt * Math.PI) / 180, f, c } }
@@ -986,7 +993,9 @@ function drawLogo(g, p, f, c, opts, a, at) {
   if (!at || a.a <= 0) return
   const spot = { ...at }
   if (p.layout === "ticker" && !spot.huge) spot.sticker = true
-  const mark = opts.marks?.get(p.logo)
+  // Round stickers and the huge watermark take the mark alone, when there is one.
+  const alone = (spot.sticker || spot.huge) && opts.marks?.has(p.logoMark)
+  const mark = opts.marks?.get(alone ? p.logoMark : p.logo)
   g.save()
   g.translate(spot.x + a.dx, spot.y + a.dy)
   g.rotate(a.rot + spot.rot + (spot.sticker ? -0.15 : 0))

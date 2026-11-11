@@ -1,7 +1,8 @@
 // The Brand bench: the brand engine in the shared shell, plus what only it needs: the logo (an SVG,
 // or a PNG or JPEG with its background taken out), a palette taken from the logo, faces for each
 // role, the kit (design tokens, CSS, BRAND.md, the logo, the patch) as one .zip, and the brand
-// sent on to Motion, the Colour lab and the Type tester.
+// sent on to Motion, the Colour lab, the Type tester and Flyposter; and kept as my brand
+// (core/brand.js), which every instrument can start from.
 import * as engine from "./brand.js"
 import { tokens, css, brandMd } from "./kit.js"
 import { createMachine } from "../../packages/core/shell.js"
@@ -14,6 +15,7 @@ import { newListItem, toHash } from "../../packages/core/patch.js"
 import { download } from "../../packages/core/export.js"
 import { zip } from "../../packages/core/zip.js"
 import { effectById } from "../../packages/core/effects/index.js"
+import { keepBrand } from "../../packages/core/brand.js"
 
 const facesDef = engine.manifest.parameters.find((d) => d.key === "faces")
 const FONT_KEYS = new Set(["faces", "adobeKit", "brandName", "tagline"])
@@ -135,13 +137,24 @@ async function kit(machine, note) {
   note.textContent = `Saved ${slug(p)}-brand.zip: BRAND.md, design tokens, CSS, the patch, the board${logo ? " and the logo" : ""}.`
 }
 
+// The brand kept in this browser for every instrument: names, colours, logos, faces and voice.
+function keep(p) {
+  const P = p.params, head = engine.face(P, "headline"), body = engine.face(P, "body")
+  const lockup = (name) => (name ? { name, svg: p.marks[name] ?? null } : null)
+  return keepBrand({
+    name: P.brandName, tagline: P.tagline, inks: P.inks, paper: P.background, logoColour: P.logoColour === "auto" ? "auto" : "original",
+    logo: lockup(P.logo), mark: lockup(P.logoMark), adobeKit: P.adobeKit, voice: P.voice,
+    faces: { headline: { family: head.font, source: head.fontSource, weight: head.weight }, body: { family: body.font, source: body.fontSource, weight: body.weight } },
+  })
+}
+
 // The brand, sent on to the other instruments as a patch in the link.
 function sendTo(p) {
   const P = p.params, head = engine.face(P, "headline"), body = engine.face(P, "body")
   const logoLine = marks.has(P.logo) ? `@${P.logo}` : P.brandName.toUpperCase()
   return {
     motion: `/make/#${toHash({ instrument: "elastic", seed: p.seed, marks: p.marks[P.logo] ? { [P.logo]: p.marks[P.logo] } : {}, params: { content: `${logoLine}\n${P.brandName.toUpperCase()}`, mode: "sequence", font: head.font, fontSource: head.fontSource, adobeKit: P.adobeKit, palette: P.inks, background: P.background } })}`,
-    post: `/flyposter/#${toHash({ instrument: "flyposter", seed: p.seed, marks: p.marks[P.logo] ? { [P.logo]: p.marks[P.logo] } : {}, params: { brandName: P.brandName, logo: marks.has(P.logo) ? P.logo : "", logoColour: P.logoColour === "auto" ? "auto" : "original", inks: P.inks, paper: P.background, headline: P.tagline || P.brandName, display: head.font, displaySource: head.fontSource, displayWeight: head.weight, text: body.font, textSource: body.fontSource, textWeight: body.weight, adobeKit: P.adobeKit, lockType: true } })}`,
+    post: `/flyposter/#${toHash({ instrument: "flyposter", seed: p.seed, marks: Object.fromEntries([P.logo, P.logoMark].filter((n) => p.marks[n]).map((n) => [n, p.marks[n]])), params: { brandName: P.brandName, logo: marks.has(P.logo) ? P.logo : "", logoMark: P.logoMark, lens: P.voice, logoColour: P.logoColour === "auto" ? "auto" : "original", inks: P.inks, paper: P.background, headline: P.tagline || P.brandName, display: head.font, displaySource: head.fontSource, displayWeight: head.weight, text: body.font, textSource: body.fontSource, textWeight: body.weight, adobeKit: P.adobeKit, lockType: true } })}`,
     colour: `/colour/#${toHash({ instrument: "colour", params: { inks: P.inks, background: P.background, study: "card" } })}`,
     type: `/type/#${toHash({ instrument: "type", params: { adobeKit: P.adobeKit, background: P.background, rows: [
       { text: P.brandName, font: head.font, fontSource: head.fontSource, weight: head.weight, tracking: head.tracking, fit: "width" },
@@ -163,8 +176,10 @@ function kitStrip(machine) {
     button("Copy CSS", "The palette, faces and radius as CSS custom properties", () => copy(css(machine.patch), "the CSS")),
   )
   const sendRow = Object.assign(document.createElement("div"), { className: "strip" })
-  const go = (text, key) => button(text, "Opens with this brand's logo, inks and faces", () => { location.href = sendTo(machine.patch)[key] })
-  sendRow.append(go("Animate in Motion", "motion"), go("Study in the Colour lab", "colour"), go("Set in the Type tester", "type"), go("Make a post", "post"))
+  const go = (text, key) => button(text, "Opens with this brand's logo, inks and faces", () => { if (key === "post") keep(machine.patch); location.href = sendTo(machine.patch)[key] })
+  sendRow.append(
+    button("Use everywhere", "Keep this as your brand in this browser: Flyposter (and what comes next) opens with it", () => { keep(machine.patch); note.textContent = `${machine.patch.params.brandName || "This brand"} is your brand now: Flyposter opens with its logos, colours, faces and voice.` }, true),
+    go("Animate in Motion", "motion"), go("Study in the Colour lab", "colour"), go("Set in the Type tester", "type"), go("Make a post", "post"))
   shop.querySelector(".progress").before(kitRow, sendRow)
   shop.append(note)
 }
@@ -176,7 +191,7 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
 
   load(patch, key) {
     if (!key || FONT_KEYS.has(key)) loadFonts(patch)
-    if (!key || key === "logo") loadLogo(patch)
+    if (!key || key === "logo" || key === "logoMark") loadLogo(patch)
   },
   options: () => ({ marks }),
   ready: (patch) => Promise.all(engine.fontRequests(patch).map((r) => ensureFont(r))),
@@ -218,5 +233,5 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     logoStrip(machine)
     kitStrip(machine)
   },
-  api: { kit: () => ({ tokens: tokens(m.patch), css: css(m.patch), brandMd: brandMd(m.patch) }), sendTo: () => sendTo(m.patch) },
+  api: { kit: () => ({ tokens: tokens(m.patch), css: css(m.patch), brandMd: brandMd(m.patch) }), sendTo: () => sendTo(m.patch), keep: () => keep(m.patch) },
 })

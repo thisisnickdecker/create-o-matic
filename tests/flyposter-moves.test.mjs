@@ -54,3 +54,13 @@ test("moves are checked like any setting, and the judge sees them", () => {
   const off = judge(scene(ruler, post({ layout: "stack", moves: [{ id: "stack:line0", dx: 0.9 }] })))
   assert.ok(off.score < clean && off.faults.some((f) => f.id === "off-frame"))
 })
+
+test("a move made at one size stays at that size; one for every size counts everywhere", () => {
+  const cta = (format, moves) => find(parts(ruler, post({ layout: "stack", format, moves })), "cta")
+  const own = [{ id: "story/stack:cta", dx: 0.1 }]
+  assert.notDeepEqual(cta("story", own), cta("story", []))
+  assert.deepEqual(cta("portrait", own), cta("portrait", []))
+  const every = [{ id: "stack:cta", dx: 0.1 }, { id: "square/stack:cta", dx: 0 }]
+  assert.notDeepEqual(cta("portrait", every), cta("portrait", []))
+  assert.deepEqual(cta("square", every), cta("square", []), "this size's own move wins")
+})

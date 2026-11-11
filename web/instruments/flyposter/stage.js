@@ -50,19 +50,22 @@ export function stageEditing(machine, { options, onFirstMove, record }) {
   }
 
   // ---- the moves in the patch ----
-  const idOf = (role) => `${p().layout}:${role}`
+  // A move belongs to this size and layout; one made for every size (by an agent, say) is the
+  // starting point for this size's own.
+  const idOf = (role) => engine.moveId(p(), role)
   const moveOf = (role) => p().moves.find((mv) => mv.id === idOf(role))
+  const shared = (role) => p().moves.find((mv) => mv.id === `${p().layout}:${role}`)
   function ensure(role) {
     let mv = moveOf(role)
     if (!mv) {
-      mv = { id: idOf(role), dx: 0, dy: 0, s: 1, r: 0, hide: false }
+      mv = { dx: 0, dy: 0, s: 1, r: 0, hide: false, ...shared(role), id: idOf(role) }
       p().moves = [...p().moves.slice(-63), mv]
     }
     return mv
   }
   // After a change: kept, undoable, and the first real move keeps the layout when you Vary.
   const settle = () => {
-    if (!p().lockLayout && p().moves.some((mv) => mv.id.startsWith(`${p().layout}:`))) onFirstMove()
+    if (!p().lockLayout && engine.movesHere(p()).length) onFirstMove()
     machine.changed(); record(); show()
   }
 
@@ -92,7 +95,9 @@ export function stageEditing(machine, { options, onFirstMove, record }) {
   function pick(role) { picked = role; show() }
   function reset(role) {
     record()
+    // Where a move counts for every size, this size gets a move that cancels it.
     p().moves = p().moves.filter((mv) => mv.id !== idOf(role))
+    if (shared(role)) p().moves.push({ id: idOf(role), dx: 0, dy: 0, s: 1, r: 0, hide: false })
     settle()
   }
 
@@ -160,7 +165,7 @@ export function stageEditing(machine, { options, onFirstMove, record }) {
     if (!gesture || e.pointerId !== gesture.id) return
     const mv = moveOf(gesture.role)
     // A click that didn't move anything leaves no move behind.
-    if (mv && !mv.hide && Math.abs(mv.dx) < 1e-4 && Math.abs(mv.dy) < 1e-4 && Math.abs(mv.s - 1) < 1e-4 && Math.abs(mv.r) < 1e-4) p().moves = p().moves.filter((x) => x !== mv)
+    if (mv && !mv.hide && !shared(gesture.role) && Math.abs(mv.dx) < 1e-4 && Math.abs(mv.dy) < 1e-4 && Math.abs(mv.s - 1) < 1e-4 && Math.abs(mv.r) < 1e-4) p().moves = p().moves.filter((x) => x !== mv)
     gesture = null
     guides.replaceChildren()
     settle()

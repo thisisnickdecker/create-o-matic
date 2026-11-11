@@ -363,6 +363,16 @@ body.dragging .drop { display: grid; }
 .fly-card-more { justify-self: start; min-height: 26px; padding: 0 2px; border: 0; background: none; color: var(--g600); font: inherit; font-size: 12px; cursor: pointer; }
 .fly-card-more:hover { color: var(--ink); text-decoration: underline; }
 @keyframes fly-wait { to { opacity: .55; } }
+.fly-set-grid { display: grid; align-content: start; gap: 20px; min-height: 0; overflow: auto; }
+.fly-set-row h3 { margin: 0 0 8px; color: var(--g600); font-size: 13px; font-weight: inherit; }
+.fly-set-tiles { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; }
+.fly-set-tile { display: grid; gap: 6px; margin: 0; }
+.fly-set-tile canvas { display: block; width: auto; max-width: 100%; }
+.fly-set-tile .fly-card-use, .fly-set-slide { justify-self: start; width: fit-content; border-radius: 4px; background: none; overflow: hidden; box-shadow: var(--shadow); }
+.fly-set-tile figcaption { max-width: 34ch; color: var(--g600); font-size: 12px; line-height: 1.35; }
+.fly-set-tile figcaption b { color: var(--ink); font-weight: inherit; }
+.fly-set-score.weak { color: var(--accent); }
+.fly-set-open { flex: none; }
 .fly-edit { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .fly-sel { position: absolute; outline: 1.5px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 .fly-sel-tag { position: absolute; left: -4px; bottom: calc(100% + 8px); padding: 2px 7px; border-radius: 999px; background: var(--accent); color: var(--white); font-size: 11px; white-space: nowrap; }
@@ -386,5 +396,7 @@ body.dragging .drop { display: grid; }
   .fly-deck-hint { display: none; }
   .fly-deck-title { flex: 1; }
   .fly-card-more { min-height: 36px; }
+  .fly-set-tiles { gap: 10px; }
+  .fly-set .fly-deck-title { flex-basis: 100%; }
   .fly-emoji-set { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); }
 }

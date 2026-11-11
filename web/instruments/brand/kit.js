@@ -4,6 +4,7 @@
 //   brandMd(patch) BRAND.md: the brand in plain words and tables, for people and for agents
 import { contrast, grade, inkOn, rgbText, oklchText, colourName } from "../../packages/core/colour.js"
 import { face, displayName } from "./brand.js"
+import { LENSES } from "../flyposter/copy.js"
 
 const ROLES = ["headline", "subhead", "body", "caption", "accent"]
 const roles = (p) => ROLES.filter((r) => p.faces.some((f) => f.role === r))
@@ -57,6 +58,12 @@ export function readable(p) {
   return out.sort((x, y) => y.ratio - x.ratio)
 }
 
+// The house voice, from Flyposter's copy lenses.
+function voice(p) {
+  const lens = LENSES.find(([id]) => id === p.voice)
+  return lens ? ["\n## Voice", `\n${lens[1]}: ${lens[2]}`] : []
+}
+
 export function brandMd(patch, { link = "", logoFile = "" } = {}) {
   const p = patch.params, name = p.brandName
   const row = (hex, label) => { const on = inkOn(hex), r = contrast(on, hex); return `| ${label} | \`${hex}\` | ${colourName(hex)} | ${rgbText(hex)} | ${oklchText(hex)} | ${on === "#FFFFFF" ? "white" : "black"} (${r.toFixed(1)}:1, ${grade(r)}) |` }
@@ -68,6 +75,7 @@ export function brandMd(patch, { link = "", logoFile = "" } = {}) {
     `\nMade with the Brand bench in Create-o-matic.${link ? ` [Open and edit this brand](${link}).` : " Open `brand.json` in the Brand bench (createomatic.xyz/brand/) to edit it."}`,
     "\n## Logo",
     `\n${logoFile ? `The file is \`${logoFile}\`. ` : ""}Shown ${{ original: "in its own colours", ink: `in ${colourName(p.inks[0])} (\`${p.inks[0]}\`)`, auto: "in black or white, whichever reads on the ground" }[p.logoColour]}. On an ink, reverse it to black or white, as the board shows. Give it clear space of at least half its height on every side, and don't stretch, recolour outside the palette, or add effects to it in running text.`,
+    p.logoMark ? `\nThere's a mark alone (\`${p.logoMark}\`), without the name, for small and round places: app icons, stamps, stickers. Use the full logo wherever it fits.` : "",
     `\nIn motion it ${MOTION[p.motion] ?? "is still"}${p.motion !== "still" ? `, ${p.beats === 1 ? "once" : `${p.beats} times`} every ${p.duration} seconds` : ""}.`,
     "\n## Colour",
     "\n| | Hex | Name | RGB | OKLCH | Text on it |",
@@ -80,6 +88,7 @@ export function brandMd(patch, { link = "", logoFile = "" } = {}) {
     "\n| Role | Family | Weight | Tracking | Source |",
     "|---|---|---|---|---|",
     ...roles(p).map((r) => { const x = f(r); return `| ${r[0].toUpperCase() + r.slice(1)} | ${displayName(x.font)}${displayName(x.font) !== x.font ? ` (CSS: \`${x.font}\`)` : ""} | ${x.weight} | ${x.tracking}em | ${{ open: "open source (Fontsource / Google)", google: "Google Fonts", adobe: `Adobe Fonts${p.adobeKit ? `, project ${p.adobeKit}` : ""}`, system: "installed", file: "licensed files" }[x.fontSource] ?? x.fontSource} |` }),
+    ...voice(p),
     "\n## For agents and tools",
     "\n- `tokens.json`: these colours, faces and radius as W3C design tokens (DTCG). Tokens Studio for Figma and Style Dictionary read them.",
     "- `brand.css`: the same as CSS custom properties, with the font imports.",

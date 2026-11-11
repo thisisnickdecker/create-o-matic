@@ -16,10 +16,12 @@ it sits with the other instruments' names (Spirotype, Showroom) rather than repe
 
 ## How it works
 
-1. **Brand pocket.** Name, logo (SVG keeps its colours; a PNG or JPEG loses its background),
-   brand colours, and two neutrals: Paper and Black. Remembered in this browser for next time;
-   **Forget** clears it. The Brand bench's **Make a post** fills it with the bench's logo, colours
-   and faces (and keeps the type when you Vary).
+1. **Brand pocket.** Name, logo (SVG keeps its colours; a PNG or JPEG loses its background), the
+   mark alone (optional: round stickers and the huge watermark use it), brand colours, and two
+   neutrals: Paper and Black. It's your brand, kept in this browser for every instrument
+   (`packages/core/brand.js`); **Forget** clears it. The Brand bench's **Use everywhere** and
+   **Make a post** write it with the bench's logos, colours, faces and tone of voice: Flyposter
+   then opens with them, keeps the type when you Vary, and Rewrite starts in the brand's voice.
 2. **Message.** Headline, details, where, call to action. **Rewrite** steps the headline through
    hand-written copy lenses (`copy.js`): the copywriter, the punk, the Swiss designer, the
    deadpan, the shopkeeper and the MC. They're archetypes, never real people, and there's no AI.
@@ -78,6 +80,19 @@ The typesetting is part of it:
 - **The call to action** takes the clearest spot: where the layout put it, the other side, under
   the logo, or a corner or edge of the frame.
 
+## The whole set
+
+**The whole set** (beside Vary, and **Export the whole set** in the Print shop) shows the post at
+every size a campaign needs, live: Feed 1080×1350, Story 1080×1920, Square 1080×1080, Landscape
+1920×1080 and Banner 1200×630 (link cards, email headers). Below them, a carousel in the same look
+says it in up to three slides: the post, then the details, then the call to action with where (a
+slide only when there's something for it to say). Each tile says how it was judged; click a size to
+work on it on the stage. Change anything in the rack and the set redraws.
+
+**Export PNGs** makes one .zip of every size and slide; **PNGs and MP4s** adds each one moving
+(the shell's own video exporter, a post at a time: about 25 seconds for eight, here). Each is an ordinary
+patch made from the post (`campaign.js`), so the set is the post, not a copy of it.
+
 ## Working on the stage
 
 Click anything on the post (a line of the headline, the call to action, a sticker, the picture,
@@ -94,8 +109,10 @@ the stage or the rack (a slider dragged or a word typed is one step). The Paste-
 many parts are moved and has **Put everything back**.
 
 What you move is a setting like any other: `moves` in the patch, a list of
-`{ id: "layout:part", dx, dy, s, r, hide }`, with dx and dy as fractions of the frame, so it
-survives a change of format and travels in links and saved patches. Moves belong to a layout, and
+`{ id: "size/layout:part", dx, dy, s, r, hide }` ("story/stack:cta"), with dx and dy as fractions
+of the frame, travelling in links and saved patches. Moves belong to a size, since each size is
+composed afresh: moving the call to action in the feed leaves the story alone. A move with no size
+("stack:cta") counts at every size, and a size's own move wins over it. Moves belong to a layout, and
 the first one turns on **Keep layout**, so Vary changes the type, colour and the rest around what
 you placed. Unlock it and Vary deals new layouts; come back to the layout and your moves are
 still there. Stickers are thrown before anything is moved, so moving one part doesn't throw
@@ -123,6 +140,10 @@ instrument.open()                              // show the deck, as Vary does
 instrument.parts()                             // what's on the stage: [{ role, name, field, x, y, w, h, rot }]
 instrument.move("cta", { dx: -0.1, s: 1.3, r: 0.2 }) // move a part by hand; move("cta", null) puts it back
 instrument.move("line1", { hide: true })       // leave a part out
+instrument.move("logo", { dx: 0.02 }, { everySize: true }) // a move for every size
+await instrument.campaign()                    // every size and slide, judged: [{ id, name, group, patch, score, faults }]
+await instrument.exportSet({ video: false, save: false }) // the .zip as a Blob; save: true downloads it
+instrument.openSet()                           // show the whole set over the stage
 instrument.undo(); instrument.redo()
 instrument.set("take", 3)                      // the third rewrite of the headline
 instrument.rewrites()                          // every rewrite through the current lens
@@ -170,6 +191,18 @@ The Print shop's PNG, MP4, WebM, GIF, MOV and GIF for Figma, at full, half, quar
   `tests/flyposter-moves.test.mjs`: roles in every layout, a move touching only its part, moves
   belonging to their layout, hiding, an underline following its words, moves checked like any
   setting, and the judge seeing a moved part off the frame.
+- The whole set and the brand: in the page at 1440 wide and at phone width. The set opened with
+  all eight tiles judged; the PNG .zip made with `exportSet({ save: false })`, unpacked, and every
+  file opened at its size (1080×1350, 1080×1920, 1080×1080, 1920×1080, 1200×630 and three slides)
+  and looked at together. That showed the story setting a one-line headline small at the top of a
+  tall frame (now Stacked takes more lines in tall frames). The video .zip, made the same way in
+  23 s, held 16 files; every MP4 decoded with ffprobe at its own size, 180 frames over 6 s, and the
+  post was back at its own size afterwards. The brand: on the Brand bench, a name, two colours, a paper, a mark alone
+  and the shopkeeper's voice, then **Use everywhere**; Flyposter opened with no link carried all of
+  it, the faces from the Adobe kit, Keep type on and the shopkeeper lens, and a story rendered
+  with the mark alone on the round sticker. `tests/flyposter-campaign.test.mjs`: the set's
+  patches (accepted by the manifest, look kept, post untouched), slides only when there's
+  something to say, every layout's set composed and judged, and a hand-edited brand cleaned.
 - After the judge's changes: a PNG and an MP4 rendered again and decoded (1080×1350, 180 frames,
   6 s). The only console errors were 404s from the shared font loader asking again and again for a
   weight-variable file of Climate Crisis, which varies by year instead; it now asks once.
@@ -198,7 +231,10 @@ The Print shop's PNG, MP4, WebM, GIF, MOV and GIF for Figma, at full, half, quar
   words a fifth bigger than two.
 
 - Sound: a seeded synth and beat with motion on the beat, and audio in the MP4.
-- Background removal for photos (a PNG that's already cut out works).
+- Background removal for photos: a cutout PNG works; a photo stays a rectangle.
+- The brand's colours have roles by order (the first leads), but Vary doesn't hold to them yet: a
+  highlight colour can still flood the ground. The brand has no type scale.
+- Other instruments don't read my brand yet; the Brand bench writes it and Flyposter reads it.
 - Pick up several things at once, or group them.
 - Retype in the post's own face: the box is set in the site's type, over the post.
 - Moves are kept by part, so a headline that changes its number of lines keeps moves on line0,

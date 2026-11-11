@@ -118,6 +118,14 @@
       "help": "Drop an SVG, PNG or JPEG anywhere on the page. It's kept in this browser with your inks, for next time."
     },
     {
+      "key": "logoMark",
+      "group": "brand",
+      "label": "Mark alone",
+      "type": "mark",
+      "default": "",
+      "help": "The mark without the name, for round stickers and small places. Optional: without it the logo goes everywhere."
+    },
+    {
       "key": "logoColour",
       "group": "brand",
       "label": "Logo colour",
@@ -1042,6 +1050,10 @@
         [
           "landscape",
           "Landscape 16:9 · 1920×1080"
+        ],
+        [
+          "link",
+          "Banner 1.91:1 · 1200×630"
         ]
       ],
       "animate": false

@@ -100,6 +100,7 @@ in this browser; the patch stores only its name.
 | Kaleidoscope | folds the frame into mirrored wedges | whole turns per loop |
 | Liquid | domain-warped ripples, like looking through water | whole flow cycles |
 | Melt | columns drip from a held top edge | whole drip cycles |
+| Slices | the frame, or just the picture, cut into a grid of close-ups or repeats, scaled big in the middle and small at the edge, tilted and tapered; plays itself apart and back, with a zoom wave sweeping through | whole play and wave cycles |
 | Halftone | dots, squares or lines, any screen angle, with dot gain; vector-crisp | n/a |
 | Photocopy | generation loss: softening, uneven toner, drum streaks, speckle | n/a |
 | Grain | film grain; *Boil* animates it | n/a |

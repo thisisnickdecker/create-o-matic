@@ -21,6 +21,7 @@
 import kaleidoscope from "./kaleidoscope.js"
 import liquid from "./liquid.js"
 import melt from "./melt.js"
+import slices from "./slices.js"
 import halftone from "./halftone.js"
 import photocopy from "./photocopy.js"
 import grain from "./grain.js"
@@ -36,7 +37,7 @@ import { riso, chroma, film } from "./print.js"
 import { paper, grunge } from "./surface.js"
 
 export const EFFECTS = [
-  kaleidoscope, liquid, melt,
+  kaleidoscope, liquid, melt, slices,
   adjust, gradmap, acid, holographic, invert, posterize,
   pixelsort, mosaic, ascii, dotmatrix, halftone, riso, photocopy, paper,
   chroma, film, grunge, grain,

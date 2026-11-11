@@ -16,6 +16,7 @@ const TYPES = {
   ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml",
   ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif", ".md": "text/markdown; charset=utf-8",
   ".woff2": "font/woff2", ".woff": "font/woff", ".ttf": "font/ttf", ".otf": "font/otf", ".mp4": "video/mp4", ".webm": "video/webm",
+  ".wasm": "application/wasm", ".onnx": "application/octet-stream",
 }
 
 async function addPreset(req, res) {

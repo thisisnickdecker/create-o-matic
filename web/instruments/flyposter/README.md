@@ -37,7 +37,11 @@ it sits with the other instruments' names (Spirotype, Showroom) rather than repe
 5. **Ink well.** Colour use casts your colours into parts: Flood (a brand colour fills it), Paper,
    Night, Duotone, Riot. **Colourway** steps through which colour plays which part. Type always
    reads on the ground (contrast 3:1 or more; there's a test).
-6. **Junk drawer.** **Add a picture**: a cutout PNG makes a die-cut sticker, the star of the post;
+6. **Junk drawer.** **Add a picture**, then **Cut out the background** if it's a photo: the main
+   thing in it (a burger, a cup, a dog, you) is kept and the rest goes, in this browser, in two or
+   three seconds (`packages/core/cutout.js`: U²-Net's small model, run by onnxruntime-web, both
+   vendored, about 16 MB fetched the first time). The cutout is kept beside the photo, and Undo goes
+   back. A cutout makes a die-cut sticker, the star of the post;
    or it's the whole background, or thrown in with the stuff. Emoji are Google's Noto Emoji, 131
    of them, vendored in `packages/core/vendor/noto-emoji` (Apache 2.0) so every browser and every
    export shows the same. With no picture, the first emoji is the star. Stickers are drawn in code
@@ -145,6 +149,7 @@ await instrument.campaign()                    // every size and slide, judged: 
 await instrument.exportSet({ video: false, save: false }) // the .zip as a Blob; save: true downloads it
 instrument.openSet()                           // show the whole set over the stage
 instrument.undo(); instrument.redo()
+await instrument.cutout()                      // take the background out of the picture
 instrument.set("take", 3)                      // the third rewrite of the headline
 instrument.rewrites()                          // every rewrite through the current lens
 const png = await instrument.render("png")     // a Blob, nothing downloaded
@@ -203,6 +208,14 @@ The Print shop's PNG, MP4, WebM, GIF, MOV and GIF for Figma, at full, half, quar
   with the mark alone on the round sticker. `tests/flyposter-campaign.test.mjs`: the set's
   patches (accepted by the manifest, look kept, post untouched), slides only when there's
   something to say, every layout's set composed and judged, and a hand-edited brand cleaned.
+- Cutouts: three photos from Wikimedia Commons (a cheeseburger on white, a cup and saucer on a
+  dark table, a labrador on grass), cut out in the page with `cutout()` in 2 to 3 s each and
+  looked at on blue, whole and with the edges cropped at full size: all three subjects kept whole
+  (the spoon too, the tail too), backgrounds gone, edges soft. Then end to end: a photo added,
+  **Cut out the background** pressed, the post rendered with the burger as a die-cut sticker, and
+  Undo back to the photo. No console errors once the dev server served wasm as wasm.
+  `tests/cutout.test.mjs`: the model's input and output arithmetic, trimming, and the vendored
+  model checked against the md5 rembg publishes.
 - After the judge's changes: a PNG and an MP4 rendered again and decoded (1080×1350, 180 frames,
   6 s). The only console errors were 404s from the shared font loader asking again and again for a
   weight-variable file of Climate Crisis, which varies by year instead; it now asks once.
@@ -231,7 +244,10 @@ The Print shop's PNG, MP4, WebM, GIF, MOV and GIF for Figma, at full, half, quar
   words a fifth bigger than two.
 
 - Sound: a seeded synth and beat with motion on the beat, and audio in the MP4.
-- Background removal for photos: a cutout PNG works; a photo stays a rectangle.
+- Cutouts come from the small model, so their edges are soft (a faint halo on fur, smoothed
+  lettuce), and a busy picture with no one clear subject can lose bits or keep some background.
+  Larger models cut sharper but run to 170 MB or more; the one open-licensed browser library that
+  does it (imgly) is AGPL, so it's not used.
 - The brand's colours have roles by order (the first leads), but Vary doesn't hold to them yet: a
   highlight colour can still flood the ground. The brand has no type scale.
 - Other instruments don't read my brand yet; the Brand bench writes it and Flyposter reads it.

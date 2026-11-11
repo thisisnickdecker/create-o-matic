@@ -121,7 +121,27 @@ async function useLogo(f, key = "logo") {
 async function usePicture(f) {
   const name = await addMedia(f)
   m.set("image", name)
-  m.note(`${f.name} is the picture. A PNG with a see-through background makes the best cutout.`)
+  const opaque = !/png|webp|gif/i.test(f.type)
+  m.note(opaque ? `${f.name} is the picture. Cut out the background to make it a sticker.` : `${f.name} is the picture.`)
+}
+// The picture with its background taken out (core/cutout.js), kept beside the original.
+let cutting = false
+async function cutOut() {
+  const name = m.patch.params.image
+  if (!name || !image || cutting) return m.note(name ? "Still cutting the last one out." : "Add a picture first.", !name)
+  cutting = true
+  syncAll()
+  m.note("Cutting out the background… The first time, the cutter itself arrives (about 16 MB).")
+  try {
+    const { cutout } = await import("../../packages/core/cutout.js")
+    const t0 = performance.now()
+    const blob = await cutout(image.el)
+    const file = new File([blob], `${name.replace(/\.[a-z0-9]+$/i, "").replace(/-cutout$/, "")}-cutout.png`, { type: "image/png" })
+    m.set("image", await addMedia(file))
+    m.note(`Cut out in ${((performance.now() - t0) / 1000).toFixed(1)} s, and kept as ${file.name}. Undo goes back to the photo.`)
+  } catch (e) {
+    m.note(`The cutout didn't work: ${e.message}`, true)
+  } finally { cutting = false; syncAll() }
 }
 const pictureInput = Object.assign(document.createElement("input"), { type: "file", accept: "image/*", hidden: true })
 pictureInput.onchange = async () => { const f = pictureInput.files[0]; pictureInput.value = ""; if (f) await usePicture(f).catch((e) => m.note(e.message, true)) }
@@ -329,8 +349,12 @@ function stuffPickers(machine) {
   stickerRow?.after(chips)
   // The picture: add one.
   const imageRow = [...body.querySelectorAll(".row")].find((r) => r.querySelector(".name")?.textContent === "Picture")
-  imageRow?.before(el("div", { className: "strip" }, button("Add a picture", "A cutout PNG or a photo", () => pictureInput.click(), "btn solid")))
+  const cut = button("Cut out the background", "Finds the main thing in the picture and takes the rest away, in this browser", () => cutOut(), "btn")
+  imageRow?.before(el("div", { className: "strip" }, button("Add a picture", "A cutout PNG or a photo", () => pictureInput.click(), "btn solid"), cut))
   return () => {
+    cut.hidden = !machine.patch.params.image
+    cut.disabled = cutting
+    cut.textContent = cutting ? "Cutting out…" : "Cut out the background"
     const on = new Set(stickersOf(machine.patch.params.stickers))
     chips.querySelectorAll("button").forEach((b) => b.classList.toggle("on", on.has(b.dataset.id)))
     if (!pop.hidden) fill()
@@ -607,6 +631,8 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     campaign: async () => Promise.all(campaign(m.patch).map(async (x) => ({ ...x, ...(await judged(x.patch)), patch: x.patch }))),
     exportSet: (opts = {}) => exportSet(m, opts),
     openSet: () => openCampaign(m),
+    // cutout(): takes the background out of the picture, as the Junk drawer's button does.
+    cutout: () => cutOut(),
     undo: () => undo(),
     redo: () => redo(),
     rewrites: () => rewrites(m.patch.params, m.patch.params.lens),

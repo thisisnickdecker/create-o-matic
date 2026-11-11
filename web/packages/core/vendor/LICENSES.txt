@@ -1,5 +1,7 @@
 mp4-muxer 5.2.1 (MIT, Vanilagy) · webm-muxer 5.1.4 (MIT, Vanilagy) · gifenc 1.0.3 (MIT, Matt DesLauriers). Builds from npm, unmodified except webm-muxer, which also writes VP9 alpha (BlockAdditions, marked "Create-o-matic" in the file).
 
+In their own folders, each with its LICENSE.txt: noto-emoji (Apache 2.0 and OFL, Google); onnxruntime-web 1.20.1 (MIT, Microsoft: ort.wasm.min.mjs and the SIMD wasm, from npm, unmodified but for a dropped source-map comment); u2netp (Apache 2.0, Xuebin Qin's U²-Net, the small model as rembg converts it to ONNX, md5 8e83ca70e441ab06c318d82300c84806).
+
 == mp4-muxer-5.2.1
 MIT License
 

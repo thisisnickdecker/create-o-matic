@@ -143,7 +143,12 @@ async function play(root) {
   // The sliders start where the look itself sits.
   function fromLook() {
     const p = presets[look].params, e = EFFECT[PLAY[look][0]]
-    proportions = p.proportions ?? "stretch"
+    proportions = "stretch"
+    // "As designed" names what the look itself uses, so you know what you'd be changing from.
+    const size = [...ui.size.options].find((o) => o.value === p.format)?.textContent.split(" ")[0] ?? `${p.width}×${p.height}`
+    ui.size.options[0].textContent = `As designed · ${size}`
+    const face = p.fontSource === "adobe" ? [...ui.font.options].find((o) => o.value === p.font)?.textContent ?? p.font : p.font
+    ui.font.options[0].textContent = `As designed · ${face}`
     ui.motion.value = p.amount ?? 0.6
     ui.speed.value = p.duration
     ui.rows.value = p.rows ?? 12
@@ -167,7 +172,8 @@ async function play(root) {
   function current() {
     const patch = playPatch(presets[look], input.value, logo), p = patch.params, e = EFFECT[PLAY[look][0]]
     if (ui.size.value) p.format = ui.size.value
-    if (ui.font.value) Object.assign(p, { font: ui.font.value, fontSource: "open" })
+    const kit = ui.font.selectedOptions[0]?.dataset.kit
+    if (ui.font.value) Object.assign(p, { font: ui.font.value, fontSource: kit ? "adobe" : "open", adobeKit: kit ?? p.adobeKit })
     if (colour >= 0) {
       p.palette = PALETTES[colour].colours
       if (p.gradient && p.gradient !== "off") p.gradientInks = PALETTES[colour].colours
@@ -248,7 +254,6 @@ async function play(root) {
     ui.font.value = any([...ui.font.options].map((o) => o.value).filter(Boolean))
     colour = Math.random() < 0.2 ? -1 : Math.floor(Math.random() * (swatches.length - 1))
     ground = Math.random() < 0.3 ? null : any(GROUNDS)[1]
-    proportions = Math.random() < 0.3 ? "keep" : "stretch"
     // Character looks need room to read: fewer, bigger cells.
     const fine = Boolean(VARIANT[PLAY[look][0]])
     if (!ui.gridRows[0]?.hidden) { roll(ui.rows, 1, fine ? 5 : 10); roll(ui.columns, 1, fine ? 2 : 5) }

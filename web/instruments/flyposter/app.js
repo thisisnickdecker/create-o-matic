@@ -1,12 +1,14 @@
 // Flyposter: the engine in the shared shell, plus what only it needs: fonts, the picture, the
 // emoji, the logo; the brand pocket, remembered in this browser; Vary with locks, front and centre,
 // which deals many posts, has the judge (score.js) score them and shows the best nine; Rewrite,
-// which steps your headline through the copy lenses; and pickers for emoji and stickers.
+// which steps your headline through the copy lenses; pickers for emoji and stickers; working on
+// the stage itself (stage.js); and undo for all of it.
 import * as engine from "./flyposter.js"
 import { MOODS, LOCKS, vary, nudge } from "./moods.js"
 import { judge, choose, washout } from "./score.js"
 import { LENSES, rewrites, lensOf } from "./copy.js"
 import { STICKERS, stickersOf } from "./stickers.js"
+import { stageEditing } from "./stage.js"
 import { createMachine } from "../../packages/core/shell.js"
 import { ensureFont } from "../../packages/core/fonts.js"
 import { openFontPicker } from "../../packages/core/fontpicker.js"
@@ -337,7 +339,64 @@ function setLocks(keep) {
   if (keep) for (const facet of Object.keys(LOCKS)) m.patch.params[`lock${facet[0].toUpperCase()}${facet.slice(1)}`] = !!keep[facet]
 }
 
+// ---- undo ----
+// Every change, from the rack or the stage, can be undone: the patch as it was is kept (all but
+// the freeze frame, which moves whenever you pause). A run of changes from the rack, a slider
+// dragged or a word typed, counts as one (merge); each thing done on the stage is its own step.
+const history = { past: [], future: [], last: null, at: 0, restoring: false }
+const snapshot = (patch) => JSON.stringify({ ...patch, params: { ...patch.params, phase: 0 } })
+function record(merge = false) {
+  if (history.restoring || !m) return
+  const now = snapshot(m.patch)
+  if (history.last === null) { history.last = now; return }
+  if (now === history.last) return
+  const quick = merge && performance.now() - history.at < 600
+  if (!quick || !history.past.length) history.past.push(history.last)
+  history.past = history.past.slice(-100)
+  history.last = now
+  history.future = []
+  history.at = performance.now()
+}
+function step(from, to) {
+  if (!from.length) return false
+  to.push(history.last)
+  const back = JSON.parse(from.pop())
+  back.params.phase = m.patch.params.phase
+  history.restoring = true
+  m.setPatch(back)
+  history.restoring = false
+  history.last = snapshot(m.patch)
+  history.at = 0
+  stage?.show()
+  return true
+}
+const undo = () => step(history.past, history.future)
+const redo = () => step(history.future, history.past)
+addEventListener("keydown", (e) => {
+  if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "z" || e.target.closest?.("input, textarea")) return
+  e.preventDefault()
+  if (!(e.shiftKey ? redo() : undo())) m.note(e.shiftKey ? "Nothing to redo." : "Nothing to undo.")
+})
+
+// The Paste-up's own strip: how much is moved by hand, and putting it all back.
+function movesBar(machine) {
+  const body = machine.host.querySelector('[data-group="layout"] .group-body')
+  const said = el("p", { className: "note" })
+  const back = button("Put everything back", "Undo every move in this layout", () => {
+    const p = machine.patch.params
+    p.moves = p.moves.filter((mv) => !mv.id.startsWith(`${p.layout}:`))
+    machine.changed(); record(); stage?.show()
+  })
+  body.prepend(el("div", { className: "strip" }, back), said)
+  return () => {
+    const p = machine.patch.params, n = p.moves.filter((mv) => mv.id.startsWith(`${p.layout}:`)).length
+    back.hidden = !n
+    said.textContent = n ? `${n} part${n > 1 ? "s" : ""} moved by hand in this layout.` : "Click anything on the post to move it; double-click words to retype them."
+  }
+}
+
 // ---- the machine ----
+let stage = null
 let syncers = []
 const syncAll = () => syncers.forEach((s) => s())
 
@@ -353,8 +412,9 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     loadImage(patch)
     loadEmojis(patch)
     if (BRAND_KEYS.includes(key)) rememberBrand(patch)
-    queueMicrotask(syncAll)
+    queueMicrotask(() => { syncAll(); record(true); stage?.show() })
   },
+  playing: () => stage?.show(),
   options: () => ({ fontGen, image, emoji, marks }),
   ready,
   heavy: (p) => p.params.layers.some((l) => l.on && effectById(l.effect)?.active(l.params)),
@@ -395,10 +455,18 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     const vary = machine.host.querySelector('[data-ref="vary"]')
     if (vary) Object.assign(vary, { title: "Nine new posts from this mood; locked things stay", onclick: () => openDeck(machine) })
     brandBar(machine)
-    syncers = [varyBar(machine), rewriteBar(machine), stuffPickers(machine)]
+    syncers = [varyBar(machine), rewriteBar(machine), stuffPickers(machine), movesBar(machine)]
+    stage = stageEditing(machine, {
+      options: () => ({ fontGen, image, emoji, marks }),
+      record,
+      onFirstMove: () => {
+        machine.patch.params.lockLayout = true
+        syncAll()
+        machine.note("Moved by hand, so Keep layout is on: Vary leaves the layout and your moves alone.")
+      },
+    })
   },
   api: {
-    // vary(): a new post from the mood; locks as in the rack, or { layout: true, … } to keep those.
     // vary(): the best of a dozen new posts from the mood, put on the stage. keep as below.
     vary: async (keep) => {
       setLocks(keep)
@@ -411,6 +479,18 @@ m = await createMachine(document.querySelector("[data-machine]"), engine, {
     judge: async () => { const { score, faults } = await judged(m.patch); return { score, faults } },
     // open(): show the deck of nine, as Vary does.
     open: (from = "fresh") => openDeck(m, from),
+    // parts(): what's on the stage and where: [{ role, name, field, x, y, w, h, rot }] in output
+    // pixels. move(role, { dx, dy, s, r, hide }) sets how a part is moved by hand (dx, dy as
+    // fractions of the frame); move(role, null) puts it back. undo() and redo() as Cmd-Z.
+    parts: () => engine.parts(document.createElement("canvas").getContext("2d"), m.patch, { fontGen, image, emoji, marks }),
+    move: (role, mv) => {
+      const p = m.patch.params, id = `${p.layout}:${role}`
+      const moves = [...p.moves.filter((x) => x.id !== id), ...(mv ? [{ ...mv, id }] : [])]
+      m.setPatch({ ...m.patch, params: { ...p, moves, lockLayout: p.lockLayout || !!mv } }) // checked and clamped
+      return structuredClone(m.patch.params.moves)
+    },
+    undo: () => undo(),
+    redo: () => redo(),
     rewrites: () => rewrites(m.patch.params, m.patch.params.lens),
     lenses: () => LENSES.map(([id, name, blurb]) => ({ id, name, blurb })),
     moods: () => Object.entries(MOODS).map(([id, x]) => ({ id, name: x.label, blurb: x.blurb })),

@@ -504,7 +504,7 @@ const LAYOUTS = {
 }
 
 // ---- the stuff: emoji, stickers and the picture, thrown ----
-function throwStuff(p, f, hero, heroToken, items) {
+function throwStuff(p, f, hero, heroToken, items, spot) {
   const { W, H } = f, min = Math.min(W, H)
   let tokens = [...emojiOf(p.emoji).map((e) => ({ type: "emoji", hex: e.hex })), ...stickersOf(p.stickers).map((id) => ({ type: "sticker", id })), ...(p.image && p.imageRole === "scatter" ? [{ type: "image" }] : [])]
   if (heroToken?.type === "emoji" && tokens.length > 1) {
@@ -516,7 +516,6 @@ function throwStuff(p, f, hero, heroToken, items) {
   const out = []
   // What stuff in front shouldn't cover: the words, the shapes holding words, the logo.
   const keepClear = items.filter((it) => it.kind === "text" || it.label).map((it) => ({ x: it.x, y: it.y, w: it.w / 2, h: it.h / 2 + it.px * 0.2 || it.h / 2 }))
-  const spot = LOGO_SPOTS(p, f)
   if (spot && !spot.huge) keepClear.push({ x: spot.x, y: spot.y, w: spot.s, h: spot.s * 0.6 })
   const covers = (x, y, s) => keepClear.reduce((a, b) => a + Math.max(0, Math.min(x + s / 2, b.x + b.w) - Math.max(x - s / 2, b.x - b.w)) * Math.max(0, Math.min(y + s / 2, b.y + b.h) - Math.max(y - s / 2, b.y - b.h)), 0) / (s * s)
   for (let i = 0; i < p.stuffCount; i++) {
@@ -541,6 +540,38 @@ function throwStuff(p, f, hero, heroToken, items) {
       ph: r(), ph2: r(), dir: r() < 0.5 ? -1 : 1, seed: Math.floor(r() * 1000),
     })
   }
+  return out
+}
+
+// ---- moved by hand ----
+// Every part of a post has a role, the same each time the layout is composed: line0, line1… for
+// the headline, word0… for scatter's stickers, details, where, cta, number, ring, band0…, picture,
+// logo, stuff0…, and shape0… or text0… for the rest. A move (patch.params.moves) is kept by
+// layout and role, so a post's own layout keeps what you placed by hand.
+function roles(items, w) {
+  const seen = {}
+  // Parts that come in runs are always numbered (word0, word1…); the rest only from the second on.
+  const RUNS = new Set(["word", "band", "shape", "text"])
+  const name = (base) => {
+    const n = (seen[base] = (seen[base] ?? -1) + 1)
+    return RUNS.has(base) ? `${base}${n}` : n ? `${base}${n}` : base
+  }
+  const same = (a, b) => b && String(a ?? "").trim().toLowerCase() === b.trim().toLowerCase()
+  for (const it of items) {
+    if (it.follows) continue
+    const said = it.text ?? it.label?.join(" ")
+    it.role = name(it.cta || same(said, w.cta) ? "cta" : it.big ? "number" : it.kind === "text" && it.line != null ? `line${it.line}`
+      : it.kind === "arc" ? "ring" : it.kind === "ticker" ? "band" : same(said, w.details) ? "details" : same(said, w.where) ? "where"
+      : it.kind === "shape" && it.label && it.labelK === "d" ? "word" : it.kind === "text" ? "text" : "shape")
+  }
+}
+// Turn and scale a part about its centre.
+function grow(it, k) {
+  for (const key of ["w", "h", "px", "labelPx", "r", "segW", "line", "stroke"]) if (typeof it[key] === "number") it[key] *= k
+}
+function moved(p) {
+  const out = new Map()
+  for (const mv of p.moves ?? []) if (mv.id.startsWith(`${p.layout}:`)) out.set(mv.id.slice(p.layout.length + 1), mv)
   return out
 }
 
@@ -598,13 +629,77 @@ function compose(g, p, W, H, opts) {
     it.x = best.x; it.y = best.y
   }
   f.H = H
-  const stuff = throwStuff(p, f, hero, heroToken, items)
+  // The stuff lands where the layout left room, before anything's moved by hand, so moving one
+  // thing doesn't throw everything again.
+  const thrown = throwStuff(p, f, hero, heroToken, items, spot)
+  // What you've moved by hand: shifted, scaled, turned or left out.
+  roles(items, w)
+  const moves = moved(p)
+  const shift = (o, mv) => { o.x += mv.dx * W; o.y += mv.dy * H; o.rot = (o.rot ?? 0) + mv.r; if (mv.s !== 1) grow(o, mv.s) }
+  for (const it of items) {
+    const mv = it.role && moves.get(it.role)
+    if (!mv) continue
+    if (mv.hide) { it.hidden = true; continue }
+    const x0 = it.x, y0 = it.y
+    shift(it, mv)
+    for (const o of items) if (o.follows === it) { o.x = it.x + (o.x - x0) * mv.s; o.y = it.y + (o.y - y0) * mv.s; if (mv.s !== 1) grow(o, mv.s); o.rot = (o.rot ?? 0) + mv.r }
+  }
+  const shown = items.filter((it) => !it.hidden && !it.follows?.hidden)
+  const logoMove = moves.get("logo")
+  const mark = spot && !logoMove?.hide ? { ...spot, rot: 0 } : null
+  if (mark && logoMove) { mark.x += logoMove.dx * W; mark.y += logoMove.dy * H; mark.s *= logoMove.s; mark.rot = logoMove.r }
+  const heroMove = moves.get("picture")
+  const star0 = heroMove?.hide ? null : heroToken
+  if (heroMove && !heroMove.hide) { hero.x += heroMove.dx * W; hero.y += heroMove.dy * H; hero.size *= heroMove.s; hero.rot = heroMove.r }
+  const stuff = thrown.filter((o) => {
+    const mv = moves.get(`stuff${o.i}`)
+    if (mv) { if (mv.hide) return false; o.x += mv.dx * W; o.y += mv.dy * H; o.s *= mv.s; o.rot += mv.r }
+    return true
+  })
   // Where the logo and the star end up, for the judge (score.js).
-  const logo = spot && (opts.marks?.has(p.logo) || p.brandName.trim()) ? spot : null
+  const logo = mark && (opts.marks?.has(p.logo) || p.brandName.trim()) ? mark : null
   const hs = hero.size * (p.imageSize / 0.6), aspect = heroToken?.type === "image" && opts.image ? opts.image.w / opts.image.h : 1
-  const star = heroToken ? { x: hero.x + (p.imageX * W) / 2, y: hero.y - (p.imageY * H) / 2, w: aspect >= 1 ? hs : hs * aspect, h: aspect >= 1 ? hs / aspect : hs, front: !!hero.front } : null
-  kept = { key, fontGen: opts.fontGen, scene: { p, items, stuff, hero, heroToken, star, logo, groupTilt: built.groupTilt ?? (p.tilt * Math.PI) / 180, f, c } }
+  const star = star0 ? { x: hero.x + (p.imageX * W) / 2, y: hero.y - (p.imageY * H) / 2, w: aspect >= 1 ? hs : hs * aspect, h: aspect >= 1 ? hs / aspect : hs, front: !!hero.front, rot: hero.rot ?? 0 } : null
+  kept = { key, fontGen: opts.fontGen, scene: { p, items: shown, stuff, hero, heroToken: star0, star, logo, spot: mark, groupTilt: built.groupTilt ?? (p.tilt * Math.PI) / 180, f, c } }
   return kept.scene
+}
+
+// What's where on the stage, at rest, in the order it's drawn (the top one last), for picking
+// things up and moving them: { role, name, field, x, y, w, h, rot, tilt } in output pixels, the
+// centre already turned by the group's tilt. field is the setting its words come from, if any.
+const FIELDS = { cta: "cta", details: "details", where: "where", ring: "headline" }
+const NAMES = { cta: "Call to action", details: "Details", where: "Where", number: "Giant number", ring: "Ring of words", picture: "Picture", logo: "Logo" }
+export function parts(ctx, patch, opts = {}) {
+  const s = scene(ctx, patch, opts), { W, H } = s.f, tilt = s.groupTilt
+  const turn = (x, y) => {
+    const dx = x - W / 2, dy = y - H / 2
+    return [W / 2 + dx * Math.cos(tilt) - dy * Math.sin(tilt), H / 2 + dx * Math.sin(tilt) + dy * Math.cos(tilt)]
+  }
+  const named = (role) => NAMES[role] ?? role.replace(/^line(\d+)$/, (m, j) => `Headline, line ${+j + 1}`).replace(/^word(\d+)$/, (m, j) => `Headline, word ${+j + 1}`)
+    .replace(/^band(\d+)$/, (m, j) => `Band ${+j + 1}`).replace(/^stuff(\d+)$/, (m, j) => `Sticker ${+j + 1}`).replace(/^(shape|text)(\d+)$/, (m, k, j) => `${k === "shape" ? "Shape" : "Words"} ${+j + 1}`)
+  // A ticker's bands each say one of your lines; which one is in its words.
+  const w = words(s.p), said = (it) => ["details", "where", "cta"].find((k) => w[k] && it.text?.trim().toLowerCase() === w[k].toLowerCase())
+  const field = (it) => FIELDS[it.role] ?? (it.kind === "ticker" ? said(it) ?? "headline" : /^(line|word)/.test(it.role) ? "headline" : null)
+  const item = (it) => {
+    const [x, y] = turn(it.x, it.y)
+    const round = it.kind === "arc"
+    return { role: it.role, name: named(it.role), field: field(it), x, y, w: round ? it.r * 2 + it.px : it.w, h: round ? it.r * 2 + it.px : it.h, rot: (it.rot ?? 0) + tilt, tilt }
+  }
+  const out = []
+  for (const o of s.stuff) if (!o.front) out.push({ role: `stuff${o.i}`, name: named(`stuff${o.i}`), field: null, x: o.x, y: o.y, w: o.s, h: o.s, rot: o.rot, tilt: 0 })
+  for (const it of s.items) if (it.under && it.role) out.push(item(it))
+  const hero = s.star && { role: "picture", name: NAMES.picture, field: null, x: s.star.x, y: s.star.y, w: s.star.w, h: s.star.h, rot: s.star.rot, tilt: 0 }
+  if (hero && !s.star.front) out.push(hero)
+  for (const it of s.items) if (!it.under && it.role) out.push(item(it))
+  if (hero && s.star.front) out.push(hero)
+  for (const o of s.stuff) if (o.front) out.push({ role: `stuff${o.i}`, name: named(`stuff${o.i}`), field: null, x: o.x, y: o.y, w: o.s, h: o.s, rot: o.rot, tilt: 0 })
+  if (s.spot) {
+    // On a round sticker it's the circle; otherwise the box a wide mark or the brand name fills.
+    const round = s.spot.sticker || (patch.params.layout === "ticker" && !s.spot.huge)
+    const box = s.spot.huge ? { w: s.spot.s, h: s.spot.s * 0.5 } : round ? { w: s.spot.s * 1.24, h: s.spot.s * 1.24 } : { w: s.spot.s * 1.6, h: s.spot.s * 0.8 }
+    out.push({ role: "logo", name: NAMES.logo, field: null, x: s.spot.x, y: s.spot.y, w: box.w, h: box.h, rot: s.spot.rot, tilt: 0 })
+  }
+  return out
 }
 
 // The post composed but not drawn, at its freeze frame: for the judge (score.js) and the tests.
@@ -887,14 +982,14 @@ const LOGO_SPOTS = (p, f, r) => {
   }
 }
 
-function drawLogo(g, p, f, c, opts, a) {
-  const spot = LOGO_SPOTS(p, f)
-  if (!spot || a.a <= 0) return
+function drawLogo(g, p, f, c, opts, a, at) {
+  if (!at || a.a <= 0) return
+  const spot = { ...at }
   if (p.layout === "ticker" && !spot.huge) spot.sticker = true
   const mark = opts.marks?.get(p.logo)
   g.save()
   g.translate(spot.x + a.dx, spot.y + a.dy)
-  g.rotate(a.rot + (spot.sticker ? -0.15 : 0))
+  g.rotate(a.rot + spot.rot + (spot.sticker ? -0.15 : 0))
   g.scale(a.s, a.s)
   if (spot.huge) g.globalAlpha = 0.14
   if (spot.sticker) { g.fillStyle = c.accent === c.ground ? c.type : c.accent; g.beginPath(); g.arc(0, 0, spot.s * 0.62, 0, TAU); g.fill() }
@@ -959,7 +1054,7 @@ export function render(ctx, patch, t, opts = {}) {
     ctx.restore()
     ctx.globalAlpha = 0.28; ctx.fillStyle = c.ground; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1
   }
-  if (p.logoPlace === "huge") drawLogo(ctx, p, f, c, opts, { a: 1, s: 1, dx: 0, dy: 0, rot: 0 })
+  if (p.logoPlace === "huge") drawLogo(ctx, p, f, c, opts, { a: 1, s: 1, dx: 0, dy: 0, rot: 0 }, scene.spot)
 
   const build = BUILDS.has(p.motion)
   const n = scene.items.length + 2
@@ -1014,7 +1109,7 @@ export function render(ctx, patch, t, opts = {}) {
       if (a.a > 0 && a.s > 0.001) {
         ctx.save()
         ctx.translate(h.x + (p.imageX * W) / 2 + a.dx, h.y - (p.imageY * H) / 2 + a.dy + bob)
-        ctx.rotate(a.rot)
+        ctx.rotate(a.rot + (h.rot ?? 0))
         ctx.scale(a.s, a.s)
         const size = h.size * (p.imageSize / 0.6)
         if (ht.type === "emoji") drawPicture(ctx, opts.emoji.get(ht.hex), size, size, p.stuffTreat === "plain" ? "as" : p.stuffTreat, { shadow: c.type, ink: c.type }, u)
@@ -1031,7 +1126,7 @@ export function render(ctx, patch, t, opts = {}) {
   if (scene.hero.front) drawHero()
 
   drawStuff(true)
-  if (p.logoPlace !== "huge") drawLogo(ctx, p, f, c, opts, move(p, t, 0, n, W, u, 11))
+  if (p.logoPlace !== "huge") drawLogo(ctx, p, f, c, opts, move(p, t, 0, n, W, u, 11), scene.spot)
 
   ctx.restore()
   ctx.setTransform(1, 0, 0, 1, 0, 0)

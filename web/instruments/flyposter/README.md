@@ -78,6 +78,29 @@ The typesetting is part of it:
 - **The call to action** takes the clearest spot: where the layout put it, the other side, under
   the logo, or a corner or edge of the frame.
 
+## Working on the stage
+
+Click anything on the post (a line of the headline, the call to action, a sticker, the picture,
+the logo) to pick it up, and drag it. Pull the corner knob to scale it, the knob above it to turn it
+(Shift for 15° steps). Guides snap it to the middle, the margins and the other parts' edges and
+middles; hold Alt to place it freely. Double-click (or double-tap) words to retype them in place:
+the headline, details, where or call to action, whichever the words come from. Typing over a
+Rewrite makes it your own line.
+
+With something picked: arrows nudge a pixel (Shift for ten), `[` and `]` turn 5° (Shift for 15°),
+`-` and `=` scale, Delete hides it, R puts it back where the layout had it, Esc lets go. The bar
+under it does Retype, Hide and Put back too. Cmd-Z and Shift-Cmd-Z undo and redo anything, from
+the stage or the rack (a slider dragged or a word typed is one step). The Paste-up group says how
+many parts are moved and has **Put everything back**.
+
+What you move is a setting like any other: `moves` in the patch, a list of
+`{ id: "layout:part", dx, dy, s, r, hide }`, with dx and dy as fractions of the frame, so it
+survives a change of format and travels in links and saved patches. Moves belong to a layout, and
+the first one turns on **Keep layout**, so Vary changes the type, colour and the rest around what
+you placed. Unlock it and Vary deals new layouts; come back to the layout and your moves are
+still there. Stickers are thrown before anything is moved, so moving one part doesn't throw
+everything again, and the judge scores the post as moved.
+
 ## Driving it from a description (agents)
 
 Open `/flyposter/` and use `window.instrument`:
@@ -97,6 +120,10 @@ await instrument.deal()                        // nine judged posts, best first,
 await instrument.deal({ from: "like", seed: 7 }) // nine near relations of the post on the stage
 await instrument.judge()                       // { score, faults } for the post on the stage
 instrument.open()                              // show the deck, as Vary does
+instrument.parts()                             // what's on the stage: [{ role, name, field, x, y, w, h, rot }]
+instrument.move("cta", { dx: -0.1, s: 1.3, r: 0.2 }) // move a part by hand; move("cta", null) puts it back
+instrument.move("line1", { hide: true })       // leave a part out
+instrument.undo(); instrument.redo()
 instrument.set("take", 3)                      // the third rewrite of the headline
 instrument.rewrites()                          // every rewrite through the current lens
 const png = await instrument.render("png")     // a Blob, nothing downloaded
@@ -134,6 +161,15 @@ The Print shop's PNG, MP4, WebM, GIF, MOV and GIF for Figma, at full, half, quar
   in one nine, and a 48 shown because variety outweighed the score (now the floor). Dealing takes
   about 3 s the first time (the mood's fonts arrive), then under a second; on phone it's two
   columns, full screen, scrolling.
+- Working on the stage, in the page at 1440 wide and at phone width, with real pointer drags and
+  key presses: picking up the call to action, dragging it (the layout locked itself and said so),
+  the scale and turn knobs, Shift-arrow nudges, `]`, Delete, Cmd-Z and Shift-Cmd-Z (each its own
+  step), double-clicking the headline and typing a new one, and a drag with a little sideways
+  wobble snapping back to the middle. That caught and fixed: moving one part re-threw every
+  sticker, the bar sitting on the scale knob, and quick stage edits merging into one undo step.
+  `tests/flyposter-moves.test.mjs`: roles in every layout, a move touching only its part, moves
+  belonging to their layout, hiding, an underline following its words, moves checked like any
+  setting, and the judge seeing a moved part off the frame.
 - After the judge's changes: a PNG and an MP4 rendered again and decoded (1080×1350, 180 frames,
   6 s). The only console errors were 404s from the shared font loader asking again and again for a
   weight-variable file of Climate Crisis, which varies by year instead; it now asks once.
@@ -163,7 +199,11 @@ The Print shop's PNG, MP4, WebM, GIF, MOV and GIF for Figma, at full, half, quar
 
 - Sound: a seeded synth and beat with motion on the beat, and audio in the MP4.
 - Background removal for photos (a PNG that's already cut out works).
-- Drag things on the stage; placement is by Variant, Throw and the picture's sliders.
+- Pick up several things at once, or group them.
+- Retype in the post's own face: the box is set in the site's type, over the post.
+- Moves are kept by part, so a headline that changes its number of lines keeps moves on line0,
+  line1… by position, not by the words on them.
+- The grid's facts (When, Where, Next) move as separate lines, not as columns.
 - Emoji outside the built-in set are skipped.
 - WebM, GIF and MOV come from the shared exporter and weren't checked here.
 - A front door and domain of its own.

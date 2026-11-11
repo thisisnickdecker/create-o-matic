@@ -384,6 +384,56 @@
       "help": "Small decisions inside the layout: which side, which corner, how the stickers fall."
     },
     {
+      "key": "moves",
+      "group": "layout",
+      "label": "Moved by hand",
+      "type": "list",
+      "hidden": true,
+      "max": 64,
+      "default": [],
+      "help": "What you've moved on the stage, per layout: id is layout:part (stack:line0, badge:cta, number:picture, any:logo). dx and dy are fractions of the frame, s a scale, r a turn in radians; hide leaves it out.",
+      "item": [
+        {
+          "key": "dx",
+          "label": "Across",
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "default": 0
+        },
+        {
+          "key": "dy",
+          "label": "Down",
+          "type": "number",
+          "min": -2,
+          "max": 2,
+          "default": 0
+        },
+        {
+          "key": "s",
+          "label": "Scale",
+          "type": "number",
+          "min": 0.2,
+          "max": 5,
+          "default": 1
+        },
+        {
+          "key": "r",
+          "label": "Turn",
+          "type": "number",
+          "min": -3.15,
+          "max": 3.15,
+          "default": 0
+        },
+        {
+          "key": "hide",
+          "label": "Hidden",
+          "type": "bool",
+          "default": false
+        }
+      ]
+    },
+    {
       "key": "align",
       "group": "layout",
       "label": "Align",

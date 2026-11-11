@@ -363,6 +363,22 @@ body.dragging .drop { display: grid; }
 .fly-card-more { justify-self: start; min-height: 26px; padding: 0 2px; border: 0; background: none; color: var(--g600); font: inherit; font-size: 12px; cursor: pointer; }
 .fly-card-more:hover { color: var(--ink); text-decoration: underline; }
 @keyframes fly-wait { to { opacity: .55; } }
+.fly-edit { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.fly-sel { position: absolute; outline: 1.5px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.fly-sel-tag { position: absolute; left: -4px; bottom: calc(100% + 8px); padding: 2px 7px; border-radius: 999px; background: var(--accent); color: var(--white); font-size: 11px; white-space: nowrap; }
+.fly-knob { position: absolute; width: 14px; height: 14px; border: 2px solid var(--accent); border-radius: 50%; background: var(--white); pointer-events: auto; touch-action: none; }
+.fly-knob-scale { right: -11px; bottom: -11px; cursor: nwse-resize; }
+.fly-knob-turn { left: 50%; top: -34px; margin-left: -7px; cursor: grab; }
+.fly-knob-turn::after { content: ""; position: absolute; left: 4px; top: 12px; width: 2px; height: 14px; background: var(--accent); }
+.fly-guides { position: absolute; inset: 0; }
+.fly-guide { position: absolute; display: block; background: var(--accent); opacity: .8; }
+.fly-guide.v { width: 1px; }
+.fly-guide.h { height: 1px; }
+.fly-sel-bar { position: absolute; z-index: 2; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; background: var(--white); box-shadow: var(--shadow); transform: translateX(-50%); white-space: nowrap; }
+.fly-sel-bar .fly-chip { min-height: 26px; font-size: 12px; }
+.fly-retype-wrap { position: absolute; z-index: 3; display: grid; gap: 4px; transform: translate(-50%, -50%); }
+.fly-retype { width: min(420px, 80vw); padding: 10px 12px; border: 0; border-radius: var(--r-m); background: var(--white); box-shadow: 0 0 0 2px var(--accent), var(--shadow); color: var(--ink); font: inherit; font-size: 17px; line-height: 1.3; resize: none; }
+.fly-retype-hint { justify-self: center; padding: 2px 8px; border-radius: 999px; background: var(--white); color: var(--g600); font-size: 11px; }
 @media (max-width: 760px) {
   .fly-chip { min-height: 40px; padding: 0 14px; }
   .fly-deck { position: fixed; z-index: 50; overflow: auto; grid-template-rows: auto auto; }

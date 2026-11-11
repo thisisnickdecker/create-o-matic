@@ -133,6 +133,11 @@ Safari has no constant-quality mode yet, so it uses the old fixed rate.
 It's a Cloudflare Pages project called `createomatic`, serving `web/` as static files
 (`wrangler.toml`). `npm run deploy` runs the checks and publishes. Any static host works the same way.
 
+Work on the site itself (homepage, manual, sitemap, share images) happens on the `site` branch,
+apart from instrument work on `main`. `npm run deploy:site` publishes it as a preview at
+site.createomatic.pages.dev; createomatic.xyz only changes when `site` is merged into `main` and
+deployed with `npm run deploy`.
+
 ## Credits
 
 Fonts in the font library are served by [Fontsource](https://fontsource.org) (mostly OFL).
